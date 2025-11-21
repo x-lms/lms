@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인 - 학습관리시스템</title>
-    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="{{springMacroRequestContext.request.contextPath}}/css/common.css">
     <link rel="stylesheet" href="/css/stylejm.css">
 </head>
 <body class="login-wrapper">
@@ -24,7 +24,7 @@
             </div>
             
             <div class="login-body">
-                <form action="/login" method="POST">
+                <form action="{{springMacroRequestContext.request.contextPath}}/login" method="POST">
                     <div class="user-type-tabs">
                         <button type="button" class="tab-btn active" data-type="student">학생</button>
                         <button type="button" class="tab-btn" data-type="professor">교수</button>
@@ -49,7 +49,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
-                            <input type="password" id="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요">
+                            <input type="password" id="userPw" name="userPw" class="form-input" placeholder="비밀번호를 입력하세요">
                         </div>
                     </div>
 

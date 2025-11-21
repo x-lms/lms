@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.lms.mapper.PublicMapper">
+	<!-- 학생로그인 -->
+	<select id="selectLoginStudent" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Student">
+		select student_no, dept_no, student_name, student_img, student_state
+		from student where student_no = #{userId} and student_pw = #{userPw}
+	</select>
+	<!-- 교수로그인 -->
+	<select id="selectLoginProfessor" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Emp">
+		select emp_no empNo, emp_email empEmail, emp_name empName, dept_no, deptNo emp_img empImg
+		from emp where emp_role= 2 and emp_email = #{userId} and emp_pw = #{userPw}
+	</select>
+	<!-- 교직원로그인 -->
+	<select id="selectLoginEmp" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Emp">
+		select emp_no empNo, emp_email empEmail, emp_name empName, emp_img empImg
+		from emp where emp_role= 1 and emp_email = #{userId} and emp_pw = #{userPw}
+	</select>
+</mapper>
