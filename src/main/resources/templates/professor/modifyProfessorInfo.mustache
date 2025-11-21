@@ -1,0 +1,94 @@
+<!-- modifyProfessorInfo.mustache -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>교수 정보 수정</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <h1>정보 수정</h1>
+
+    <form action="{{springMacroRequestContext.request.contextPath}/professor/modifyProfessorInfo?empNo={{e.empNo}}" method="post">
+       
+        <p>
+            <label>사진</label>
+            <input type="file"  name="empImg">
+            <img src="{{e.empImg}}">
+        </p>
+        
+        <p>
+            <label>학과 번호: </label>
+            <input type="text" name="deptNo" value="{{e.deptNo}}">
+        </p>
+
+        <p>
+            <label>비밀번호: </label>
+            <input type="password" name="empPw" id="password" value="">
+            <span id="pwMessage" style="color:red;"></span>
+        </p>
+       
+        <p>
+            <label>비밀번호 확인: </label>
+            <input type="password" name="empPw2" id="password2" value="">
+        </p>
+
+        <p>
+            <label>이름: </label>
+            <input type="text" name="empName" value="{{e.empName}}">
+        </p>
+
+        <p>
+            <label>생년월일: </label>
+            <input type="date" name="empBirth" value="{{e.empBirth}}">
+        </p>
+
+        <p>
+            <label>전화번호: </label>
+            <input type="text" name="empPhone" value="{{e.empPhone}}">
+        </p>
+
+        <p>
+            <button type="submit">수정</button>
+        </p>
+    </form>
+
+    <p><a href="{{springMacroRequestContext.request.contextPath}}/professor/professorInfo">뒤로가기</a></p>
+
+    <script>
+    $(document).ready(function() {
+
+        // 비밀번호 숫자+영어만 허용
+        $("#password").on("input", function() {
+            const password = $(this).val();
+            const regex = /^[A-Za-z0-9]*$/; // 숫자와 영어만 허용
+
+            if(regex.test(password)) {
+                $("#pwMessage").text(""); // 통과 시 메시지 제거
+            } else {
+                $("#pwMessage").text("비밀번호는 숫자와 영어만 가능합니다.");
+                // 마지막 입력 문자 제거
+                $(this).val(password.slice(0, -1));
+            }
+        });
+
+        // 폼 제출 시 비밀번호 확인 체크
+        $("form").on("submit", function(e) {
+            const pw = $("#password").val();
+            const pw2 = $("#password2").val();
+
+            // 비밀번호가 입력되어 있을 때만 체크
+            if(pw || pw2) {
+                if(pw !== pw2) {
+                    alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                    e.preventDefault(); // 제출 막기
+                }
+            }
+        });
+       
+ 
+
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.lms.mapper.ProfessorMapper">
+	
+	<update id="updateProfessorInfo" parameterType="com.example.lms.dto.Emp">
+		update emp
+		set dept_no = #{deptNo}, emp_pw = #{empPw}, emp_name = #{empName},
+			emp_birth = #{empBirth}, emp_phone = #{empPhone}, emp_img = #{empImg}		
+		where emp_No = #{empNo}
+	</update> 
+	
+	<select id="professorInfo" parameterType="int" resultType="com.example.lms.dto.Emp">
+		select 
+			emp_no empNo, dept_no deptNo,
+			emp_name empName, emp_email empEmail,
+			emp_birth empBirth, emp_phone empPhone, emp_img empImg 
+		from emp
+		where emp_no = #{empNo}
+	</select>
+
+</mapper>
