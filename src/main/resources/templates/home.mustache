@@ -1,10 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 학습관리시스템</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/stylejm.css">
 </head>
-<body>
+<body class="login-wrapper">
+    <header class="login-header">
+        <div class="logo">LMS</div>
+        <div>
+            <h1>한국대학교 학습관리시스템</h1>
+            <p>Hankuk University Learning Management System</p>
+        </div>
+    </header>
 
+    <main class="login-content">
+        <div class="login-container">
+            <div class="login-title">
+                <h2>통합 로그인</h2>
+                <p>학번/이메일과 비밀번호를 입력해주세요</p>
+            </div>
+            
+            <div class="login-body">
+                <form action="/login" method="POST">
+                    <div class="user-type-tabs">
+                        <button type="button" class="tab-btn active" data-type="student">학생</button>
+                        <button type="button" class="tab-btn" data-type="professor">교수</button>
+                        <button type="button" class="tab-btn" data-type="emp">교직원</button>
+                    </div>
+                    
+                    <input type="hidden" name="userType" id="userType" value="student">
+
+                    <div class="form-group">
+                        <label for="userId">아이디 (학번/이메일)</label>
+                        <div class="input-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <input type="text" id="userId" name="userId" class="form-input" placeholder="학번 또는 이메일을 입력하세요">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <div class="input-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            <input type="password" id="password" name="password" class="form-input" placeholder="비밀번호를 입력하세요">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-btn">로그인</button>
+                </form>
+
+                <div class="extra-links">
+                    <a href="/find-id">아이디 찾기</a>
+                    <span class="divider">|</span>
+                    <a href="/find-pw">비밀번호 찾기</a>
+                </div>
+
+                <div class="notice-box">
+                    <p><strong>📢 공지:</strong> 2024학년도 2학기 수강신청이 3월 2일부터 시작됩니다. 사전에 로그인 테스트를 완료해주세요.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="login-footer">
+        <p>© 2024 한국대학교 정보전산원. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('userType').value = this.dataset.type;
+            });
+        });
+    </script>
 </body>
 </html>

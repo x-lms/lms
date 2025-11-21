@@ -1,1 +1,214 @@
 @charset "UTF-8";
+/* ==================== 레이아웃 기본 ==================== */
+body {
+    background: #f1f5f9;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==================== 헤더 ==================== */
+.header {
+    background: #1a1a2e;
+    padding: 0 30px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.header-text h1 {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.header-text p {
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.user-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.user-id {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.logout-btn {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.3s;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* ==================== 컨테이너 ==================== */
+.container {
+    display: flex;
+    margin-top: 70px;
+    min-height: calc(100vh - 70px - 50px);
+}
+
+/* ==================== 사이드바 ==================== */
+.sidebar {
+    width: 240px;
+    background: white;
+    border-right: 1px solid #e5e7eb;
+    padding: 20px 0;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    bottom: 50px;
+    overflow-y: auto;
+}
+
+.nav-menu {
+    list-style: none;
+}
+
+.nav-item {
+    margin: 4px 12px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #64748b;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.nav-link svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.nav-link:hover {
+    background: #f1f5f9;
+    color: #1e40af;
+}
+
+.nav-item.active .nav-link {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: white;
+}
+/* 서브메뉴 기본 숨김 */
+.sub-menu {
+    max-height: 0;
+    overflow: hidden;
+    list-style: none;
+    margin-left: 40px; /* 아이콘 아래 정렬 */
+    padding-left: 0;
+    transition: max-height 0.3s ease;
+}
+
+/* 서브메뉴 아이템 */
+.sub-menu li a {
+    display: block;
+    padding: 6px 10px;
+    font-size: 14px;
+    color: #555;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.sub-menu li a:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+/* 열렸을 때 */
+.nav-item.open .sub-menu {
+    max-height: 500px; /* 충분히 큰 값 */
+}
+/* ==================== 메인 컨텐츠 ==================== */
+.main-content {
+    flex: 1;
+    margin-left: 240px;
+    padding: 30px;
+    background: #f1f5f9;
+}
+
+/* ==================== 푸터 ==================== */
+.footer {
+    background: #1a1a2e;
+    padding: 15px;
+    text-align: center;
+    margin-left: 240px;
+}
+
+.footer p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+}

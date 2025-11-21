@@ -1,7 +1,9 @@
 package com.example.lms.service;
 
-import com.example.lms.dto.Student;
+import org.springframework.stereotype.Service;
 
+import com.example.lms.dto.Student;
+@Service
 public class StudentService {
 
 	public Student getStudentById(int i) {
