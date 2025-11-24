@@ -1,0 +1,111 @@
+<!-- modifyStudentInfo.mustache -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>학생 정보 수정</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/modifyStudent-info.css">
+</head>
+<body>
+    {{ >layouts/header }}
+    <div class="container">
+        {{ >layouts/navStudent }}
+        <div class="main-content">
+            <div class="page-header">
+                <h2 class="page-title">학생 정보 수정</h2>
+                <p class="page-subtitle">내 정보를 수정할 수 있습니다</p>
+            </div>
+
+            <div class="student-card">
+                <div class="card-header">
+                    <div class="profile-image-wrapper">
+                        <img id="previewImg" 
+                             src="{{#s.studentImg}}{{s.studentImg}}{{/s.studentImg}}{{^s.studentImg}}/images/default-profile.png{{/s.studentImg}}" 
+                             alt="학생 이미지" 
+                             class="profile-image">
+                    </div>
+                    <h3 class="profile-name">{{s.studentName}}</h3>
+                    <p class="profile-role">학생</p>
+                </div>
+
+                <div class="card-body">
+                    <form id="studentForm" 
+                          action="/student/modifyStudentInfo" 
+                          method="post" 
+                          enctype="multipart/form-data">
+                        
+                        <!-- studentNo 반드시 hidden input으로 포함 -->
+                        <input type="hidden" name="studentNo" value="{{s.studentNo}}">
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">사진</div>
+                                <input type="file" name="studentImgFile" id="studentImg">
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">학과 번호 *</div>
+                                <input type="text" name="deptNo" value="{{s.deptNo}}" required>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">비밀번호</div>
+                                <input type="password" name="studentPw" id="password">
+                                <span id="pwMessage" style="color:red;"></span>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">비밀번호 확인</div>
+                                <input type="password" name="studentPw2" id="password2">
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">이름 *</div>
+                                <input type="text" name="studentName" value="{{s.studentName}}" required>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">생년월일 *</div>
+                                <input type="date" name="studentBirth" value="{{s.studentBirth}}" required>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">전화번호</div>
+                                <input type="text" name="studentPhone" value="{{s.studentPhone}}">
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">주소</div>
+                                <input type="text" name="studentAddress" value="{{s.studentAddress}}">
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-label">이메일</div>
+                                <input type="email" name="studentEmail" value="{{s.studentEmail}}">
+                            </div>
+
+                            <div class="info-item">
+                                <button type="submit" class="btn-submit">저장</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 이미지 미리보기
+        $('#studentImg').on('change', function() {
+            const [file] = this.files;
+            if (file) {
+                $('#previewImg').attr('src', URL.createObjectURL(file));
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.lms.mapper.StudentMapper">
+
+<!-- 학생 상세 조회 (학생 본인용) -->
+<select id="selectStudentDetail" parameterType="int" resultType="com.example.lms.dto.Student">
+    SELECT 
+        student_no AS studentNo,
+        dept_no AS deptNo,
+        student_name AS studentName,
+        student_state AS studentState,
+        student_address AS studentAddress,
+        student_phone AS studentPhone,
+        student_birth AS studentBirth,
+        student_img AS studentImg,
+        student_email AS studentEmail
+    FROM student
+    WHERE student_no = #{studentNo}
+</select>
+
+<!-- 학생 정보 수정 (학생 본인용) -->
+<update id="updateStudent" parameterType="com.example.lms.dto.Student">
+    UPDATE student
+    SET
+        student_pw = #{studentPw}, <!-- 수정 시 비밀번호 변경 가능 -->
+        student_name = #{studentName},
+        student_state = #{studentState},
+        student_address = #{studentAddress},
+        student_phone = #{studentPhone},
+        student_birth = #{studentBirth},
+        student_img = #{studentImg},
+        student_email = #{studentEmail}
+    WHERE student_no = #{studentNo}
+</update>
+
+
+</mapper>

@@ -1,0 +1,239 @@
+/* ==================== 학생 정보 페이지 스타일 ==================== */
+@charset "UTF-8";
+/* 페이지 헤더 */
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    font-size: 15px;
+    color: #6b7280;
+}
+
+/* 학생 정보 카드 */
+.student-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    max-width: 1000px;
+}
+
+/* 카드 헤더 (프로필 섹션) */
+.card-header {
+    background: #10b981; /* 초록톤: 학생 느낌 */
+    padding: 50px 40px;
+    text-align: center;
+    position: relative;
+}
+
+.profile-image-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.profile-image {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+.profile-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.profile-role {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+}
+
+/* 카드 바디 (상세 정보) */
+.card-body {
+    padding: 40px;
+}
+
+.info-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-section-title svg {
+    width: 20px;
+    height: 20px;
+    color: #10b981;
+}
+
+/* 정보 그리드 */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-item {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #10b981;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: #ecfdf5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    border-left-color: #059669;
+}
+
+.info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-label svg {
+    width: 16px;
+    height: 16px;
+    color: #10b981;
+}
+
+.info-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    word-break: break-word;
+}
+
+/* 액션 버튼 */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 10px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    transform: translateY(-2px);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .card-header {
+        padding: 40px 24px;
+    }
+
+    .profile-image {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-name {
+        font-size: 24px;
+    }
+
+    .profile-role {
+        font-size: 14px;
+    }
+
+    .card-body {
+        padding: 24px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .info-item {
+        padding: 16px;
+    }
+
+    .page-title {
+        font-size: 26px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-image {
+        width: 100px;
+        height: 100px;
+    }
+
+    .card-header {
+        padding: 30px 20px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+}

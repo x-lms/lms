@@ -1,19 +1,28 @@
 package com.example.lms.service;
 
-import org.springframework.stereotype.Service;
-
 import com.example.lms.dto.Student;
+import com.example.lms.mapper.StudentMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
 @Service
 public class StudentService {
 
-	public Student getStudentById(int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+@Autowired
+private StudentMapper studentMapper;
 
-	public Student getStudentById(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+public Student getStudentDetail(int studentNo) {
+    return studentMapper.selectStudentDetail(studentNo);
+}
+
+public int updateStudent(Student student) {
+    return studentMapper.updateStudent(student);
+}
+
+public List<Student> getStudentList() {
+    return studentMapper.selectStudentList();
+}
+
+
 }

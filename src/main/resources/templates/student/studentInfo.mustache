@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>학생 정보 - 학습관리시스템</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/student-info.css">
+</head>
+<body>
+    {{> layouts/header }}
+    <div class="container">
+        {{> layouts/navStudent }}
+        <div class="main-content">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h2 class="page-title">학생 정보</h2>
+                <p class="page-subtitle">내 프로필 정보를 확인하세요</p>
+            </div>
+        <!-- 학생 정보 카드 -->
+        <div class="student-card">
+            <!-- 프로필 헤더 섹션 -->
+            <div class="card-header">
+                <div class="profile-image-wrapper">
+                    <img src="{{s.studentImg}}" class="profile-image">
+                </div>
+                <h3 class="profile-name">{{s.studentName}}</h3>
+                <p class="profile-role">학생</p>
+                <p class="profile-state">{{s.studentState}}</p>
+            </div>
+
+            <!-- 상세 정보 섹션 -->
+            <div class="card-body">
+                <h4 class="info-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    기본 정보
+                </h4>
+
+                <div class="info-grid">
+
+                    <!-- 이름 -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            이름
+                        </div>
+                        <div class="info-value">{{s.studentName}}</div>
+                    </div>
+
+                    <!-- 학번 -->
+                    <div class="info-item">
+                        <div class="info-label">학번</div>
+                        <div class="info-value">{{s.studentNo}}</div>
+                    </div>
+
+                    <!-- 학과 번호 -->
+                    <div class="info-item">
+                        <div class="info-label">학과 번호</div>
+                        <div class="info-value">{{s.deptNo}}</div>
+                    </div>
+
+                    <!-- 상태 -->
+                    <div class="info-item">
+                        <div class="info-label">상태</div>
+                        <div class="info-value">{{s.studentState}}</div>
+                    </div>
+
+                    <!-- 이메일 -->
+                    <div class="info-item">
+                        <div class="info-label">이메일</div>
+                        <div class="info-value">{{s.studentEmail}}</div>
+                    </div>
+
+                    <!-- 생년월일 -->
+                    <div class="info-item">
+                        <div class="info-label">생년월일</div>
+                        <div class="info-value">{{s.studentBirth}}</div>
+                    </div>
+
+                    <!-- 전화번호 -->
+                    <div class="info-item">
+                        <div class="info-label">전화번호</div>
+                        <div class="info-value">{{s.studentPhone}}</div>
+                    </div>
+
+                    <!-- 주소 -->
+                    <div class="info-item">
+                        <div class="info-label">주소</div>
+                        <div class="info-value">{{s.studentAddress}}</div>
+                    </div>
+
+                </div>
+
+                <!-- 액션 버튼 -->
+                <div class="action-buttons">
+                    <a href="/student/modifyStudentInfo?studentNo={{s.studentNo}}" class="btn btn-primary">
+                        정보 수정
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> layouts/footer }}
+
+
+</body>
+</html>
