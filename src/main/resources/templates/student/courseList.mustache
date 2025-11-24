@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>수강 과목 목록</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    {{> layouts/header }}
+    <div class="container">
+        {{> layouts/navStudent }}
+
+    <div class="main-content">
+        <div class="page-header">
+            <h2 class="page-title">수강 과목 목록</h2>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>과목번호</th>
+                    <th>과목명</th>
+                    <th>교수명</th>
+                    <th>강의실</th>
+                    <th>강의기간</th>
+                    <th>수강인원</th>
+                    <th>최대인원</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#courses}}
+                <tr>
+                    <td>{{courseNo}}</td>
+                    <td>{{courseName}}</td>
+                    <td>{{empName}}</td>
+                    <td>{{courseLocation}}</td>
+                    <td>{{coursePeriod}}</td>
+                    <td>{{currentCnt}}</td>
+                    <td>{{maxCnt}}</td>
+                </tr>
+                {{/courses}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{> layouts/footer }}
+</body>
+</html>

@@ -5,8 +5,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.lms.mapper.StudentMapper">
-
-<!-- 학생 상세 조회 (학생 본인용) -->
+<!-- 학생 상세 조회 -->
 <select id="selectStudentDetail" parameterType="int" resultType="com.example.lms.dto.Student">
     SELECT 
         student_no AS studentNo,
@@ -22,11 +21,11 @@
     WHERE student_no = #{studentNo}
 </select>
 
-<!-- 학생 정보 수정 (학생 본인용) -->
+<!-- 학생 정보 수정 -->
 <update id="updateStudent" parameterType="com.example.lms.dto.Student">
     UPDATE student
     SET
-        student_pw = #{studentPw}, <!-- 수정 시 비밀번호 변경 가능 -->
+        student_pw = #{studentPw},
         student_name = #{studentName},
         student_state = #{studentState},
         student_address = #{studentAddress},
@@ -36,6 +35,29 @@
         student_email = #{studentEmail}
     WHERE student_no = #{studentNo}
 </update>
+
+<select id="selectCoursesByStudentNo" parameterType="int" resultType="com.example.lms.dto.Course">
+    SELECT 
+        c.course_no AS courseNo,
+        c.course_name AS courseName,
+        c.dept_no AS deptNo,
+        c.emp_no AS empNo,
+        c.max_cnt AS maxCnt,
+        c.current_cnt AS currentCnt,
+        c.course_period AS coursePeriod,
+        c.course_plan AS coursePlan,
+        e.emp_name AS empName,
+        ct.course_location AS courseLocation,
+        ct.course_date AS courseDate,
+        ct.course_time_start AS courseTimeStart,
+        ct.course_time_end AS courseTimeEnd
+    FROM registration r
+    JOIN course c ON r.course_no = c.course_no
+    JOIN emp e ON c.emp_no = e.emp_no
+    LEFT JOIN course_time ct ON c.course_no = ct.course_no
+    WHERE r.student_no = #{studentNo}
+</select>
+
 
 
 </mapper>
