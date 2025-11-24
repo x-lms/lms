@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>강의 상세보기 - 학습관리시스템</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/courseOne.css">
+</head>
+<body>
+    {{ >layouts/header }}
+    <div class="container">
+        {{ >layouts/navProfessor }}
+        <div class="main-content">
+            <div class="page-header">
+                <h2>강의 상세보기</h2>
+            </div>
+
+            <div class="detail-container">
+                <div class="detail-section">
+                    <h3 class="section-title">기본 정보</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="item-label">강의번호</span>
+                            <span class="item-value">{{course.courseNo}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="item-label">강의명</span>
+                            <span class="item-value strong">{{course.courseName}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="item-label">학과번호</span>
+                            <span class="item-value">{{course.deptNo}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="item-label">교수번호</span>
+                            <span class="item-value">{{course.empNo}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="item-label">정원</span>
+                            <span class="item-value">{{course.maxCnt}}명</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="item-label">현재인원</span>
+                            <span class="item-value">
+                                {{course.currentCnt}}명
+                                <span class="capacity-badge">{{course.currentCnt}} / {{course.maxCnt}}</span>
+                            </span>
+                        </div>
+                        <div class="detail-item full-width">
+                            <span class="item-label">강의기간</span>
+                            <span class="item-value">{{course.coursePeriod}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3 class="section-title">강의 계획</h3>
+                    <div class="plan-content">
+                        {{course.coursePlan}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <!-- 목록으로 이동 -->
+                <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList" class="btn-secondary">목록으로</a>
+
+                <!-- 수정 (GET) -->
+                <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyCourse" method="get" class="inline-form">
+                    <input type="hidden" name="courseNo" value="{{course.courseNo}}">
+                    <button type="submit" class="btn-primary">수정</button>
+                </form>
+
+                <!-- 삭제 (POST) -->
+                <form action="{{springMacroRequestContext.request.contextPath}}/professor/removeCourse" method="post" class="inline-form" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                    <input type="hidden" name="courseNo" value="{{course.courseNo}}">
+                    <button type="submit" class="btn-danger">삭제</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{ >layouts/footer }}
+</body>
+</html>

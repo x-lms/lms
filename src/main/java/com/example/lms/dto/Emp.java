@@ -1,5 +1,7 @@
 package com.example.lms.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 @Data
@@ -12,5 +14,6 @@ public class Emp {
 	private String empEmail;
 	private String empBirth;
 	private String empPhone;
-	private String empImg;
+	private String empImg; // DTO에 MultipartFile로 선언
+	
 }

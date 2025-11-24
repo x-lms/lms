@@ -2,17 +2,83 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.ProfessorMapper">
 	
+	<!-- 강의 삭제 -->
+	<delete id="deleteCourse" parameterType="int">
+	    DELETE FROM course
+	    WHERE course_no = #{courseNo};
+	</delete>
+	
+	<!-- 강의 수정 -->
+	<update id="updateCourse" parameterType="com.example.lms.dto.Course">
+	    UPDATE course
+	    SET
+	        course_name = #{courseName},
+	        max_cnt = #{maxCnt},
+	        course_period = #{coursePeriod},
+	        course_plan = #{coursePlan}
+	    WHERE course_no = #{courseNo};
+	</update>	
+	
+	<!-- 강의 상세보기 -->
+	<select id="courseOne" parameterType="int" resultType="com.example.lms.dto.Course">
+		SELECT
+	        course_no courseNo, course_name courseName, dept_no deptNo,
+	        emp_no empNo, max_cnt maxCnt, current_cnt currentCnt,
+	        course_period coursePeriod, course_plan coursePlan
+	    FROM course
+	    WHERE course_no = #{courseNo};
+	</select>
+		
+	<!-- 강의등록 -->
+	<insert id="insertCourse" parameterType="com.example.lms.dto.Course" useGeneratedKeys="true" keyProperty="courseNo">
+		insert into course
+			(course_name, dept_no, emp_no, max_cnt, current_cnt, course_period, course_plan)
+		values
+			(#{courseName}, #{deptNo}, #{empNo}, #{maxCnt}, 0, #{coursePeriod}, #{coursePlan})
+	</insert>
+	
+	<!-- 강의리스트 -->	
+	<select id="courseListByPage" parameterType="map" resultType="com.example.lms.dto.Course">
+		select
+			course_no courseNo, course_name courseName, dept_no deptNo,
+			emp_no empNo, max_cnt maxCnt, current_cnt currentCnt,
+			course_period coursePeriod, course_plan coursePlan 
+		from course
+		where emp_no = #{empNo}
+			<if test="searchWord != null and searchWord != ''">
+			 and course_name like concat('%', #{searchWord},'%')
+			</if>
+		order by course_no desc
+		limit #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<select id="getCourseCount" parameterType="Map" resultType="int">
+		select count(*)
+		from course
+		<where>
+			<if test="searchWord != null and searchWord != ''">
+				course_name like concat('%', #{searchWord},'%')
+			</if>
+		</where>
+	</select>
+	
+	<!-- 내 정보 수정 -->
 	<update id="updateProfessorInfo" parameterType="com.example.lms.dto.Emp">
 		update emp
-		set dept_no = #{deptNo}, emp_pw = #{empPw}, emp_name = #{empName},
-			emp_birth = #{empBirth}, emp_phone = #{empPhone}, emp_img = #{empImg}		
+		set dept_no = #{deptNo},
+			emp_pw = #{empPw},
+			emp_name = #{empName},
+			emp_birth = #{empBirth},
+			emp_phone = #{empPhone},
+			emp_img = #{empImg}		
 		where emp_No = #{empNo}
 	</update> 
 	
+	<!-- 내 정보 -->
 	<select id="professorInfo" parameterType="int" resultType="com.example.lms.dto.Emp">
 		select 
 			emp_no empNo, dept_no deptNo,
-			emp_name empName, emp_email empEmail,
+			emp_name empName, emp_email empEmail, emp_pw empPw,
 			emp_birth empBirth, emp_phone empPhone, emp_img empImg 
 		from emp
 		where emp_no = #{empNo}

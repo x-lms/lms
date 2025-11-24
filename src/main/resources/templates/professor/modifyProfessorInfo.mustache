@@ -5,16 +5,17 @@
     <meta charset="UTF-8">
     <title>교수 정보 수정</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="/css/modifyProfessorInfo.css">
 </head>
 <body>
     <h1>정보 수정</h1>
 
-    <form action="{{springMacroRequestContext.request.contextPath}/professor/modifyProfessorInfo?empNo={{e.empNo}}" method="post">
+    <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyProfessorInfo?empNo={{e.empNo}}" method="post">
        
         <p>
             <label>사진</label>
             <input type="file"  name="empImg">
-            <img src="{{e.empImg}}">
+            <img src="{{e.empNo}}" alt="">
         </p>
         
         <p>
@@ -45,7 +46,7 @@
 
         <p>
             <label>전화번호: </label>
-            <input type="text" name="empPhone" value="{{e.empPhone}}">
+            <input type="text" name="empPhone" value="{{e.empPhone}}" maxlength="13" placeholder="예: 010-1234-5678">
         </p>
 
         <p>
@@ -86,6 +87,26 @@
             }
         });
        
+        // ----------------- 전화번호 마스크 -----------------
+        const $empPhone = $("input[name='empPhone']");
+        $empPhone.on("input", function() {
+            let val = $(this).val();
+            // 기존 하이픈 제거 후 숫자만 남기기
+            val = val.replace(/[^0-9]/g, "");
+
+            // 000-0000-0000 또는 000-000-0000 형식
+            if(val.length < 4) {
+                val = val;
+            } else if(val.length < 7) {
+                val = val.replace(/^(\d{3})(\d+)/, "$1-$2");
+            } else if(val.length <= 10) {
+                val = val.replace(/^(\d{3})(\d{3})(\d+)/, "$1-$2-$3");
+            } else {
+                val = val.replace(/^(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
+            }
+
+            $(this).val(val);
+        });
  
 
     });

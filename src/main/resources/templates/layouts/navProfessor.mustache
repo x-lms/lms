@@ -31,8 +31,7 @@
                 <span>내 정보관리</span>
             </a>
             <ul class="sub-menu">
-                <li><a href="/professor/professorInfo?empNo=1">내 정보</a></li>
-                <li><a href="/professor/professorInfoEdit">정보수정</a></li>
+                <li><a href="/professor/professorInfo?empNo={{loginProfessor.empNo}}">내 정보</a></li>
             </ul>
         </li>
 
@@ -46,7 +45,7 @@
                 <span>강의관리</span>
             </a>
             <ul class="sub-menu">
-                <li><a href="/professor/courseList">강의목록</a></li>
+                <li><a href="/professor/courseList?empNo={{loginProfessor.empNo}}">강의목록</a></li>
             </ul>
         </li>
 

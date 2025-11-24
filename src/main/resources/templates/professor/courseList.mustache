@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>학습관리시스템</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/courseList.css">
+</head>
+<body>
+	{{ >layouts/header }}
+	<div class="container">
+	{{ >layouts/navProfessor }}
+	<div class="main-content">
+
+		<h2>강의 리스트</h2>
+
+		<!-- 검색 -->
+		<form action="{{springMacroRequestContext.request.contextPath}}/professor/courseList" method="get">
+		    <input type="text" name="searchWord" value="{{searchWord}}" placeholder="강의명 검색">
+		    <button type="submit">검색</button>
+		</form>
+
+		<!-- 강의 테이블 -->
+		<table>
+		    <thead>
+		        <tr>
+		            <th>강의번호</th>
+		            <th>강의명</th>
+		            <th>학과번호</th>
+		            <th>교수번호</th>
+		            <th>정원</th>
+		            <th>현재인원</th>
+		            <th>강의기간</th>
+		            <th>강의계획</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        {{#courseList}}
+		        <tr>
+		            <td>{{courseNo}}</td>
+		            <td><a href="{{springMacroRequestContext.request.contextPath}}/professor/courseOne?courseNo={{courseNo}}">{{courseName}}</a></td>
+		            <td>{{deptNo}}</td>
+		            <td>{{empNo}}</td>
+		            <td>{{maxCnt}}</td>
+		            <td>{{currentCnt}}</td>
+		            <td>{{coursePeriod}}</td>
+		            <td>{{coursePlan}}</td>
+		        </tr>
+		        {{/courseList}}
+		    </tbody>
+		</table>
+		
+		<a href="{{springMacroRequestContext.request.contextPath}}/professor/addCourse" class="register-btn">강의 등록</a>
+		<!-- 페이지네이션 -->
+		<div class="pagination">
+		    {{#prePage}}
+		        <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList?currentPage={{prePage}}&searchWord={{searchWord}}">이전</a>
+		    {{/prePage}}
+
+		    {{#pageList}}
+		        {{#isCurrent}}
+		            <strong>{{page}}</strong>
+		        {{/isCurrent}}
+		        {{^isCurrent}}
+		            <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList?currentPage={{page}}&searchWord={{searchWord}}">{{page}}</a>
+		        {{/isCurrent}}
+		    {{/pageList}}
+
+		    {{#nextPage}}
+		        <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList?currentPage={{nextPage}}&searchWord={{searchWord}}">다음</a>
+		    {{/nextPage}}
+		</div>
+	</div>
+	</div>
+    {{ >layouts/footer }}
+</body>
+</html>

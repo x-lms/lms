@@ -1,0 +1,208 @@
+/* ==================== 강의 상세보기 CSS ==================== */
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #2196F3;
+}
+
+/* 상세 컨테이너 */
+.detail-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+/* 섹션 */
+.detail-section {
+    padding: 32px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* 그리드 레이아웃 */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 32px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.item-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.item-value {
+    font-size: 15px;
+    color: #1f2937;
+    font-weight: 400;
+}
+
+.item-value.strong {
+    font-weight: 600;
+    font-size: 16px;
+    color: #111827;
+}
+
+/* 수강 인원 뱃지 */
+.capacity-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 4px 10px;
+    background: #e0f2fe;
+    color: #0369a1;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* 강의계획 내용 */
+.plan-content {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #4b5563;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+/* 버튼 그룹 */
+.button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px 0;
+}
+
+/* 인라인 폼 */
+.inline-form {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+/* 버튼 스타일 */
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+    padding: 12px 32px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+}
+
+.btn-primary {
+    background: #1e40af;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+}
+
+.btn-secondary {
+    background: white;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .page-header h2 {
+        font-size: 20px;
+    }
+
+    .detail-section {
+        padding: 20px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .section-title {
+        font-size: 15px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .inline-form {
+        width: 100%;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        width: 100%;
+        text-align: center;
+    }
+
+    .plan-content {
+        padding: 16px;
+        font-size: 13px;
+    }
+}

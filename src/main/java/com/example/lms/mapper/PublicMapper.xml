@@ -8,7 +8,7 @@
 	</select>
 	<!-- 교수로그인 -->
 	<select id="selectLoginProfessor" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Emp">
-		select emp_no empNo, emp_email empEmail, emp_name empName, dept_no, deptNo emp_img empImg
+		select emp_no empNo, emp_email empEmail, emp_name empName, dept_no deptNo, emp_img empImg
 		from emp where emp_role= 2 and emp_email = #{userId} and emp_pw = #{userPw}
 	</select>
 	<!-- 교직원로그인 -->
