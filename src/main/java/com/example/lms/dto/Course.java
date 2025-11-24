@@ -13,5 +13,4 @@ public class Course {
 	private String coursePeriod;
 	private String coursePlan;
 	
-	
 }
