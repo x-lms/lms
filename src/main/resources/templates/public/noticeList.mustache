@@ -16,16 +16,18 @@
 		{{ >layouts/navEmp }}
 		<div class="main-content">
 			<div class="page-header">
-			    <h2 class="page-title">공지사항</h2>
+				<h2 class="page-title">공지사항</h2>
 			</div>
 			
 			<div class="notice-container">
-			    <div class="notice-header">
-			        <div class="search-box">
-			            <input type="text" class="search-input" placeholder="검색어를 입력하세요">
-			            <button type="button" class="search-btn">검색</button>
-			        </div>
-			    </div>
+				<form action="{{springMacroRequestContext.request.contextPath}}/public/noticeList" method="get">
+				    <div class="notice-header">
+				        <div class="search-box">
+				            <input type="text" name="searchWord" class="search-input" placeholder="검색어를 입력하세요" value="{{searchWord}}">
+				            <button type="submit" class="search-btn">검색</button>
+				        </div>
+				    </div>
+				</form>
 			
 			    <table class="table">
 			        <thead>
@@ -37,86 +39,40 @@
 			            </tr>
 			        </thead>
 			        <tbody>
-			            <tr>
-			                <td class="col-num"><span class="pin-icon">📌</span></td>
-			                <td>
-			                    <a href="/notice/1" class="notice-title important">2024학년도 2학기 수강신청 일정 안내</a>
-			                    <span class="badge badge-new">NEW</span>
-			                </td>
-			                <td class="col-author">학사팀</td>
-			                <td class="col-date">2024.02.26</td>
-			            </tr>
-			            <tr>
-			                <td class="col-num"><span class="pin-icon">📌</span></td>
-			                <td>
-			                    <a href="/notice/2" class="notice-title important">LMS 시스템 정기점검 안내 (3/1)</a>
-			                </td>
-			                <td class="col-author">정보전산원</td>
-			                <td class="col-date">2024.02.25</td>
-			            </tr>
-			            <tr>
-			                <td class="col-num">48</td>
-			                <td>
-			                    <a href="/notice/3" class="notice-title">2024학년도 1학기 교내장학금 신청 안내</a>
-			                    <span class="badge badge-new">NEW</span>
-			                </td>
-			                <td class="col-author">장학팀</td>
-			                <td class="col-date">2024.02.26</td>
-			            </tr>
-			            <tr>
-			                <td class="col-num">47</td>
-			                <td>
-			                    <a href="/notice/4" class="notice-title">졸업예정자 학점 이수 현황 확인 안내</a>
-			                </td>
-			                <td class="col-author">학사팀</td>
-			                <td class="col-date">2024.02.24</td>
-			            </tr>
-			            <tr>
-			                <td class="col-num">46</td>
-			                <td>
-			                    <a href="/notice/5" class="notice-title">중앙도서관 운영시간 변경 안내</a>
-			                </td>
-			                <td class="col-author">도서관</td>
-			                <td class="col-date">2024.02.23</td>
-			            </tr>
-			            <tr>
-			                <td class="col-num">45</td>
-			                <td>
-			                    <a href="/notice/6" class="notice-title">2024학년도 1학기 휴학 신청 안내</a>
-			                </td>
-			                <td class="col-author">학사팀</td>
-			                <td class="col-date">2024.02.22</td>
-			            </tr>
-			            <tr>
-			                <td class="col-num">44</td>
-			                <td>
-			                    <a href="/notice/7" class="notice-title">국가근로장학금 참여학생 모집</a>
-			                </td>
-			                <td class="col-author">장학팀</td>
-			                <td class="col-date">2024.02.21</td>
-			            </tr>
-			            <tr>
-			                <td class="col-num">43</td>
-			                <td>
-			                    <a href="/notice/8" class="notice-title">학생증 재발급 신청 방법 안내</a>
-			                </td>
-			                <td class="col-author">학생지원팀</td>
-			                <td class="col-date">2024.02.20</td>
-			            </tr>
+			        {{#noticeList}}
+						<tr>
+							<td class="col-num">{{notice.noticeNo}}</td>
+							<td>
+								<a href="" class="notice-title">{{notice.noticeTitle}}</a>
+								{{#isNew}}
+									<span class="badge badge-new">NEW</span>
+								{{/isNew}}
+							</td>
+							<td class="col-author">{{notice.noticeWriter}}</td>
+							<td class="col-date">{{notice.createdate}}</td>
+						</tr>
+			        {{/noticeList}}
 			        </tbody>
 			    </table>
 			    <div class="btn-box">
-			    	<a href="/emp/addNotice" class="add-btn">추가</a>
+			    	<a href="{{springMacroRequestContext.request.contextPath}}/emp/addNotice" class="add-btn">추가</a>
 			    </div>
 			    <div class="pagination">
-			        <a href="#" class="page-btn">이전</a>
-			        <a href="#" class="page-btn active">1</a>
-			        <a href="#" class="page-btn">2</a>
-			        <a href="#" class="page-btn">3</a>
-			        <a href="#" class="page-btn">4</a>
-			        <a href="#" class="page-btn">5</a>
-			        <a href="#" class="page-btn">다음</a>
-			    </div>
+					{{#prePage}}
+						 <a href="{{springMacroRequestContext.request.contextPath}}/public/noticeList?currentPage={{prePage}}&searchWord={{searchWord}}" class="page-btn">이전</a>
+					{{/prePage}}
+					
+					{{#pageList}}
+						<a href="{{springMacroRequestContext.request.contextPath}}/public/noticeList?currentPage={{pageNo}}&searchWord={{searchWord}}" class="page-btn {{#active}}active{{/active}}">
+					  	  {{pageNo}}
+						</a>
+					{{/pageList}}
+					
+					{{#nextPage}}
+						<a href="{{springMacroRequestContext.request.contextPath}}/public/noticeList?currentPage={{nextPage}}&searchWord={{searchWord}}" class="page-btn">다음</a>
+					{{/nextPage}}
+				</div>
+
 			</div>
 		</div>
 	</div>

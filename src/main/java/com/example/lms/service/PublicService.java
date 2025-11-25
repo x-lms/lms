@@ -1,5 +1,7 @@
 package com.example.lms.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,8 @@ import com.example.lms.mapper.PublicMapper;
 public class PublicService {
 	@Autowired
 	PublicMapper publicMapper;
+	private static final int ROW_PER_PAGE = 10;	// 한 페이지에 보여질 글 수
+	
 	public Student loginStudent(LoginUser lu) {
 		return publicMapper.selectLoginStudent(lu);
 	}
@@ -20,5 +24,21 @@ public class PublicService {
 	}
 	public Emp loginEmp(LoginUser lu) {
 		return publicMapper.selectLoginEmp(lu);
+	}
+	
+	// 공지사항 리스트
+	public List<Notice> getNoticeList(int currentPage, String searchWord) {
+		int beginRow = (currentPage - 1) * ROW_PER_PAGE;
+		SearchList sl = new SearchList();
+		sl.setRowPerPage(ROW_PER_PAGE);
+		sl.setBeginRow(beginRow);
+		sl.setSearchWord(searchWord);
+		return publicMapper.selectNoticeList(sl);
+	}
+	public int countNotice(String searchWord) {
+		return publicMapper.countNotice(searchWord);
+	}
+	public int getRowPerPage() {
+		return ROW_PER_PAGE;
 	}
 }

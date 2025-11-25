@@ -1,5 +1,7 @@
 package com.example.lms.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.lms.dto.*;
@@ -9,4 +11,8 @@ public interface PublicMapper {
 	Student selectLoginStudent(LoginUser loginUser);
 	Emp selectLoginProfessor(LoginUser loginUser);
 	Emp selectLoginEmp(LoginUser loginUser);
+	
+	// 공지사항 리스트
+	List<Notice> selectNoticeList(SearchList sl);
+	int countNotice(String searchWord);
 }
