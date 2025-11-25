@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.lms.mapper.EmpMapper">
+	<insert id="insertNotice" useGeneratedKeys="true" keyProperty="noticeNo" parameterType="com.example.lms.dto.Notice">
+		INSERT INTO notice (emp_no, notice_writer, notice_title, notice_contents)
+		VALUES (#{empNo}, #{noticeWriter}, #{noticeTitle}, #{noticeContents})
+	</insert>
+	<insert id="insertNoticeFile" parameterType="com.example.lms.dto.NoticeFile">
+		INSERT INTO notice_file (notice_no, file_name, origin_name)
+		VALUES (#{noticeNo}, #{fileName}, #{originName})
+	</insert>
+</mapper>

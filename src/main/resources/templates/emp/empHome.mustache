@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습관리시스템</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+	<!-- include -->
+	{{ >layouts/header }}
+	<div class="container">
+		{{ >layouts/navEmp }}
+		<div class="main-content">
+			<div class="page-header">
+			    <h2 class="page-title">{{loginEmp.empName}}님 환영합니다.</h2>
+			</div>
+		</div>
+	</div>
+	{{ >layouts/footer }}
+</body>

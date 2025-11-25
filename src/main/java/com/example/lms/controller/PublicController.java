@@ -5,9 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.example.lms.dto.Emp;
-import com.example.lms.dto.LoginUser;
-import com.example.lms.dto.Student;
+import com.example.lms.dto.*;
 import com.example.lms.service.PublicService;
 
 import jakarta.servlet.http.HttpSession;
@@ -25,29 +23,23 @@ public class PublicController {
 	// 로그인 폼
 	@PostMapping({"/", "/login"})
 	public String login(HttpSession session, LoginUser lu) {
-		Student loginStudent = null;
-		Emp loginProfessor = null;
-		Emp loginEmp = null;
 		log.debug(lu.toString());
-		if(lu.getUserType().equals("student")) {
-			loginStudent = publicService.loginStudent(lu);
-			if(loginStudent == null) {	// 로그인 실패시 login.mustache로 다시 포워딩
-				return "/public/login";
-			}
-			session.setAttribute("loginStudent", loginStudent);
-		} else if(lu.getUserType().equals("professor")) {
-			loginProfessor = publicService.loginProfessor(lu);
-			if(loginProfessor == null) {	// 로그인 실패시 login.mustache로 다시 포워딩
-				return "/public/login";
-			}
-			session.setAttribute("loginProfessor", loginProfessor);
-		} else {
-			loginEmp = publicService.loginEmp(lu);
-			if(loginEmp == null) {	// 로그인 실패시 login.mustache로 다시 포워딩
-				return "/public/login";
-			}
-			session.setAttribute("loginEmp", loginEmp);
+		
+		Object loginUser = switch(lu.getUserType()) {
+			case "student" -> publicService.loginStudent(lu);
+			case "professor" -> publicService.loginProfessor(lu);
+			case "emp" -> publicService.loginEmp(lu);
+			default -> null;
+		};
+		
+		if(loginUser == null) {
+			return "/public/login";
 		}
+		
+		String userType = lu.getUserType().substring(0, 1).toUpperCase() + lu.getUserType().substring(1);
+		String sessionKey = "login" + userType;
+		log.debug(sessionKey);
+		session.setAttribute(sessionKey, loginUser);
 		
 		return "redirect:/" + lu.getUserType() + "/" + lu.getUserType() + "Home";
 	}
@@ -59,8 +51,10 @@ public class PublicController {
 		return "redirect:/login"; // 리다이렉트
 	}
 	
+	// 공지사항게시판
 	@GetMapping("/public/noticeList")
 	public String noticeList() {
+		
 		return "public/noticeList";
 	}
 
