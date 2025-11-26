@@ -14,7 +14,7 @@
     <div class="main-content">
 	    <h2>출석체크 - {{courseName}}</h2>
 
-        <form action="{{springMacroRequestContext.request.contextPath}}/professor/saveAttendance" method="post">
+        <form action="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistory" method="post">
         <input type="hidden" name="courseNo" value="{{courseNo}}">
                 
         <table>
