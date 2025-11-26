@@ -5,14 +5,14 @@
 	<title>학습관리시스템</title>
 	<link rel="stylesheet" href="/css/common.css">
 	<link rel="stylesheet" href="/css/layout.css">
-	<link rel="stylesheet" href="/css/courseList.css">
+	<link rel="stylesheet" href="/css/addAttendance.css">
 </head>
 <body>
 	{{ >layouts/header }}
     <div class="container">
     {{ >layouts/navProfessor }}
     <div class="main-content">
-	    <h2>출석체크 - {{courseName}}</h2>
+	    <h2>출석체크</h2>
 
         <form action="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistory" method="post">
         <input type="hidden" name="courseNo" value="{{courseNo}}">
@@ -39,7 +39,7 @@
                     <td>{{studentEmail}}</td>
                     <td>{{studentPhone}}</td>
                     <td>
-                        <select name="attState_{{studentNo}}">
+                        <select name="attState">
                             <option value="출석">출석</option>
                             <option value="결석">결석</option>
                             <option value="지각">지각</option>
@@ -52,7 +52,7 @@
         </table>
 
         <p>
-            <button type="submit">출석 완료</button>
+            <button type="submit">출석 체크</button>
             <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendance">뒤로가기</a>
         </p>
 		</form>

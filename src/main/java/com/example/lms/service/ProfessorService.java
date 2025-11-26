@@ -7,7 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.lms.dto.Attendance;
 import com.example.lms.dto.Course;
+import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Student;
 import com.example.lms.mapper.ProfessorMapper;
@@ -19,6 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 public class ProfessorService {
 	@Autowired
 	ProfessorMapper professorMapper;
+
+	// 출석체크
+	public int insertAttendance(Attendance a) {
+		return professorMapper.insertAttendance(a);
+	}
+	
+	// 출석체크(학생목록)
+	public List<CourseStudent> getStudentListByCourse(int courseNo) {
+		return professorMapper.getStudentListByCourse(courseNo);
+	}
 	
 	// 출석체크(강의목록)
 	public List<Course> getAttendance(int empNo) {
@@ -103,6 +115,9 @@ public class ProfessorService {
 	public Emp professorInfo(int empNo) {
 		return professorMapper.professorInfo(empNo);
 	}
+
+
+
 
 
 

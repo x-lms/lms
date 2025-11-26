@@ -180,6 +180,26 @@ tbody td:nth-child(2) {
     font-weight: 600;
 }
 
+/* 학생목록 링크 스타일 */
+table tbody td a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+table tbody td a:hover {
+    color: #fff;
+    background-color: #4a90e2;
+    text-decoration: none;
+}
+
+table tbody td a:active {
+    background-color: #357abd;
+}
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .main-content h2 {

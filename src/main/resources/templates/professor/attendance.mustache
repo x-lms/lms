@@ -5,7 +5,7 @@
 	<title>학습관리시스템</title>
 	<link rel="stylesheet" href="/css/common.css">
 	<link rel="stylesheet" href="/css/layout.css">
-	<link rel="stylesheet" href="/css/courseList.css">
+	<link rel="stylesheet" href="/css/attendance.css">
 </head>
 <body>
 	{{ >layouts/header }}
@@ -29,12 +29,12 @@
 		    <tbody>
 		        {{#courseList}}
 		        <tr>
-		            <td>{{courseName}}</td>
+		        	<td>{{courseName}}</td>
 		            <td>{{deptNo}}</td>
 		            <td>{{maxCnt}}</td>
 		            <td>{{currentCnt}}</td>
 		            <td>{{coursePeriod}}</td>
-		            <td><a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceList?courseNo={{courseNo}}" >학생목록</a></td>
+		            <td><a href="{{springMacroRequestContext.request.contextPath}}/professor/addAttendance?courseNo={{courseNo}}" >학생목록</a></td>
 		        </tr>
 		        {{/courseList}}
 		    </tbody>

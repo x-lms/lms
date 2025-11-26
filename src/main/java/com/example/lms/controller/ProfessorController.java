@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.lms.dto.Attendance;
 import com.example.lms.dto.Course;
+import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.PageInfo;
 import com.example.lms.dto.Student;
@@ -36,8 +38,30 @@ public class ProfessorController {
 	private final String uploadDir = "C:/lms/uploads";
 	private final List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif");
 	
+	// 출석체크 폼
+	@GetMapping("/professor/addAttendance")
+	public String attendanceList(HttpSession session, Model model, int courseNo) {
+		Emp loginProfessor = getLoginProfessor(session);
+		List<CourseStudent> studentList = professorService.getStudentListByCourse(courseNo);
+		model.addAttribute("studentList", studentList);
+		model.addAttribute("courseNo", courseNo);
+							
+		return "/professor/addAttendance";
+	}
 	
-	// 출석체크
+	// 출석체크 액션
+	@PostMapping("/professor/addAttendance")
+	public String attendanceList(HttpSession session, Model model, Attendance a) {
+		Emp loginProfessor = getLoginProfessor(session);
+		a.setEmpNo(loginProfessor.getEmpNo());
+		model.addAttribute("a", a);
+		
+		professorService.insertAttendance(a);
+		
+		return "redirect:/professor/addAttendance";
+	}
+	
+	// 출석체크(강의목록)
 	@GetMapping("/professor/attendance")
 	public String attendance(HttpSession session, Model model) {
 		Emp loginProfessor = getLoginProfessor(session);
