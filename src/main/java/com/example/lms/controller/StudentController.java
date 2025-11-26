@@ -1,7 +1,6 @@
 package com.example.lms.controller;
 
 import com.example.lms.dto.Student;
-import com.example.lms.dto.Course;
 import com.example.lms.service.StudentService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
@@ -25,7 +24,6 @@ import java.util.UUID;
 public class StudentController {
 
 private final StudentService studentService;
-
 private final String uploadDir = "C:/lms/uploads";
 private final List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif");
 
@@ -38,59 +36,46 @@ public void init() {
     }
 }
 
+// 학생 홈
+@GetMapping("/studentHome")
+public String studentHome(HttpSession session, Model model) {
+    Student loginStudent = (Student) session.getAttribute("loginStudent");
+    if (loginStudent == null) return "redirect:/login";
+
+    model.addAttribute("studentName", loginStudent.getStudentName());
+    return "student/studentHome";
+}
+
 // 학생 본인 정보 조회
 @GetMapping("/studentInfo")
 public String studentInfo(HttpSession session, Model model) {
-    if (session.getAttribute("loginStudentNo") == null) {
-        session.setAttribute("loginStudentNo", 1);
-    }
-
-    int studentNo = (int) session.getAttribute("loginStudentNo");
-    if (studentNo == 0) return "redirect:/login";
-
-    Student s = studentService.getStudentDetail(studentNo);
-    if (s == null) return "error/404";
-
+    Student loginStudent = getLoginStudent(session);
+    Student s = studentService.getStudentDetail(loginStudent.getStudentNo());
     normalizeStudentFields(s);
     model.addAttribute("s", s);
     return "student/studentInfo";
 }
 
-// 학생 본인 정보 수정 페이지
+// 학생 정보 수정 페이지
 @GetMapping("/modifyStudentInfo")
 public String modifyStudentInfo(HttpSession session, Model model) {
-    if (session.getAttribute("loginStudentNo") == null) {
-        session.setAttribute("loginStudentNo", 1);
-    }
-
-    int studentNo = (int) session.getAttribute("loginStudentNo");
-    if (studentNo == 0) return "redirect:/login";
-
-    Student s = studentService.getStudentDetail(studentNo);
-    if (s == null) return "error/404";
-
+    Student loginStudent = getLoginStudent(session);
+    Student s = studentService.getStudentDetail(loginStudent.getStudentNo());
     normalizeStudentFields(s);
     model.addAttribute("s", s);
     return "student/modifyStudentInfo";
 }
 
-// 학생 본인 정보 수정 처리
+// 학생 정보 수정 처리
 @PostMapping("/modifyStudentInfo")
 public String modifyStudentInfo(
         @ModelAttribute Student s,
         @RequestParam("studentImgFile") MultipartFile studentImgFile,
         HttpSession session
 ) {
-    if (session.getAttribute("loginStudentNo") == null) {
-        session.setAttribute("loginStudentNo", 1);
-    }
-
-    int studentNo = (int) session.getAttribute("loginStudentNo");
-    if (studentNo == 0) return "redirect:/login";
-
+    Student loginStudent = getLoginStudent(session);
+    int studentNo = loginStudent.getStudentNo();
     Student old = studentService.getStudentDetail(studentNo);
-    if (old == null) return "error/404";
-
     s.setStudentNo(studentNo);
 
     if (studentImgFile != null && !studentImgFile.isEmpty()) {
@@ -104,7 +89,6 @@ public String modifyStudentInfo(
             String fileName = UUID.randomUUID() + "_" + originalName;
             File dest = new File(uploadDir, fileName);
             dest.getParentFile().mkdirs();
-
             try {
                 studentImgFile.transferTo(dest);
                 s.setStudentImg("/uploads/" + fileName);
@@ -130,26 +114,14 @@ public String modifyStudentInfo(
 }
 
 // ----------------------------
-// 추가: 학생 수강과목 조회
+// 공통 유틸
 // ----------------------------
-@GetMapping("/courseList")
-public String courseList(HttpSession session, Model model) {
-    if (session.getAttribute("loginStudentNo") == null) {
-        session.setAttribute("loginStudentNo", 1);
-    }
-
-    int studentNo = (int) session.getAttribute("loginStudentNo");
-    if (studentNo == 0) return "redirect:/login";
-
-    List<Course> courses = studentService.getStudentCourses(studentNo);
-    model.addAttribute("courses", courses);
-
-    return "student/courseList";
+private Student getLoginStudent(HttpSession session) {
+    Student loginStudent = (Student) session.getAttribute("loginStudent");
+    if (loginStudent == null) throw new RuntimeException("로그인 세션 없음");
+    return loginStudent;
 }
 
-// ----------------------------
-// 유틸리티 메서드
-// ----------------------------
 private void normalizeStudentFields(Student s) {
     if (s.getStudentBirth() == null) s.setStudentBirth("");
     if (s.getStudentPhone() == null) s.setStudentPhone("");
@@ -169,5 +141,6 @@ private String getExtension(String filename) {
     int idx = filename.lastIndexOf('.');
     return (idx != -1) ? filename.substring(idx + 1) : "";
 }
+
 
 }
