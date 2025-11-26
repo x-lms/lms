@@ -1,63 +1,190 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.lms.mapper.StudentMapper">
-<!-- 학생 상세 조회 -->
-<select id="selectStudentDetail" parameterType="int" resultType="com.example.lms.dto.Student">
-    SELECT 
-        student_no AS studentNo,
-        dept_no AS deptNo,
-        student_name AS studentName,
-        student_state AS studentState,
-        student_address AS studentAddress,
-        student_phone AS studentPhone,
-        student_birth AS studentBirth,
-        student_img AS studentImg,
-        student_email AS studentEmail
-    FROM student
-    WHERE student_no = #{studentNo}
-</select>
 
-<!-- 학생 정보 수정 -->
-<update id="updateStudent" parameterType="com.example.lms.dto.Student">
-    UPDATE student
-    SET
-        student_pw = #{studentPw},
-        student_name = #{studentName},
-        student_state = #{studentState},
-        student_address = #{studentAddress},
-        student_phone = #{studentPhone},
-        student_birth = #{studentBirth},
-        student_img = #{studentImg},
-        student_email = #{studentEmail}
-    WHERE student_no = #{studentNo}
-</update>
+    <!-- 학생 조회 -->
+    <select id="selectStudentDetail" parameterType="int" resultType="com.example.lms.dto.Student">
+        SELECT 
+            student_no AS studentNo,
+            dept_no AS deptNo,
+            student_name AS studentName,
+            student_state AS studentState,
+            student_address AS studentAddress,
+            student_phone AS studentPhone,
+            student_birth AS studentBirth,
+            student_img AS studentImg,
+            student_email AS studentEmail
+        FROM student
+        WHERE student_no = #{studentNo}
+    </select>
 
-<select id="selectCoursesByStudentNo" parameterType="int" resultType="com.example.lms.dto.Course">
-    SELECT 
-        c.course_no AS courseNo,
-        c.course_name AS courseName,
-        c.dept_no AS deptNo,
-        c.emp_no AS empNo,
-        c.max_cnt AS maxCnt,
-        c.current_cnt AS currentCnt,
-        c.course_period AS coursePeriod,
-        c.course_plan AS coursePlan,
-        e.emp_name AS empName,
-        ct.course_location AS courseLocation,
-        ct.course_date AS courseDate,
-        ct.course_time_start AS courseTimeStart,
-        ct.course_time_end AS courseTimeEnd
-    FROM registration r
-    JOIN course c ON r.course_no = c.course_no
-    JOIN emp e ON c.emp_no = e.emp_no
-    LEFT JOIN course_time ct ON c.course_no = ct.course_no
-    WHERE r.student_no = #{studentNo}
-</select>
+    <!-- 학생 수정 -->
+    <update id="updateStudent" parameterType="com.example.lms.dto.Student">
+        UPDATE student
+        SET
+            student_pw = #{studentPw},
+            student_name = #{studentName},
+            student_state = #{studentState},
+            student_address = #{studentAddress},
+            student_phone = #{studentPhone},
+            student_birth = #{studentBirth},
+            student_img = #{studentImg},
+            student_email = #{studentEmail}
+        WHERE student_no = #{studentNo}
+    </update>
 
+    <!-- 수강중 강의 -->
+    <select id="selectCoursesByStudentNo" parameterType="int" resultType="com.example.lms.dto.Course">
+        SELECT 
+            c.course_no AS courseNo,
+            c.course_name AS courseName,
+            c.dept_no AS deptNo,
+            c.emp_no AS empNo,
+            c.max_cnt AS maxCnt,
+            c.current_cnt AS currentCnt,
+            c.course_period AS coursePeriod,
+            c.course_plan AS coursePlan,
+            e.emp_name AS empName
+        FROM registration r
+        JOIN course c ON r.course_no = c.course_no
+        JOIN emp e ON c.emp_no = e.emp_no
+        WHERE r.student_no = #{studentNo}
+    </select>
 
+    <!-- 신청 가능한 강의 -->
+    <select id="selectAvailableCourses" parameterType="int" resultType="com.example.lms.dto.Course">
+        SELECT 
+            c.course_no AS courseNo,
+            c.course_name AS courseName,
+            c.dept_no AS deptNo,
+            c.emp_no AS empNo,
+            c.max_cnt AS maxCnt,
+            c.current_cnt AS currentCnt,
+            c.course_period AS coursePeriod,
+            c.course_plan AS coursePlan,
+            e.emp_name AS empName
+        FROM course c
+        JOIN emp e ON c.emp_no = e.emp_no
+        WHERE NOT EXISTS (
+            SELECT 1 
+            FROM registration r
+            WHERE r.course_no = c.course_no
+              AND r.student_no = #{studentNo}
+        )
+    </select>
+
+    <!-- 개별 강의 조회 -->
+    <select id="selectCourseByCourseNo" parameterType="int" resultType="com.example.lms.dto.Course">
+        SELECT 
+            c.course_no AS courseNo,
+            c.course_name AS courseName,
+            c.dept_no AS deptNo,
+            c.emp_no AS empNo,
+            c.max_cnt AS maxCnt,
+            c.current_cnt AS currentCnt,
+            c.course_period AS coursePeriod,
+            c.course_plan AS coursePlan
+        FROM course c
+        WHERE c.course_no = #{courseNo}
+    </select>
+
+    <!-- 강의 시간 -->
+    <select id="selectCourseTimesByCourseNo" parameterType="int" resultType="com.example.lms.dto.CourseTime">
+        SELECT 
+            course_time_no AS courseTimeNo,
+            course_no AS courseNo,
+            course_location AS courseLocation,
+            course_date AS coursedate,
+            course_time_start AS courseTimeStart,
+            course_time_end AS courseTimeEnd
+        FROM course_time
+        WHERE course_no = #{courseNo}
+    </select>
+
+    <!-- 중복 신청 체크 -->
+    <select id="checkDuplicateCourse" parameterType="map" resultType="int">
+        SELECT COUNT(*) 
+        FROM registration
+        WHERE student_no = #{studentNo} AND course_no = #{courseNo}
+    </select>
+
+    <!-- 수강 신청 -->
+    <insert id="insertStudentCourse" parameterType="map">
+        INSERT INTO registration(student_no, course_no)
+        VALUES (#{studentNo}, #{courseNo})
+    </insert>
+
+    <!-- 교수명 조회 -->
+    <select id="selectEmpNameByCourseNo" parameterType="int" resultType="String">
+        SELECT e.emp_name
+        FROM emp e
+        JOIN course c ON e.emp_no = c.emp_no
+        WHERE c.course_no = #{courseNo}
+    </select>
+
+    <!-- 검색 + 페이징 -->
+    <select id="selectCoursesByKeywordWithPaging" parameterType="map" resultType="com.example.lms.dto.Course">
+        SELECT 
+            c.course_no AS courseNo,
+            c.course_name AS courseName,
+            c.emp_no AS empNo,
+            c.course_period AS coursePeriod,
+            c.max_cnt AS maxCnt,
+            c.current_cnt AS currentCnt
+        FROM course c
+        LEFT JOIN emp e ON c.emp_no = e.emp_no
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM registration r
+            WHERE r.course_no = c.course_no AND r.student_no = #{studentNo}
+        )
+        AND (c.course_name LIKE CONCAT('%', #{keyword}, '%') 
+             OR e.emp_name LIKE CONCAT('%', #{keyword}, '%'))
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countCoursesByKeyword" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM course c
+        LEFT JOIN emp e ON c.emp_no = e.emp_no
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM registration r
+            WHERE r.course_no = c.course_no AND r.student_no = #{studentNo}
+        )
+        AND (c.course_name LIKE CONCAT('%', #{keyword}, '%') 
+             OR e.emp_name LIKE CONCAT('%', #{keyword}, '%'))
+    </select>
+
+    <select id="selectAvailableCoursesWithPaging" parameterType="map" resultType="com.example.lms.dto.Course">
+        SELECT 
+            c.course_no AS courseNo,
+            c.course_name AS courseName,
+            c.emp_no AS empNo,
+            c.course_period AS coursePeriod,
+            c.max_cnt AS maxCnt,
+            c.current_cnt AS currentCnt
+        FROM course c
+        LEFT JOIN emp e ON c.emp_no = e.emp_no
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM registration r
+            WHERE r.course_no = c.course_no AND r.student_no = #{studentNo}
+        )
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAvailableCourses" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM course c
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM registration r
+            WHERE r.course_no = c.course_no AND r.student_no = #{studentNo}
+        )
+    </select>
 
 </mapper>

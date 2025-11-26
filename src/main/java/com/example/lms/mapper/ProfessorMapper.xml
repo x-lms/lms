@@ -2,6 +2,49 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.ProfessorMapper">
 	
+		
+	<!-- 출석체크(강의목록) -->	
+	<select id="getAttandance" parameterType="map" resultType="com.example.lms.dto.Course">
+		select
+			course_no courseNo, course_name courseName, dept_no deptNo,
+			emp_no empNo, max_cnt maxCnt, current_cnt currentCnt,
+			course_period coursePeriod, course_plan coursePlan 
+		from course
+		where emp_no = #{empNo}
+	</select>
+	
+	<!-- 학생리스트 -->
+	<select id="studentListByPage" parameterType="map" resultType="com.example.lms.dto.Student">
+		SELECT
+		    student_no studentNo,
+		    dept_no deptNo,
+		    student_pw studentPw,
+		    student_name studentName,
+		    student_state studentState,
+		    student_address studentAddress,
+		    student_phone studentPhone,
+		    student_birth studentBirth,
+		    student_img studentImg,
+		    student_email studentEmail
+		FROM student
+		where dept_no = #{deptNo}
+			<if test="searchWord != null and searchWord != ''">
+			 and student_name like concat('%', #{searchWord},'%')
+			</if>
+		order by student_name asc
+		limit #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<select id="getStudentCount" parameterType="Map" resultType="int">
+		select count(*)
+		from student
+		<where>
+			<if test="searchWord != null and searchWord != ''">
+				student_name like concat('%', #{searchWord},'%')
+			</if>
+		</where>
+	</select>
+	
 	<!-- 강의 삭제 -->
 	<delete id="deleteCourse" parameterType="int">
 	    DELETE FROM course

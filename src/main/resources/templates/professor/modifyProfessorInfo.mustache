@@ -3,20 +3,21 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>교수 정보 수정</title>
+    <title>학습관리시스템</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="/css/modifyProfessorInfo.css">
 </head>
 <body>
     <h1>정보 수정</h1>
 
-    <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyProfessorInfo?empNo={{e.empNo}}" method="post">
+    <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyProfessorInfo?empNo={{e.empNo}}" method="post" enctype="multipart/form-data">
        
         <p>
-            <label>사진</label>
-            <input type="file"  name="empImg">
-            <img src="{{e.empNo}}" alt="">
-        </p>
+		    <label>사진</label>
+		    <input type="file" name="empImgFile" accept="image/*">
+		    <img src="{{#e.empImg}}/uploads/{{e.empImg}}{{/e.empImg}}" class="profile-image">
+		    <input type="hidden" name="empImg" value="{{e.empImg}}"> <!-- 기존 이미지 유지용 -->
+		</p>
         
         <p>
             <label>학과 번호: </label>

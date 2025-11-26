@@ -15,5 +15,6 @@ public class Emp {
 	private String empBirth;
 	private String empPhone;
 	private String empImg; // DTO에 MultipartFile로 선언
+	private MultipartFile empImgFile; 
 	
 }

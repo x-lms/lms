@@ -2,11 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.PublicMapper">
 	<!-- 학생로그인 -->
+
 	<select id="selectLoginStudent" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Student">
 		SELECT student_no studentNo, dept_no deptNo, student_name studentName, student_img studentImg, student_state studentState
 		FROM student 
 		WHERE student_no = #{userId} AND student_pw = #{userPw}
 	</select>
+
+<select id="selectLoginStudent" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Student">
+	    select 
+	        student_no AS studentNo,
+	        dept_no AS deptNo,
+	        student_name AS studentName,
+	        student_img AS studentImg,
+	        student_state AS studentState
+	    from student 
+	    where student_no = CAST(#{userId} AS UNSIGNED)
+	      and student_pw = #{userPw}
+</select>
+
+
 	<!-- 교수로그인 -->
 	<select id="selectLoginProfessor" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Emp">
 		SELECT emp_no empNo, emp_email empEmail, emp_name empName, dept_no deptNo, emp_img empImg

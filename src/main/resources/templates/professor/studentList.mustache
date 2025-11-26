@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<title>학습관리시스템</title>
+	<link rel="stylesheet" href="/css/common.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/courseList.css">
+</head>
+<body>
+	{{ >layouts/header }}
+	<div class="container">
+	{{ >layouts/navProfessor }}
+	<div class="main-content">
+
+		<h2>학생 리스트</h2>
+
+		<!-- 검색 -->
+		<form action="{{springMacroRequestContext.request.contextPath}}/professor/studentList" method="get">
+		    <input type="text" name="searchWord" value="{{searchWord}}" placeholder="학생이름 검색">
+		    <button type="submit">검색</button>
+		</form>
+
+		<!-- 학생 테이블 -->
+		<table>
+		    <thead>
+		        <tr>
+		            <th>사진</th>
+		            <th>학과번호</th>
+		            <th>이름</th>
+		            <th>이메일</th>
+		            <th>전화번호</th>
+		            <th>상태</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        {{#studentList}}
+		        <tr>
+		            <td><img src="{{#studentImg}}/uploads/{{studentImg}}{{/studentImg}}" alt="학생이미지"></td>
+		            <td>{{deptNo}}</td>
+		            <td>{{studentName}}</td>
+		            <td>{{studentEmail}}</td>
+		            <td>{{studentPhone}}</td>
+		            <td>{{studentState}}</td>
+		        </tr>
+		        {{/studentList}}
+		    </tbody>
+		</table>
+		
+		<!-- 페이지네이션 -->
+		<div class="pagination">
+		    {{#prePage}}
+		        <a href="{{springMacroRequestContext.request.contextPath}}/professor/studentList?currentPage={{prePage}}&searchWord={{searchWord}}">이전</a>
+		    {{/prePage}}
+
+		    {{#pageList}}
+		        {{#isCurrent}}
+		            <strong>{{page}}</strong>
+		        {{/isCurrent}}
+		        {{^isCurrent}}
+		            <a href="{{springMacroRequestContext.request.contextPath}}/professor/studentList?currentPage={{page}}&searchWord={{searchWord}}">{{page}}</a>
+		        {{/isCurrent}}
+		    {{/pageList}}
+
+		    {{#nextPage}}
+		        <a href="{{springMacroRequestContext.request.contextPath}}/professor/studentList?currentPage={{nextPage}}&searchWord={{searchWord}}">다음</a>
+		    {{/nextPage}}
+		</div>
+	</div>
+	</div>
+    {{ >layouts/footer }}
+</body>
+</html>

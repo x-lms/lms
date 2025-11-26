@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<title>학습관리시스템</title>
+	<link rel="stylesheet" href="/css/common.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/courseList.css">
+</head>
+<body>
+	{{ >layouts/header }}
+	<div class="container">
+	{{ >layouts/navProfessor }}
+	<div class="main-content">
+
+		<h2>출석체크(강의목록)</h2>
+				
+		<table>
+		    <thead>
+		        <tr>
+		            <th>강의명</th>
+		            <th>학과번호</th>
+		            <th>정원</th>
+		            <th>현재인원</th>
+		            <th>강의기간</th>
+		            <th>학생목록</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        {{#courseList}}
+		        <tr>
+		            <td>{{courseName}}</td>
+		            <td>{{deptNo}}</td>
+		            <td>{{maxCnt}}</td>
+		            <td>{{currentCnt}}</td>
+		            <td>{{coursePeriod}}</td>
+		            <td><a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceList?courseNo={{courseNo}}" >학생목록</a></td>
+		        </tr>
+		        {{/courseList}}
+		    </tbody>
+		</table>
+		</div>
+	</div>
+	{{ >layouts/footer }}
+</body>
+</html>

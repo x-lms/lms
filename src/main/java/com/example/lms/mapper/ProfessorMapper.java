@@ -7,10 +7,20 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.example.lms.dto.Course;
 import com.example.lms.dto.Emp;
+import com.example.lms.dto.Student;
 
 
 @Mapper
 public interface ProfessorMapper {
+	
+	
+	
+	// 출석체크 (강의목록)
+	List<Course> getAttandance(Map<String, Object> m);
+	
+	// 학생리스트
+	List<Student> studentListByPage(Map<String, Object> m);
+	int getStudentCount(Map<String, Object> m);
 	
 	// 강의 상세보기
 	Course courseOne(int courseNo);
@@ -29,5 +39,6 @@ public interface ProfessorMapper {
 	Emp professorInfo(int empNo);
 	// 내 정보 수정
 	int updateProfessorInfo(Emp e);
+
 
 }

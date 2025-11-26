@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.lms.dto.Course;
 import com.example.lms.dto.Emp;
+import com.example.lms.dto.Student;
 import com.example.lms.mapper.ProfessorMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,37 @@ import lombok.extern.slf4j.Slf4j;
 public class ProfessorService {
 	@Autowired
 	ProfessorMapper professorMapper;
+	
+	// 출석체크(강의목록)
+	public List<Course> getAttendance(int empNo) {
+		Map<String, Object> m = new HashMap<>();
+		m.put("empNo", empNo);
+		List<Course> courseList = professorMapper.getAttandance(m);
+		
+		return courseList;
+	}
+	
+	// 학생 리스트
+	public List<Student> studentListByPage(int deptNo, int currentPage, String searchWord) {
+		int rowPerPage = 10;
+		int beginRow = (currentPage - 1) * rowPerPage;
+		Map<String, Object> m = new HashMap<>();
+		m.put("deptNo", deptNo);
+		m.put("rowPerPage", rowPerPage);
+		m.put("beginRow", beginRow);
+		m.put("searchWord", searchWord);
+		List<Student> studentList = professorMapper.studentListByPage(m);
+		log.debug("studentList : {}", studentList);
+		
+		return studentList;
+	}
+	
+	public int getStudentCount(int deptNo, String searchWord) {
+		Map<String, Object> m = new HashMap<>();
+		m.put("deptNo", deptNo);
+		m.put("searchWord", searchWord);
+		return professorMapper.getStudentCount(m);
+	}
 	
 	// 강의 상세보기
 	public Course getCourseOne(int courseNo) {
@@ -71,6 +103,9 @@ public class ProfessorService {
 	public Emp professorInfo(int empNo) {
 		return professorMapper.professorInfo(empNo);
 	}
+
+
+
 
 
 

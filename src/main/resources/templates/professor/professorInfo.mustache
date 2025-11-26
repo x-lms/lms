@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>교수 정보 - 학습관리시스템</title>
+<title>학습관리시스템</title>
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/professor-info.css">
@@ -23,7 +23,7 @@
 				<!-- 프로필 헤더 섹션 -->
 				<div class="card-header">
 					<div class="profile-image-wrapper">
-						<img src="{{e.empImg}}" class="profile-image">
+						<img src="{{#e.empImg}}/uploads/{{e.empImg}}{{/e.empImg}}" class="profile-image">
 					</div>
 					<h3 class="profile-name">{{e.empName}}</h3>
 					<p class="profile-role">교수</p>

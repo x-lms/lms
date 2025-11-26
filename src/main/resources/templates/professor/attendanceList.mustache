@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<title>학습관리시스템</title>
+	<link rel="stylesheet" href="/css/common.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/courseList.css">
+</head>
+<body>
+	{{ >layouts/header }}
+    <div class="container">
+    {{ >layouts/navProfessor }}
+    <div class="main-content">
+	    <h2>출석체크 - {{courseName}}</h2>
+
+        <form action="{{springMacroRequestContext.request.contextPath}}/professor/saveAttendance" method="post">
+        <input type="hidden" name="courseNo" value="{{courseNo}}">
+                
+        <table>
+            <thead>
+                <tr>
+                    <th>학생번호</th>
+                    <th>사진</th>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>전화번호</th>
+                    <th>출석 상태</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#studentList}}
+                <tr>
+                    <td>{{studentNo}}</td>
+                    <td>
+                        <img src="{{#studentImg}}/upload/{{studentImg}}{{/studentImg}}" alt="">
+                    </td>
+                    <td>{{studentName}}</td>
+                    <td>{{studentEmail}}</td>
+                    <td>{{studentPhone}}</td>
+                    <td>
+                        <select name="attState_{{studentNo}}">
+                            <option value="출석">출석</option>
+                            <option value="결석">결석</option>
+                            <option value="지각">지각</option>
+                            <option value="조퇴">조퇴</option>
+                        </select>
+                    </td>
+                </tr>
+                {{/studentList}}
+            </tbody>
+        </table>
+
+        <p>
+            <button type="submit">출석 완료</button>
+            <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendance">뒤로가기</a>
+        </p>
+		</form>
+        </div>
+    </div>
+    {{ >layouts/footer }}
+</body>
+</html>

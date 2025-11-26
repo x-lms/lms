@@ -3,9 +3,11 @@ package com.example.lms.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,9 +15,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.lms.dto.Course;
 import com.example.lms.dto.Emp;
+import com.example.lms.dto.PageInfo;
+import com.example.lms.dto.Student;
 import com.example.lms.service.ProfessorService;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,35 +32,73 @@ public class ProfessorController {
 	@Autowired
 	ProfessorService professorService;
 	
+	// 파일 위치, 확장자
+	private final String uploadDir = "C:/lms/uploads";
+	private final List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif");
+	
+	
+	// 출석체크
+	@GetMapping("/professor/attendance")
+	public String attendance(HttpSession session, Model model) {
+		Emp loginProfessor = getLoginProfessor(session);
+		List<Course> courseList = professorService.getAttendance(loginProfessor.getEmpNo());
+		model.addAttribute("courseList", courseList);
+		log.debug("courseList : " + courseList);
+		return "/professor/attendance";
+	}
+	
+	// 학생리스트
+	@GetMapping("/professor/studentList")
+	public String studentList(HttpSession session, Model model, @RequestParam(defaultValue = "1") int currentPage, @RequestParam(defaultValue = "") String searchWord) {
+		Emp loginProfessor = getLoginProfessor(session);
+		
+		int rowPerPage = 10;       // 한 페이지에 표시할 강의 수
+	    int pageBlock = 10;        // 한 블록에 표시할 페이지 수
+
+	    // 학생 리스트
+	    List<Student> studentList = professorService.studentListByPage(loginProfessor.getDeptNo(), currentPage, searchWord);
+
+	    // 전체 학생 수
+	    int totalCount = professorService.getStudentCount(loginProfessor.getDeptNo(), searchWord);
+
+	    // PageInfo 생성
+	    PageInfo pageInfo = getPageInfo(totalCount, currentPage, rowPerPage, pageBlock);
+
+	    List<Map<String,Object>> pageListWithCurrent = new ArrayList<>();
+	    for(int p : pageInfo.getPageList()) {
+	        Map<String,Object> m = new HashMap<>();
+	        m.put("page", p);
+	        m.put("isCurrent", p == pageInfo.getCurrentPage());
+	        pageListWithCurrent.add(m);
+	    }
+	    for (Student s : studentList) {
+	        String img = s.getStudentImg() != null ? s.getStudentImg() : "";
+	    } 
+	    	 
+	    model.addAttribute("studentList", studentList);
+	    model.addAttribute("searchWord", searchWord);
+	    model.addAttribute("pageInfo", pageInfo);
+	    model.addAttribute("pageList", pageListWithCurrent);
+	    
+		return "/professor/studentList";
+	}
+	
 	// 강의 상세보기
 	@GetMapping("/professor/courseOne")
 	public String courseOne(HttpSession session, Model model, int courseNo) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-		        throw new RuntimeException("로그인 세션 없음");
-		    }
+		Emp loginProfessor = getLoginProfessor(session);
+		
 		Course course = professorService.getCourseOne(courseNo);
 		model.addAttribute("course", course);
 		return "/professor/courseOne";
 	}
 	
-	// 강의 등록
-	@GetMapping("/professor/addCourse")
-	public String addCourse(HttpSession session) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-		        throw new RuntimeException("로그인 세션 없음");
-		    }
-		return "/professor/addCourse";
-	}
 	
 	// 강의 수정 폼
 	@GetMapping("/professor/modifyCourse")
 	public String courseUpdate(HttpSession session, Model model, int courseNo) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-			throw new RuntimeException("로그인 세션 없음");
-		}
+		Emp loginProfessor = getLoginProfessor(session);
+		
 		Course c = professorService.getCourseOne(courseNo);
 		model.addAttribute("c", c);
 		
@@ -65,10 +108,7 @@ public class ProfessorController {
 	// 강의 수정 액션
 	@PostMapping("/professor/modifyCourse")
 	public String courseUpdate(HttpSession session, Course course) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-			throw new RuntimeException("로그인 세션 없음");
-		}
+		Emp loginProfessor = getLoginProfessor(session);
 
 	    professorService.updateCourse(course);
 
@@ -78,21 +118,23 @@ public class ProfessorController {
 	// 강의 삭제
 	@PostMapping("/professor/removeCourse")
 	public String courseDelete(HttpSession session, int courseNo) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-			throw new RuntimeException("로그인 세션 없음");
-		}
+		Emp loginProfessor = getLoginProfessor(session);
 
 	    professorService.deleteCourse(courseNo);
 	    return "redirect:/professor/courseList";
 	}
 	
+	// 강의 등록 폼
+	@GetMapping("/professor/addCourse")
+	public String addCourse(HttpSession session) {
+		Emp loginProfessor = getLoginProfessor(session);
+		return "/professor/addCourse";
+	}
+	
+	// 강의 등록 액션
 	@PostMapping("/professor/addCourse")
 	public String addCourse(HttpSession session, Course c) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-			throw new RuntimeException("로그인 세션 없음");
-		}
+		Emp loginProfessor = getLoginProfessor(session);
 		
 		professorService.insertCourse(c);
 		
@@ -102,10 +144,8 @@ public class ProfessorController {
 	// 강의리스트
 	@GetMapping("/professor/courseList")
 	public String courseList(HttpSession session, Model model, @RequestParam(defaultValue = "1") int currentPage, @RequestParam(defaultValue = "") String searchWord) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-		        throw new RuntimeException("로그인 세션 없음");
-		    }
+		Emp loginProfessor = getLoginProfessor(session);
+		
 		int rowPerPage = 10;       // 한 페이지에 표시할 강의 수
 	    int pageBlock = 10;        // 한 블록에 표시할 페이지 수
 
@@ -115,72 +155,55 @@ public class ProfessorController {
 	    // 전체 강의 수
 	    int totalCount = professorService.getCourseCount(loginProfessor.getEmpNo(), searchWord);
 
-	    // 마지막 페이지 계산
-	    int lastPage = (int) Math.ceil((double) totalCount / rowPerPage);
+	    // PageInfo 생성
+	    PageInfo pageInfo = getPageInfo(totalCount, currentPage, rowPerPage, pageBlock);
 
-	    // 페이지 블록 계산
-	    int startPage = ((currentPage - 1) / pageBlock) * pageBlock + 1;
-	    int endPage = startPage + pageBlock - 1;
-	    if (endPage > lastPage) endPage = lastPage;
-
-	    // 이전/다음 페이지
-	    Integer prePage = (startPage > 1) ? startPage - 1 : null;
-	    Integer nextPage = (endPage < lastPage) ? endPage + 1 : null;
-
-	    // 페이지 번호 리스트
-	    List<Map<String, Object>> pageList = new ArrayList<>();
-	    for (int i = startPage; i <= endPage; i++) {
-	        Map<String, Object> pageMap = new HashMap<>();
-	        pageMap.put("page", i);
-	        pageMap.put("isCurrent", i == currentPage);
-	        pageList.add(pageMap);
+	    // Mustache에서 편하게 쓰기 위해 pageList에 isCurrent 표시
+	    List<Map<String,Object>> pageListWithCurrent = new ArrayList<>();
+	    for(int p : pageInfo.getPageList()) {
+	        Map<String,Object> m = new HashMap<>();
+	        m.put("page", p);
+	        m.put("isCurrent", p == pageInfo.getCurrentPage());
+	        pageListWithCurrent.add(m);
 	    }
-
 	    log.debug("courseList : " + courseList);
-	    
+
 	    model.addAttribute("courseList", courseList);
 	    model.addAttribute("searchWord", searchWord);
-	    model.addAttribute("currentPage", currentPage);
-	    model.addAttribute("prePage", prePage);
-	    model.addAttribute("nextPage", nextPage);
-	    model.addAttribute("lastPage", lastPage);
-	    model.addAttribute("pageList", pageList);
+	    model.addAttribute("pageInfo", pageInfo);
+	    model.addAttribute("pageList", pageListWithCurrent);
 		
 		return "/professor/courseList";
 	}
 	
-	// 교수 정보 폼	
+	// 교수 정보 수정 폼	
 	@GetMapping("/professor/modifyProfessorInfo")
 	public String modifyProfessorInfo(HttpSession session, Model model) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-		        throw new RuntimeException("로그인 세션 없음");
-		    }
-		Emp e = professorService.professorInfo(loginProfessor.getEmpNo());
-		log.debug("e: " + e);
-		model.addAttribute("e", e);
-		if (e.getEmpBirth() == null) e.setEmpBirth("");
-	    if (e.getEmpPhone() == null) e.setEmpPhone("");
-	    if (e.getEmpImg() == null) e.setEmpImg("");
+		Emp loginProfessor = getLoginProfessor(session);
+
+        Emp e = professorService.professorInfo(loginProfessor.getEmpNo());
+        normalizeEmpFields(e);
+
+        model.addAttribute("e", e);
 	    
 		return "professor/modifyProfessorInfo";
 	}
 	
-	// 교수 정보 액션
+	// 교수 정보 수정 액션
 	@PostMapping("/professor/modifyProfessorInfo")
 	public String modifyProfessorInfo(HttpSession session, Emp e) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-		        throw new RuntimeException("로그인 세션 없음");
-		    }
-		e.setEmpNo(loginProfessor.getEmpNo());
-		log.debug("empNo: " + e.getEmpNo());
-		if (e.getEmpPw() == null || e.getEmpPw().isEmpty()) {
-		       // DB에서 기존 비밀번호 가져오기
-		       Emp e1 = professorService.professorInfo(loginProfessor.getEmpNo());
-		       e.setEmpPw(e1.getEmpPw());
-		   }
-				
+		Emp loginProfessor = getLoginProfessor(session);
+	    e.setEmpNo(loginProfessor.getEmpNo());
+
+        // 비밀번호 미입력 시 기존 DB 값 유지
+        if (isEmpty(e.getEmpPw())) {
+            Emp old = professorService.professorInfo(e.getEmpNo());
+            e.setEmpPw(old.getEmpPw());
+        }
+
+        // 파일 업로드 처리
+        handleFileUpload(e);
+	        
 		professorService.updateProfessorInfo(e);
 		return "redirect:/professor/professorInfo";
 	}
@@ -188,18 +211,12 @@ public class ProfessorController {
 	// 교수정보
 	@GetMapping("/professor/professorInfo")
 	public String professorInfo(HttpSession session, Model model) {
-		Emp loginProfessor = (Emp) session.getAttribute("loginProfessor");
-	    if (loginProfessor == null) {
-		        throw new RuntimeException("로그인 세션 없음");
-		    }
-	    Emp e = professorService.professorInfo(loginProfessor.getEmpNo());
-		log.debug("e: "+e);
-		
-		model.addAttribute("e", e);
-		// null이면 공백 처리
-	    if (e.getEmpBirth() == null) e.setEmpBirth("");
-	    if (e.getEmpPhone() == null) e.setEmpPhone("");
-	    if (e.getEmpImg() == null) e.setEmpImg("");
+		Emp loginProfessor = getLoginProfessor(session);
+
+        Emp e = professorService.professorInfo(loginProfessor.getEmpNo());
+        normalizeEmpFields(e);
+
+        model.addAttribute("e", e);
 		
 		return "professor/professorInfo";
 	}
@@ -207,10 +224,94 @@ public class ProfessorController {
 	// 교수 홈
 	@GetMapping("/professor/professorHome")
 	public String professorHome(HttpSession session) {
-		Emp loginProfessor =  (Emp)session.getAttribute("loginProfessor");
-		if (loginProfessor == null) {
-	        throw new RuntimeException("로그인 세션 없음");
-	    }
+		Emp loginProfessor = getLoginProfessor(session);
 		return "professor/professorHome";
 	}
+	
+	// ===========================
+    // 공통 유틸 메서드
+    // ===========================
+	
+	// 페이징
+	public PageInfo getPageInfo(int totalCount, int currentPage, int rowPerPage, int pageBlock) {
+	    PageInfo pageInfo = new PageInfo();
+	    pageInfo.setCurrentPage(currentPage);
+	    pageInfo.setRowPerPage(rowPerPage);
+	    pageInfo.setPageBlock(pageBlock);
+	    pageInfo.setTotalCount(totalCount);
+
+	    int lastPage = (int) Math.ceil((double) totalCount / rowPerPage);
+	    pageInfo.setLastPage(lastPage);
+
+	    int startPage = ((currentPage - 1) / pageBlock) * pageBlock + 1;
+	    int endPage = startPage + pageBlock - 1;
+	    if(endPage > lastPage) endPage = lastPage;
+
+	    pageInfo.setStartPage(startPage);
+	    pageInfo.setEndPage(endPage);
+	    pageInfo.setPrePage(startPage > 1 ? startPage - 1 : null);
+	    pageInfo.setNextPage(endPage < lastPage ? endPage + 1 : null);
+
+	    List<Integer> pages = new ArrayList<>();
+	    for(int i = startPage; i <= endPage; i++) pages.add(i);
+	    pageInfo.setPageList(pages);
+
+	    return pageInfo;
+	}
+	
+    private Emp getLoginProfessor(HttpSession session) {
+        Emp loginProfessor = (Emp) session.getAttribute("loginProfessor");
+        if (loginProfessor == null) {
+            throw new RuntimeException("로그인 세션 없음");
+        }
+        return loginProfessor;
+    }
+
+    private void normalizeEmpFields(Emp e) {
+        e.setEmpBirth(e.getEmpBirth() == null ? "" : e.getEmpBirth().trim());
+        e.setEmpPhone(e.getEmpPhone() == null ? "" : e.getEmpPhone().trim());
+        e.setEmpImg(e.getEmpImg() == null ? "" : e.getEmpImg().trim());
+    }
+
+    private boolean isEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+
+    private void handleFileUpload(Emp e) {
+        MultipartFile file = e.getEmpImgFile();
+        if (file != null && !file.isEmpty()) {
+            String ext = getExtension(file.getOriginalFilename()).toLowerCase();
+            if (!allowedExtensions.contains(ext)) {
+                log.warn("허용되지 않은 파일 형식: {}", file.getOriginalFilename());
+                return; // 기존 파일 유지
+            }
+
+            // UUID로 새 파일명 생성
+            String newFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            File dest = new File(uploadDir, newFileName);
+            dest.getParentFile().mkdirs();
+
+            try {
+                file.transferTo(dest);
+
+                // 기존 파일 삭제
+                if (e.getEmpImg() != null && !e.getEmpImg().isBlank()) {
+                    File oldFile = new File(uploadDir, e.getEmpImg());
+                    if (oldFile.exists()) oldFile.delete();
+                }
+
+                e.setEmpImg(newFileName);
+            } catch (IOException ex) {
+                log.error("파일 업로드 실패", ex);
+            }
+        }
+        // 파일 없으면 기존 이미지 그대로 유지
+    }
+
+    private String getExtension(String filename) {
+        if (filename == null) return "";
+        int idx = filename.lastIndexOf('.');
+        return (idx != -1) ? filename.substring(idx + 1) : "";
+    }
 }
+
