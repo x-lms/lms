@@ -186,5 +186,6 @@
             WHERE r.course_no = c.course_no AND r.student_no = #{studentNo}
         )
     </select>
+    
 
 </mapper>

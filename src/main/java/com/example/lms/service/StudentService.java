@@ -2,6 +2,7 @@ package com.example.lms.service;
 
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.StudentCourse;
+import com.example.lms.dto.TimetableCell;
 import com.example.lms.dto.Student;
 import com.example.lms.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
@@ -145,4 +146,95 @@ public class StudentService {
     public int countAvailableCourses(int studentNo) {
         return studentMapper.countAvailableCourses(studentNo);
     }
+
+ // ========================= 학생 시간표 =========================
+    public List<TimetableCell> getStudentSchedule(int studentNo) {
+
+        // 학생이 신청한 모든 강의 조회
+        List<StudentCourse> courses = getStudentCourses(studentNo);
+
+        // 시간표 기본 틀 (1~9교시)
+        List<TimetableCell> table = new ArrayList<>();
+        for (int i = 1; i <= 9; i++) {
+            TimetableCell cell = new TimetableCell();
+            cell.setPeriod(i);
+            table.add(cell);
+        }
+
+        // 과목별 시간 배치
+        for (StudentCourse course : courses) {
+            for (CourseTime time : course.getCourseTimes()) {
+            	String day = switch(time.getCoursedate().toUpperCase()) {
+            	    case "월", "MON" -> "MON";
+            	    case "화", "TUE" -> "TUE";
+            	    case "수", "WED" -> "WED";
+            	    case "목", "THU" -> "THU";
+            	    case "금", "FRI" -> "FRI";
+            	    default -> ""; 
+            	};
+
+
+                // 시작/종료 시간 → 교시
+                int startPeriod = convertTimeToPeriod(time.getCourseTimeStart());
+                int endPeriod = convertTimeToPeriod(time.getCourseTimeEnd());
+
+                // 범위 내 교시에 과목명 삽입
+                for (int p = startPeriod; p <= endPeriod; p++) {
+                    if (p < 1 || p > table.size()) continue;
+
+                    TimetableCell row = table.get(p - 1);
+                    String existing = getCellValueByDay(row, day);
+                    if (!existing.isEmpty()) {
+                        // 겹치는 경우 "과목1 / 과목2"
+                        setCellValueByDay(row, day, existing + " / " + course.getCourseName());
+                    } else {
+                        setCellValueByDay(row, day, course.getCourseName());
+                    }
+                }
+            }
+        }
+
+        return table;
+    }
+
+    // 교시 변환 (HH:mm → 교시 1~9)
+    private int convertTimeToPeriod(String time) {
+        int hour = Integer.parseInt(time.substring(0, 2));
+        return switch (hour) {
+            case 9 -> 1;
+            case 10 -> 2;
+            case 11 -> 3;
+            case 12 -> 4;
+            case 13 -> 5;
+            case 14 -> 6;
+            case 15 -> 7;
+            case 16 -> 8;
+            case 17 -> 9;
+            default -> 0;
+        };
+    }
+
+    // 요일별 getter
+    private String getCellValueByDay(TimetableCell cell, String day) {
+        return switch (day) {
+            case "MON" -> cell.getMon();
+            case "TUE" -> cell.getTue();
+            case "WED" -> cell.getWed();
+            case "THU" -> cell.getThu();
+            case "FRI" -> cell.getFri();
+            default -> "";
+        };
+    }
+
+    // 요일별 setter
+    private void setCellValueByDay(TimetableCell cell, String day, String value) {
+        switch (day) {
+            case "MON" -> cell.setMon(value);
+            case "TUE" -> cell.setTue(value);
+            case "WED" -> cell.setWed(value);
+            case "THU" -> cell.setThu(value);
+            case "FRI" -> cell.setFri(value);
+        }
+    }
+
 }

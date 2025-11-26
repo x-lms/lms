@@ -2,6 +2,7 @@ package com.example.lms.controller;
 
 import com.example.lms.dto.StudentCourse;
 import com.example.lms.dto.Student;
+import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.StudentService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +19,45 @@ public class StudentCourseController {
 
     private final StudentService studentService;
 
-    // 수강신청 페이지 (검색 + 페이징)
+    // 학생 시간표 보기   
+    @GetMapping("/timetable")
+    public String studentTimetable(
+            @SessionAttribute("loginStudent") Student loginStudent,
+            Model model) {
+
+        int studentNo = loginStudent.getStudentNo();
+        List<TimetableCell> timetable = studentService.getStudentSchedule(studentNo);
+
+        model.addAttribute("timetable", timetable);
+        return "student/studentSchedule"; // studentSchedule.mustache
+    }
+
+
+    // 수강 과목 목록
+    @GetMapping("/courseList")
+    public String studentCourseList(
+            @SessionAttribute("loginStudent") Student loginStudent,
+            Model model) {
+
+        int studentNo = loginStudent.getStudentNo();
+        List<StudentCourse> courses = studentService.getStudentCourses(studentNo);
+
+        model.addAttribute("courses", courses);
+        return "student/courseList";
+    }
+
+    // 수강 신청 페이지 (검색 + 페이징)
     @GetMapping("/addCourse")
-    public String addCoursePage(HttpSession session, Model model,
-                                @RequestParam(required = false) String keyword,
-                                @RequestParam(defaultValue = "1") int page) {
+    public String addCoursePage(
+            HttpSession session, Model model,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page) {
 
         Student loginStudent = (Student) session.getAttribute("loginStudent");
         if (loginStudent == null) return "redirect:/login";
 
         int studentNo = loginStudent.getStudentNo();
-        int pageSize = 10; // 한 페이지에 표시할 강의 수
+        int pageSize = 10;
 
         List<StudentCourse> courses;
         int totalCourses;
@@ -51,13 +80,17 @@ public class StudentCourseController {
         return "student/addCourse";
     }
 
-    // 수강신청 처리
+
+    // 수강 신청 처리
     @PostMapping("/addCourse/{courseNo}")
-    public String addCourse(@PathVariable int courseNo, HttpSession session, Model model) {
+    public String addCourse(
+            @PathVariable int courseNo, HttpSession session, Model model) {
+
         Student loginStudent = (Student) session.getAttribute("loginStudent");
         if (loginStudent == null) return "redirect:/login";
 
         int studentNo = loginStudent.getStudentNo();
+
         try {
             studentService.applyCourse(studentNo, courseNo);
             model.addAttribute("msg", "수강신청이 완료되었습니다.");
@@ -65,7 +98,7 @@ public class StudentCourseController {
             model.addAttribute("msg", e.getMessage());
         }
 
-        // 신청 후 첫 페이지 재조회
+        // 신청 후 첫 페이지 다시 조회
         List<StudentCourse> courses = studentService.getAvailableCoursesWithTimes(studentNo, 1, 10);
         int totalCourses = studentService.countAvailableCourses(studentNo);
         int totalPages = (int) Math.ceil((double) totalCourses / 10);

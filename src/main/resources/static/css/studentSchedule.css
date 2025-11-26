@@ -1,0 +1,76 @@
+
+/* 테이블 기본 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* 칸 크기 균일 */
+    font-family: Arial, sans-serif;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 10px 5px;
+    vertical-align: middle;
+    word-break: break-word;
+}
+
+/* 헤더 스타일 */
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* 교시 번호 강조 */
+td:first-child {
+    background-color: #f9f9f9;
+    font-weight: bold;
+}
+
+/* 과목 있는 칸 강조 */
+td.has-course {
+    background-color: #f9f0c0;
+    cursor: pointer;
+    position: relative;
+}
+
+/* 겹치는 수업 */
+td.has-course.multiple {
+    background-color: #f9c0c0;
+    font-weight: bold;
+}
+
+/* 마우스 오버 시 살짝 색상 변화 */
+td.has-course:hover {
+    background-color: #ffe59c;
+}
+
+/* Tooltip 스타일 */
+td.has-course[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* Tooltip 화살표 */
+td.has-course[title]:hover::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent;
+    z-index: 10;
+}
