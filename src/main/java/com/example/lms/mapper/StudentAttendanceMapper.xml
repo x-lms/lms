@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.lms.mapper.StudentAttendanceMapper">
+
+    <!-- 1. 학생 정보 조회 -->
+    <select id="getStudentInfo" parameterType="int" resultType="com.example.lms.dto.Student">
+        SELECT 
+            student_no AS studentNo,
+            dept_no AS deptNo,
+            student_pw AS studentPw,
+            student_name AS studentName,
+            student_state AS studentState,
+            student_address AS studentAddress,
+            student_phone AS studentPhone,
+            student_birth AS studentBirth,
+            student_img AS studentImg,
+            student_email AS studentEmail
+        FROM student
+        WHERE student_no = #{studentNo}
+    </select>
+
+    <!-- 2. 수강 과목 목록 -->
+    <select id="getCourseList" parameterType="int" resultType="com.example.lms.dto.Course">
+        SELECT 
+            c.course_no AS courseNo,
+            c.course_name AS courseName,
+            c.dept_no AS deptNo,
+            c.emp_no AS empNo,
+            c.max_cnt AS maxCnt,
+            c.current_cnt AS currentCnt,
+            c.course_period AS coursePeriod,
+            c.course_plan AS coursePlan
+        FROM course c
+        JOIN registration r ON c.course_no = r.course_no
+        WHERE r.student_no = #{studentNo}
+    </select>
+
+    <!-- 3. 출결 요약 -->
+    <select id="getAttendanceSummary" parameterType="map" resultType="map">
+        SELECT 
+            SUM(CASE WHEN att_state = '출석' THEN 1 ELSE 0 END) AS attend,
+            SUM(CASE WHEN att_state = '지각' THEN 1 ELSE 0 END) AS late,
+            SUM(CASE WHEN att_state = '결석' THEN 1 ELSE 0 END) AS absent
+        FROM attendance
+        WHERE student_no = #{studentNo}
+          AND course_no = #{courseNo}
+    </select>
+
+   <!-- 4. 출결 상세 -->
+<select id="getAttendanceDetail" parameterType="map" resultType="com.example.lms.dto.Attendance">
+	    SELECT
+	        att_no AS attNo,
+	        student_no AS studentNo,
+	        course_no AS courseNo,
+	        att_date AS attDate,
+	        att_state AS attState
+	    FROM attendance
+	    WHERE student_no = #{studentNo}
+	      AND course_no = #{courseNo}
+	    ORDER BY att_date
+</select>
+
+</mapper>

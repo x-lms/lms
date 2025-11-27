@@ -1,5 +1,6 @@
 package com.example.lms.mapper;
 
+import com.example.lms.dto.Assignment;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Student;
@@ -27,7 +28,7 @@ public interface StudentMapper {
     String selectEmpNameByCourseNo(int courseNo);
 
     List<CourseTime> selectCourseTimesByCourseNo(int courseNo);
-
+    
     // ================= 개별 강의 조회 =================
     Course selectCourseByCourseNo(int courseNo);
 
@@ -51,4 +52,14 @@ public interface StudentMapper {
     );
 
     int countAvailableCourses(int studentNo);
+    List<Assignment> selectAssignmentsByCourseNo(int courseNo);
+    Map<String, Object> selectCourseEnrollInfo(int studentNo, int courseNo);
+	
+    //수강 취소
+    int deleteStudentCourse(Map<String, Integer> params);
+    
+    
+    
+    
+    
 }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>학생 출석 조회</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/student-attendance.css">
+</head>
+<body>
+    {{>layouts/header}}
+    <div class="container">
+        {{>layouts/navStudent}}
+
+        <div class="main-content">
+				<h2 class="page-title">학생 출석 조회</h2>
+            <!-- 학생 프로필 -->
+            <div class="student-profile">
+                
+                <img src="{{#student.studentImg}}{{student.studentImg}}{{/student.studentImg}}{{^student.studentImg}}/images/default-profile.png{{/student.studentImg}}" 
+                     class="profile-img" alt="학생 이미지">
+                <div class="student-info">
+                    <h2>{{student.studentName}}</h2>
+                    <p>학번: {{student.studentNo}}</p>
+                    <p>이메일: {{student.studentEmail}}</p>
+                </div>
+            </div>
+
+            <!-- 수강 강의 스크롤 -->
+            <div class="course-scroll">
+                {{#courseList}}
+                <div class="course-card" onclick="loadDetail({{courseNo}}, this)">
+                    {{courseName}}
+                </div>
+                {{/courseList}}
+            </div>
+
+            <!-- 출석 상세 -->
+            <div id="attendance-detail"></div>
+
+        </div>
+    </div>
+
+    <script>
+    function loadDetail(courseNo, el) {
+        fetch(`/student/attendanceList/detail?courseNo=` + courseNo)
+            .then(res => res.json())
+            .then(data => {
+                const summary = data.summary;
+                const list = data.detail;
+
+                let html = `
+                    <h3>출석 요약</h3>
+                    <p>출석: ${summary.attend}</p>
+                    <p>지각: ${summary.late}</p>
+                    <p>결석: ${summary.absent}</p>
+
+                    <h3>상세 내역</h3>
+                `;
+
+                list.forEach(a => {
+                    html += `<p>${a.attDate} - ${a.attState}</p>`;
+                });
+
+                document.getElementById("attendance-detail").innerHTML = html;
+            });
+    }
+    </script>
+
+    {{>layouts/footer}}
+</body>
+</html>

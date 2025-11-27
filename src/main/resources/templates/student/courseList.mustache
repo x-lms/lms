@@ -6,11 +6,7 @@
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/layout.css">
     <link rel="stylesheet" href="/css/dashboard.css">
-    <style>
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f4f4f4; }
-    </style>
+    <link rel="stylesheet" href="/css/courseList.css">
 </head>
 <body>
 {{> layouts/header }}
@@ -35,7 +31,7 @@
             <tbody>
                 {{#courses}}
                 <tr>
-                    <td>{{courseName}}</td>
+                    <td><a href="/student/courseOne/{{courseNo}}" class="course-link">{{courseName}}</a></td>
                     <td>{{empName}}</td>
                     <td>{{courseDate}}</td>
                     <td>{{courseTimeStart}}~{{courseTimeEnd}}</td>

@@ -1,0 +1,121 @@
+@charset "UTF-8";
+
+/* ==================== 학생 프로필 ==================== */
+.student-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.profile-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3b82f6;
+}
+
+.student-info h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 5px;
+}
+
+.student-info p {
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* ==================== 수강 강의 스크롤 ==================== */
+.course-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 10px 0;
+    margin-bottom: 30px;
+}
+
+.course-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.course-scroll::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 3px;
+}
+
+.course-scroll::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 3px;
+}
+
+.course-card {
+    flex: 0 0 auto;
+    padding: 12px 24px;
+    background-color: #f0f8ff;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: 500;
+    color: #1e3a8a;
+    transition: all 0.2s;
+}
+
+.course-card:hover {
+    background-color: #d0ebff;
+    transform: translateY(-2px);
+}
+
+.course-card.active {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 600;
+}
+
+/* ==================== 출석 상세 ==================== */
+#attendance-detail {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#attendance-detail h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 6px;
+}
+
+#attendance-detail p {
+    font-size: 14px;
+    color: #334155;
+    margin: 6px 0;
+    line-height: 1.5;
+}
+
+/* ==================== 반응형 ==================== */
+@media (max-width: 768px) {
+    .student-profile {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .course-scroll {
+        gap: 8px;
+        padding: 8px 0;
+    }
+
+    .course-card {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}

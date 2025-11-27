@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>{{course.courseName}} 상세보기</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/studentCourseOne.css">
+</head>
+
+<body>
+{{> layouts/header }}
+
+<div class="container">
+    {{> layouts/navStudent }}
+
+    <div class="main-content">
+        <div class="page-header">
+            <h2 class="page-title">강의 상세정보</h2>
+        </div>
+
+        <div class="detail-box">
+            <div class="detail-title">{{course.courseName}}</div>
+
+            <div class="course-info">
+                <div><b>교수명:</b> {{course.empName}}</div>
+                <div><b>강의실:</b> {{course.courseLocation}}</div>
+                <div><b>요일:</b> {{course.courseDate}}</div>
+                <div><b>시간:</b> {{course.courseTimeStart}} ~ {{course.courseTimeEnd}}</div>
+                <div><b>수업 기간:</b> {{course.coursePeriod}}</div>
+                <div><b>정원:</b> {{course.currentCnt}} / {{course.maxCnt}}</div>
+            </div>
+
+            {{#course.coursePlan}}
+            <div class="section-title">강의 계획</div>
+            <div class="course-plan-text">
+                {{course.coursePlan}}
+            </div>
+            {{/course.coursePlan}}
+
+            <!-- 과제 목록 -->
+            <div class="section-title">과제 목록</div>
+            <div class="list-box">
+                <table>
+                    <tr>
+                        <th>과제명</th>
+                        <th>마감일</th>
+                        <th>제출</th>
+                    </tr>
+                    {{#assignmentList}}
+                    <tr>
+                        <td>{{projectName}}</td>
+                        <td>{{projectDeadline}}</td>
+                        <td>
+                            <form method="post" action="/student/submit-assignment/{{projectNo}}" enctype="multipart/form-data">
+                                <input type="file" name="submissionFile" required>
+                                <button type="submit" class="submit-btn">제출</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/assignmentList}}
+                    {{^assignmentList}}
+                    <tr><td colspan="3">등록된 과제가 없습니다.</td></tr>
+                    {{/assignmentList}}
+                </table>
+            </div>
+
+            <!-- 수강 취소 버튼 -->
+            {{#cancelable}}
+            <form method="post" action="/student/course-cancel/{{course.courseNo}}">
+                <button class="cancel-btn">수강 취소</button>
+            </form>
+            {{/cancelable}}
+
+            {{^cancelable}}
+            <button class="cancel-btn" disabled>수강취소 불가기간</button>
+            {{/cancelable}}
+        </div>
+    </div>
+</div>
+
+{{> layouts/footer }}
+</body>
+</html>

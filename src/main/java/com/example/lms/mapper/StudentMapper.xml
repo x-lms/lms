@@ -187,5 +187,30 @@
         )
     </select>
     
+   <select id="selectCourseEnrollInfo" resultType="map" parameterType="map">
+    SELECT student_no AS studentNo,
+           course_no AS courseNo,
+           start_date AS startDate,
+           status
+    FROM student_course
+    WHERE student_no = #{studentNo}
+      AND course_no = #{courseNo}
+</select>
 
+    <select id="selectAssignmentsByCourseNo" resultType="com.example.lms.dto.Assignment" parameterType="int">
+		    SELECT project_no AS projectNo,
+		           course_no AS courseNo,
+		           project_name AS projectName,
+		           emp_no AS empNo,
+		           project_deadline AS projectDeadline
+		    FROM project
+		    WHERE course_no = #{courseNo}
+</select>
+ 
+ <delete id="deleteStudentCourse" parameterType="map">
+    DELETE FROM registration
+    WHERE student_no = #{studentNo} AND course_no = #{courseNo}
+</delete>
+    
+    
 </mapper>

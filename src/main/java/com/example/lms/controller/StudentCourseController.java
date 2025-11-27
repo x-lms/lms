@@ -1,6 +1,7 @@
 package com.example.lms.controller;
 
 import com.example.lms.dto.StudentCourse;
+import com.example.lms.dto.Assignment;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.StudentService;
@@ -109,4 +110,50 @@ public class StudentCourseController {
 
         return "student/addCourse";
     }
+ // 수강 과목 상세보기
+    @GetMapping("/courseOne/{courseNo}")
+    public String courseDetail(
+            @PathVariable int courseNo,
+            @SessionAttribute("loginStudent") Student loginStudent,
+            Model model) {
+
+        int studentNo = loginStudent.getStudentNo();
+
+        // 과목 기본 정보 (강의 + 교수 + 시간표)
+        StudentCourse course = studentService.getCourseDetail(studentNo, courseNo);
+
+        // 과제 목록
+        List<Assignment> assignmentList = studentService.getAssignments(courseNo);
+
+        
+
+        // 취소 가능 여부 (예: 오늘 < 수강 신청 마감)
+        boolean cancelable = studentService.isCancelable(studentNo, courseNo);
+
+        model.addAttribute("course", course);
+        model.addAttribute("assignmentList", assignmentList);
+        model.addAttribute("cancelable", cancelable);
+
+        return "student/courseOne"; // courseOne.mustache
+    }
+    @PostMapping("/course-cancel/{courseNo}")
+    public String cancelCourse(
+            @PathVariable int courseNo,
+            @SessionAttribute("loginStudent") Student loginStudent,
+            Model model) {
+
+        int studentNo = loginStudent.getStudentNo();
+
+        try {
+            studentService.cancelCourse(studentNo, courseNo);
+            model.addAttribute("msg", "수강취소가 완료되었습니다.");
+        } catch (Exception e) {
+            model.addAttribute("msg", e.getMessage());
+        }
+
+        
+        return "redirect:/student/courseList";
+
+    }
+
 }

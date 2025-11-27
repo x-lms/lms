@@ -1,5 +1,6 @@
 package com.example.lms.service;
 
+import com.example.lms.dto.Assignment;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.StudentCourse;
 import com.example.lms.dto.TimetableCell;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +92,7 @@ public class StudentService {
         sc.setCourseNo(c.getCourseNo());
         sc.setCourseName(c.getCourseName());
         sc.setCoursePeriod(c.getCoursePeriod());
+        sc.setCoursePlan(c.getCoursePlan());
         sc.setCurrentCnt(c.getCurrentCnt());
         sc.setMaxCnt(c.getMaxCnt());
         sc.setFull(c.getCurrentCnt() >= c.getMaxCnt());
@@ -236,5 +239,64 @@ public class StudentService {
             case "FRI" -> cell.setFri(value);
         }
     }
+ // ========================= 강의 상세보기 =========================
 
+ // 강의 상세 정보 조회
+ public StudentCourse getCourseDetail(int studentNo, int courseNo) {
+
+     // 학생이 신청한 전체 강의 조회
+     List<StudentCourse> list = getStudentCourses(studentNo);
+
+     // 해당 courseNo에 해당하는 강의 선택
+     return list.stream()
+             .filter(c -> c.getCourseNo() == courseNo)
+             .findFirst()
+             .orElse(null);
+ }
+
+
+ // ========================= 과제 목록 =========================
+ public List<Assignment> getAssignments(int courseNo) {
+     return studentMapper.selectAssignmentsByCourseNo(courseNo);
+ }
+
+
+ // ========================= 수강 취소 가능 여부 =========================
+ public boolean isCancelable(int studentNo, int courseNo) {
+	    Map<String, Object> info = studentMapper.selectCourseEnrollInfo(studentNo, courseNo);
+	    if (info == null) return false;
+
+	    String status = (String) info.get("status");
+	    if (!"신청".equals(status)) return false;
+
+	    // coursePeriod 가져오기
+	    String coursePeriod = (String) info.get("coursePeriod"); // ex: "2025-03-01~2025-06-30"
+	    if (coursePeriod == null || !coursePeriod.contains("~")) return false;
+
+	    String[] dates = coursePeriod.split("~");
+	    java.time.LocalDate start = java.time.LocalDate.parse(dates[0].trim());
+	    java.time.LocalDate end = java.time.LocalDate.parse(dates[1].trim());
+	    java.time.LocalDate today = java.time.LocalDate.now();
+
+	    // 수업 시작일 이후면 취소 불가
+	    if (!today.isBefore(start)) {
+	        return false;
+	    }
+
+	    return true;
+	}
+
+ @Transactional
+ public void cancelCourse(int studentNo, int courseNo) throws Exception {
+     // 수업 시작일 체크
+     if (!isCancelable(studentNo, courseNo)) {
+         throw new Exception("이미 수업이 시작되어 취소할 수 없습니다.");
+     }
+
+     // registration 테이블에서 삭제
+     Map<String, Integer> params = Map.of("studentNo", studentNo, "courseNo", courseNo);
+     studentMapper.deleteStudentCourse(params);
+ }
+
+ 
 }

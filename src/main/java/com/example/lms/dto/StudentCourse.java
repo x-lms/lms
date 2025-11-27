@@ -16,7 +16,8 @@ public class StudentCourse {
 		private String courseDate;        // 강의요일
 		private String courseTimeStart;   // 강의 시작 시간
 		private String courseTimeEnd;     // 강의 끝나는 시간
-
+		
+		private String coursePlan;
 //  강의 시간 상세 리스트 유지
 private List<CourseTime> courseTimes;
 
