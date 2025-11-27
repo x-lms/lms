@@ -39,8 +39,8 @@
 
 				<div class="notice-detail-attachments">
 					<h4 class="attachments-title">첨부파일</h4>
-					{{#fileList}}
 					<ul class="attachments-list">
+						{{#fileList}}
 						<li class="attachment-item">
 							<a href="{{springMacroRequestContext.request.contextPath}}/public/downloadNoticeFile?fileNo={{fileNo}}" download>
 								<span class="attachment-icon">📎</span>
@@ -48,18 +48,18 @@
 								<span class="attachment-size">({{fileSize}} KB)</span>
 							</a>
 						</li>
+						{{/fileList}}
+						
+						{{^fileList}}
+						<p class="file-undefined">첨부파일이 없습니다.</p>
+						{{/fileList}}
 					</ul>
-					{{/fileList}}
-					
-					{{^fileList}}
-					<p>첨부파일이 없습니다.</p>
-					{{/fileList}}
 				</div>
 
 				<div class="notice-detail-actions">
 					<a href="{{springMacroRequestContext.request.contextPath}}/public/noticeList" class="btn-secondary">목록</a>
 					<div class="action-right">
-						<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifyNotice" class="btn-edit">수정</a>
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifyNotice?noticeNo={{noticeNo}}" class="btn-edit">수정</a>
 						<button type="button" class="btn-delete" onclick="deleteNotice()">삭제</button>
 					</div>
 				</div>

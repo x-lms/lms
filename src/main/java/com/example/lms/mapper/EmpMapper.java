@@ -9,5 +9,12 @@ import com.example.lms.dto.NoticeFile;
 public interface EmpMapper {
 	// 공지사항 추가
 	int insertNotice(Notice n);
+	// 공지사항 수정
+	int updateNotice(Notice n);
+	// 공지사항 삭제
+	int deleteNotice(Notice n);
+	// 파일 추가
 	int insertNoticeFile(NoticeFile nf);
+	// 공지사항 파일 삭제
+	int deleteNoticeFile(NoticeFile nf);
 }

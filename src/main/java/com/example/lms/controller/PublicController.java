@@ -135,6 +135,7 @@ public class PublicController {
 		Notice noticeOne = publicService.getNoticeOne(noticeNo);
 		List<NoticeFile> fileList = publicService.getNoticeFileList(noticeNo);
 		
+		model.addAttribute("noticeNo", noticeNo);
 		model.addAttribute("noticeOne", noticeOne);
 		model.addAttribute("fileList", fileList);
 		return "/public/noticeOne";
