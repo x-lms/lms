@@ -43,7 +43,7 @@
 						<tr>
 							<td class="col-num">{{notice.noticeNo}}</td>
 							<td>
-								<a href="" class="notice-title">{{notice.noticeTitle}}</a>
+								<a href="{{springMacroRequestContext.request.contextPath}}/public/noticeOne?noticeNo={{notice.noticeNo}}" class="notice-title">{{notice.noticeTitle}}</a>
 								{{#isNew}}
 									<span class="badge badge-new">NEW</span>
 								{{/isNew}}

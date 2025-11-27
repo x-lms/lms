@@ -41,4 +41,15 @@ public class PublicService {
 	public int getRowPerPage() {
 		return ROW_PER_PAGE;
 	}
+	
+	// 공지사항 상세페이지
+	public Notice getNoticeOne(int nno) {
+		return publicMapper.selectNoticeOne(nno);
+	}
+	public List<NoticeFile> getNoticeFileList(int noticeNo) {
+		return publicMapper.selectNoticeFile(noticeNo);
+	}
+	public NoticeFile getNoticeFile(int fileNo) {
+		return publicMapper.selectNoticeFileOne(fileNo);
+	}
 }

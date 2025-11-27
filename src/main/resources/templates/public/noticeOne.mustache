@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습관리시스템 - 공지사항 상세</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+	<!-- include -->
+	{{>layouts/header}}
+	<div class="container">
+		{{>layouts/navEmp}}
+		<div class="main-content">
+			<div class="page-header">
+				<h2 class="page-title">공지사항</h2>
+			</div>
+			{{#noticeOne}}
+			<div class="notice-container">
+				<div class="notice-detail-header">
+					<h3 class="notice-detail-title">
+						{{noticeTitle}}
+					</h3>
+					<div class="notice-detail-meta">
+						<span class="meta-item">
+							<strong>작성자:</strong> {{noticeWriter}}
+						</span>
+						<span class="meta-divider">|</span>
+						<span class="meta-item">
+							<strong>등록일:</strong> {{createdate}}
+						</span>
+					</div>
+				</div>
+				<div class="notice-detail-content">{{noticeContents}}</div>
+				{{/noticeOne}}
+
+				<div class="notice-detail-attachments">
+					<h4 class="attachments-title">첨부파일</h4>
+					{{#fileList}}
+					<ul class="attachments-list">
+						<li class="attachment-item">
+							<a href="{{springMacroRequestContext.request.contextPath}}/public/downloadNoticeFile?fileNo={{fileNo}}" download>
+								<span class="attachment-icon">📎</span>
+								<span class="attachment-name">{{originName}}</span>
+								<span class="attachment-size">({{fileSize}} KB)</span>
+							</a>
+						</li>
+					</ul>
+					{{/fileList}}
+					
+					{{^fileList}}
+					<p>첨부파일이 없습니다.</p>
+					{{/fileList}}
+				</div>
+
+				<div class="notice-detail-actions">
+					<a href="{{springMacroRequestContext.request.contextPath}}/public/noticeList" class="btn-secondary">목록</a>
+					<div class="action-right">
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifyNotice" class="btn-edit">수정</a>
+						<button type="button" class="btn-delete" onclick="deleteNotice()">삭제</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{>layouts/footer}}
+
+	<script>
+		function deleteNotice() {
+			if(confirm('공지사항을 삭제하시겠습니까?')) {
+				// 삭제 로직
+				location.href = '{{springMacroRequestContext.request.contextPath}}/emp/deleteNotice';
+			}
+		}
+	</script>
+</body>
+</html>

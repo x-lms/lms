@@ -8,5 +8,7 @@ public class NoticeFile {
 	private int noticeNo;
 	private String fileName;
 	private String originName;
+	private long fileSize;
+	private String fileType;
 	private String createdate;
 }

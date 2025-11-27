@@ -6,7 +6,7 @@
 		VALUES (#{empNo}, #{noticeWriter}, #{noticeTitle}, #{noticeContents})
 	</insert>
 	<insert id="insertNoticeFile" parameterType="com.example.lms.dto.NoticeFile">
-		INSERT INTO notice_file (notice_no, file_name, origin_name)
-		VALUES (#{noticeNo}, #{fileName}, #{originName})
+		INSERT INTO notice_file (notice_no, file_name, origin_name, file_size, file_type)
+		VALUES (#{noticeNo}, #{fileName}, #{originName}, #{fileSize}, #{fileType})
 	</insert>
 </mapper>

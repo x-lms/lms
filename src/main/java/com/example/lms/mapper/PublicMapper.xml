@@ -2,21 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.PublicMapper">
 	<!-- 학생로그인 -->
-
-
-<select id="selectLoginStudent" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Student">
-	    select 
-	        student_no AS studentNo,
-	        dept_no AS deptNo,
-	        student_name AS studentName,
-	        student_img AS studentImg,
-	        student_state AS studentState
-	    from student 
-	    where student_no = CAST(#{userId} AS UNSIGNED)
-	      and student_pw = #{userPw}
-</select>
-
-
+	<select id="selectLoginStudent" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Student">
+		    select 
+		        student_no AS studentNo,
+		        dept_no AS deptNo,
+		        student_name AS studentName,
+		        student_img AS studentImg,
+		        student_state AS studentState
+		    from student 
+		    where student_no = CAST(#{userId} AS UNSIGNED)
+		      and student_pw = #{userPw}
+	</select>
 	<!-- 교수로그인 -->
 	<select id="selectLoginProfessor" parameterType="com.example.lms.dto.LoginUser" resultType="com.example.lms.dto.Emp">
 		SELECT emp_no empNo, emp_email empEmail, emp_name empName, dept_no deptNo, emp_img empImg
@@ -29,6 +25,7 @@
 		FROM emp 
 		WHERE emp_role= 1 AND emp_email = #{userId} AND emp_pw = #{userPw}
 	</select>
+	
 	<!-- 공지사항 리스트 -->
 	<select id="selectNoticeList" parameterType="com.example.lms.dto.SearchList" resultType="com.example.lms.dto.Notice">
 		SELECT notice_no noticeNo, notice_writer noticeWriter, notice_title noticeTitle, DATE_FORMAT(createdate, '%Y.%m.%d') createdate
@@ -50,5 +47,19 @@
 				OR notice_contents LIKE CONCAT('%', #{searchWord}, '%')
 			</if>
 		</where>
+	</select>
+	
+	<!-- 공지사항 상세 -->
+	<select id="selectNoticeOne" parameterType="int" resultType="com.example.lms.dto.Notice">
+		SELECT notice_no noticeNo, notice_writer noticeWriter, notice_title noticeTitle, notice_contents noticeContents, DATE_FORMAT(createdate, '%Y.%m.%d') createdate
+		FROM notice where notice_no = #{noticeNo}
+	</select>
+	<select id="selectNoticeFile" parameterType="int" resultType="com.example.lms.dto.NoticeFile">
+		SELECT file_no fileNo, notice_no noticeNo, origin_name originName, file_name fileName, file_size fileSize, file_type fileType
+		FROM notice_file WHERE notice_no = #{noticeNo}
+	</select>
+	<select id="selectNoticeFileOne" parameterType="int" resultType="com.example.lms.dto.NoticeFile">
+		SELECT file_no fileNo, notice_no noticeNo, origin_name originName, file_name fileName, file_size fileSize, file_type fileType
+		FROM notice_file WHERE file_no = #{fileNo}
 	</select>
 </mapper>

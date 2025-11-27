@@ -46,6 +46,8 @@ public class EmpService {
 					nf.setNoticeNo(n.getNoticeNo());
 					nf.setFileName(saveName);	// 저장된 파일명
 					nf.setOriginName(originName);	// 원본 파일명
+					nf.setFileSize(file.getSize());	// 파일 사이즈
+					nf.setFileType(file.getContentType());	// 타입 저장
 					
 					empMapper.insertNoticeFile(nf);
 				} catch (Exception e) {

@@ -672,3 +672,193 @@
         text-align: center;
     }
 }
+/* ==================== 공지사항 상세보기 ==================== */
+.notice-detail-header {
+    padding: 30px;
+    border-bottom: 2px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.notice-detail-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+.notice-detail-title .pin-icon {
+    color: #dc2626;
+    margin-right: 8px;
+}
+
+.notice-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.meta-item strong {
+    color: #374151;
+    font-weight: 600;
+}
+
+.meta-divider {
+    color: #d1d5db;
+}
+
+.notice-detail-content {
+    padding: 40px 30px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #374151;
+    min-height: 300px;
+    white-space: pre-wrap;
+}
+
+.notice-detail-attachments {
+    padding: 20px 30px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.attachments-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.attachments-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.attachment-item {
+    margin-bottom: 8px;
+}
+
+.attachment-item a {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 14px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #374151;
+    transition: all 0.2s;
+}
+
+.attachment-item a:hover {
+    background: #f3f4f6;
+    border-color: #3b82f6;
+}
+
+.attachment-icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.attachment-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.attachment-size {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-left: 6px;
+}
+
+.notice-detail-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-top: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.action-right {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit {
+    padding: 10px 20px;
+    background: white;
+    color: #3b82f6;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.btn-edit:hover {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-delete {
+    padding: 10px 20px;
+    background: white;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-delete:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .notice-detail-header,
+    .notice-detail-content,
+    .notice-detail-attachments,
+    .notice-detail-actions {
+        padding: 20px;
+    }
+
+    .notice-detail-title {
+        font-size: 20px;
+    }
+
+    .notice-detail-meta {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .meta-divider {
+        display: none;
+    }
+
+    .notice-detail-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-right {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-secondary,
+    .btn-edit,
+    .btn-delete {
+        width: 100%;
+        text-align: center;
+    }
+}

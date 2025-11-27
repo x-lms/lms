@@ -1,5 +1,8 @@
 package com.example.lms.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,14 +13,19 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.lms.dto.LoginUser;
 import com.example.lms.dto.Notice;
+import com.example.lms.dto.NoticeFile;
 import com.example.lms.service.PublicService;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
@@ -120,5 +128,45 @@ public class PublicController {
 		
 		return "public/noticeList";
 	}
+	
+	// 공지사항 상세보기
+	@GetMapping("/public/noticeOne")
+	public String noticeOne(Model model, int noticeNo) {
+		Notice noticeOne = publicService.getNoticeOne(noticeNo);
+		List<NoticeFile> fileList = publicService.getNoticeFileList(noticeNo);
+		
+		model.addAttribute("noticeOne", noticeOne);
+		model.addAttribute("fileList", fileList);
+		return "/public/noticeOne";
+	}
+	@GetMapping("/public/downloadNoticeFile")
+	public void downloadNoticeFile(int fileNo, HttpServletResponse response, HttpServletRequest request) throws Exception {
+		NoticeFile nf = publicService.getNoticeFile(fileNo);
+		
+		if(nf == null) {
+			throw new RuntimeException("파일 정보가 존재하지 않습니다.");
+		}
+		
+		// 파일이 실제 저장된 경로
+		String path = request.getServletContext().getRealPath("/upload");
+		File file = new File(path, nf.getFileName());
+		
+		if(!file.exists()) {
+			throw new RuntimeException("파일이 서버에 존재하지 않습니다.");
+		}
+		
+		// 헤더 설정
+		response.setContentType(nf.getFileType());
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + URLEncoder.encode(nf.getOriginName(), "UTF-8") + "\"");
+	    response.setContentLengthLong(file.length());
+	    
+	 // 파일 스트림 전송
+	    FileInputStream fis = new FileInputStream(file);
+	    ServletOutputStream sos = response.getOutputStream();
 
+	    FileCopyUtils.copy(fis, sos);
+
+	    fis.close();
+	    sos.close();
+	}
 }
