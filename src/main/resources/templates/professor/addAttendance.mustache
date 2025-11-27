@@ -14,7 +14,7 @@
     <div class="main-content">
 	    <h2>출석체크</h2>
 
-        <form action="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistory" method="post">
+        <form action="{{springMacroRequestContext.request.contextPath}}/professor/addAttendance" method="post">
         <input type="hidden" name="courseNo" value="{{courseNo}}">
                 
         <table>
@@ -32,6 +32,7 @@
                 {{#studentList}}
                 <tr>
                     <td>{{studentNo}}</td>
+                    <input type="hidden" name="studentNo" value="{{studentNo}}">
                     <td>
                         <img src="{{#studentImg}}/upload/{{studentImg}}{{/studentImg}}" alt="">
                     </td>
@@ -40,6 +41,7 @@
                     <td>{{studentPhone}}</td>
                     <td>
                         <select name="attState">
+                        	<option value="">선택</option>
                             <option value="출석">출석</option>
                             <option value="결석">결석</option>
                             <option value="지각">지각</option>

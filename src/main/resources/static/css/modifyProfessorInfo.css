@@ -7,7 +7,6 @@
 
 body {
     font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
     min-height: 100vh;
     padding: 40px 20px;
     display: flex;
@@ -17,10 +16,9 @@ body {
 
 /* 제목 */
 h1 {
-    color: white;
+    color: black;
     font-size: 2rem;
     margin-bottom: 30px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* 폼 컨테이너 */
@@ -133,7 +131,7 @@ body > p > a {
     display: inline-block;
     padding: 12px 24px;
     background: white;
-    color: #2196F3;
+    color: #6b7280;
     text-decoration: none;
     border-radius: 8px;
     font-weight: 600;

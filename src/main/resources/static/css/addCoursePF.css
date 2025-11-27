@@ -1,8 +1,8 @@
 @charset "UTF-8";
 
-/* ==================== 강의 수정 페이지 ==================== */
+/* ==================== 강의 등록 페이지 ==================== */
 
-/* 메인 컨텐츠 영역 중앙 정렬 */
+/* 메인 컨텐츠 중앙 정렬 */
 .main-content {
     max-width: 900px;
     margin: 0 auto;
@@ -46,9 +46,8 @@
     margin-left: 2px;
 }
 
-/* 입력 필드 공통 스타일 */
+/* 입력 필드 */
 .form-input,
-.form-select,
 .form-textarea {
     width: 100%;
     padding: 12px 14px;
@@ -64,13 +63,11 @@
 }
 
 .form-input:hover,
-.form-select:hover,
 .form-textarea:hover {
     border-color: #9ca3af;
 }
 
 .form-input:focus,
-.form-select:focus,
 .form-textarea:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -100,17 +97,7 @@
     line-height: 1.6;
 }
 
-/* Select 박스 */
-.form-select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
-}
-
-/* 2열 폼 레이아웃 */
+/* 2열 레이아웃 */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -137,28 +124,6 @@
     font-weight: 500;
 }
 
-/* 에러 상태 */
-.error-message {
-    display: block;
-    font-size: 12px;
-    color: #ef4444;
-    margin-top: 6px;
-    font-weight: 500;
-}
-
-.form-input.error,
-.form-select.error,
-.form-textarea.error {
-    border-color: #ef4444;
-    background: #fef2f2;
-}
-
-.form-input.error:focus,
-.form-select.error:focus,
-.form-textarea.error:focus {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
 /* 버튼 그룹 */
 .button-group {
     display: flex;
@@ -169,7 +134,7 @@
     border-top: 1px solid #e5e7eb;
 }
 
-/* 수정 버튼 */
+/* 등록 버튼 */
 .submit-btn {
     padding: 10px 24px;
     background: #1e40af;
@@ -193,13 +158,6 @@
 .submit-btn:active {
     transform: translateY(0);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.submit-btn:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
 }
 
 /* 취소 버튼 */
@@ -231,12 +189,7 @@
     background: #f3f4f6;
 }
 
-/* 날짜/숫자 입력 최적화 */
-input[type="date"],
-input[type="text"].date-input {
-    cursor: pointer;
-}
-
+/* 숫자 입력 스피너 제거 */
 input[type="number"] {
     -moz-appearance: textfield;
 }
@@ -247,9 +200,8 @@ input[type="number"]::-webkit-inner-spin-button {
     margin: 0;
 }
 
-/* ==================== 반응형 디자인 ==================== */
+/* ==================== 반응형 ==================== */
 
-/* 큰 태블릿 */
 @media (max-width: 1024px) {
     .main-content {
         max-width: 800px;
@@ -261,7 +213,6 @@ input[type="number"]::-webkit-inner-spin-button {
     }
 }
 
-/* 태블릿 */
 @media (max-width: 768px) {
     .main-content {
         padding: 20px 16px;
@@ -279,7 +230,6 @@ input[type="number"]::-webkit-inner-spin-button {
         border-radius: 8px;
     }
 
-    /* 2열 레이아웃을 1열로 변경 */
     .form-row {
         grid-template-columns: 1fr;
         gap: 0;
@@ -298,13 +248,11 @@ input[type="number"]::-webkit-inner-spin-button {
     }
 
     .form-input,
-    .form-select,
     .form-textarea {
-        font-size: 16px; /* iOS 자동 확대 방지 */
+        font-size: 16px;
         padding: 11px 14px;
     }
 
-    /* 버튼 세로 배치 */
     .button-group {
         flex-direction: column-reverse;
         gap: 10px;
@@ -319,7 +267,6 @@ input[type="number"]::-webkit-inner-spin-button {
     }
 }
 
-/* 작은 모바일 */
 @media (max-width: 600px) {
     .main-content {
         padding: 16px 12px;
@@ -334,7 +281,6 @@ input[type="number"]::-webkit-inner-spin-button {
     }
 }
 
-/* 매우 작은 모바일 */
 @media (max-width: 480px) {
     .main-content {
         padding: 14px 10px;
@@ -357,7 +303,6 @@ input[type="number"]::-webkit-inner-spin-button {
     }
 
     .form-input,
-    .form-select,
     .form-textarea {
         padding: 10px 12px;
     }
@@ -380,7 +325,6 @@ input[type="number"]::-webkit-inner-spin-button {
     }
 }
 
-/* 초소형 디바이스 */
 @media (max-width: 360px) {
     .main-content {
         padding: 12px 8px;

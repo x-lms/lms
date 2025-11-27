@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<title>학습관리시스템</title>
+	<link rel="stylesheet" href="/css/common.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/courseList.css">
+</head>
+<body>
+	 <h2>출석 내역 변경</h2>
+
+            <div>
+                <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyHistory" method="post" enctype="multipart/form-data">
+                		<input type="hidden" name="historyNo" value="{{ah.historyNo}}">
+                    <div class="form-group">
+                        <label>출석번호:</label>
+                        <input type="number" name="attNo" value="{{ah.attNo}}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>강의번호:</label>
+                        <input type="number" name="courseNo" value="{{ah.courseNo}}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>변경 전 상태:</label>
+                        <input type="text" name="stateBefore" value="{{ah.stateBefore}}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>변경 후 상태 <span class="required">*</span></label>
+                        <select name="stateAfter" required>
+                            <option value="">선택</option>
+                            <option value="출석">출석</option>
+                            <option value="결석">결석</option>
+                            <option value="지각">지각</option>
+                            <option value="조퇴">조퇴</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>코멘트</label>
+                        <textarea name="historyComment" placeholder="변경 이유나 코멘트를 입력하세요"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>첨부파일</label>
+                        <input type="file" name="newFile">
+                    </div>
+                   
+                    <div>
+                        <button type="submit">저장</button>
+                        <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList" class="cancel-btn">취소</a>
+                    </div>
+                </form>
+			</div>
+</body>
+</html>

@@ -1,6 +1,10 @@
 package com.example.lms.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.lms.dto.Attendance;
+import com.example.lms.dto.AttendanceHistory;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.Emp;
@@ -25,8 +30,10 @@ import com.example.lms.dto.PageInfo;
 import com.example.lms.dto.Student;
 import com.example.lms.service.ProfessorService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 @Controller
@@ -36,12 +43,135 @@ public class ProfessorController {
 	
 	// 파일 위치, 확장자
 	private final String uploadDir = "C:/lms/uploads";
-	private final List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif");
+		
+	// 출석수정 폼
+	@GetMapping("/professor/modifyHistory")
+	public String updateHistory(HttpSession session, Model model, int historyNo) {
+		Emp loginProfessor = getLoginProfessor(session);
+		
+		AttendanceHistory ah = professorService.getHistoryByHN(historyNo);
+		
+		model.addAttribute("ah", ah);
+		
+				
+		return "/professor/modifyHistory";
+	}
+	
+	// 출석수정 액션
+	@PostMapping("/professor/modifyHistory")
+	public String updateHistory(HttpSession session, AttendanceHistory ah) {
+		Emp loginProfessor = getLoginProfessor(session);
+		
+		// 새 파일 업로드 처리
+		MultipartFile newFile = ah.getNewFile();
+	    if (newFile != null && !newFile.isEmpty()) {
+	        // 유니크 파일명 생성
+	        String fileName = UUID.randomUUID().toString() + "_" + newFile.getOriginalFilename();
+
+	        File saveFile = new File(uploadDir, fileName);
+
+	        try {
+	            newFile.transferTo(saveFile);
+	        } catch (Exception e) {
+	            throw new RuntimeException("파일 추가 실패");
+	        }
+
+	        // DTO에 새 파일명 저장
+	        ah.setHistoryFile(fileName);
+	    }
+	    	   
+	    // 데이터 수정
+	    professorService.updateHistory(ah);
+	    professorService.updateAttendanceFromUpdateHistory(ah);
+	    
+		
+		return "redirect:/professor/attendanceHistoryList";
+	}
+	
+	// 다운로드 파일
+	@GetMapping("/professor/downloadHistoryFile")
+	public void downloadHistoryFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
+	    String uploadDir = "C:/lms/uploads";
+	    File file = new File(uploadDir, fileName);
+
+	    if (!file.exists()) {
+	        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	        return;
+	    }
+
+	    try {
+	        // MIME 타입 설정
+	        String mimeType = Files.probeContentType(file.toPath());
+	        if (mimeType == null) mimeType = "application/octet-stream";
+	        response.setContentType(mimeType);
+
+	        // 한글 포함 파일명 인코딩
+	        String encodedFileName = URLEncoder.encode(file.getName(), "UTF-8").replaceAll("\\+", "%20");
+
+	        // 브라우저 처리: 열기용으로 inline
+	        response.setHeader("Content-Disposition", "inline; filename*=UTF-8''" + encodedFileName);
+
+	        // 파일 전송
+	        try (FileInputStream fis = new FileInputStream(file);
+	             OutputStream os = response.getOutputStream()) {
+
+	            byte[] buffer = new byte[1024];
+	            int bytesRead;
+	            while ((bytesRead = fis.read(buffer)) != -1) {
+	                os.write(buffer, 0, bytesRead);
+	            }
+	            os.flush();
+	        }
+
+	    } catch (IOException e) {
+	        throw new RuntimeException("파일 다운로드 실패", e);
+	    }
+	}
+	
+	// 출석내역목록
+	@GetMapping("/professor/attendanceHistoryList")
+	public String attendanceHistoryList(HttpSession session, Model model, @RequestParam(defaultValue = "1") int currentPage, @RequestParam(required=false) Integer searchWord) {
+		Emp loginProfessor = getLoginProfessor(session);
+		
+		int rowPerPage = 10; 
+	    int pageBlock = 10; 
+		
+	    Map<String, Object> param = new HashMap<>();
+	    param.put("attNo", searchWord);                   
+	    param.put("beginRow", (currentPage - 1) * rowPerPage);
+	    param.put("rowPerPage", rowPerPage);
+	    
+		List<AttendanceHistory> historyList = professorService.attendanceHistoryList(param);
+		Integer  totalCount = professorService.getHistoryCount(param);
+		int total = (totalCount != null) ? totalCount : 0;
+		
+	    PageInfo pageInfo = getPageInfo(total, currentPage, rowPerPage, pageBlock);
+	    		
+	    List<Map<String,Object>> pageListWithCurrent = new ArrayList<>();
+	    for(int p : pageInfo.getPageList()) {
+	        Map<String,Object> m = new HashMap<>();
+	        m.put("page", p);
+	        m.put("isCurrent", p == pageInfo.getCurrentPage());
+	        pageListWithCurrent.add(m);
+	    }
+	    
+	 
+	    
+	    model.addAttribute("historyList", historyList);
+	    model.addAttribute("searchWord", (searchWord != null) ? searchWord : "");
+	    model.addAttribute("pageInfo", pageInfo);
+	    model.addAttribute("pageList", pageListWithCurrent);
+	    
+	    log.debug("historyList : " + historyList);
+	   	    
+		return "/professor/attendanceHistoryList";
+	}
 	
 	// 출석체크 폼
 	@GetMapping("/professor/addAttendance")
-	public String attendanceList(HttpSession session, Model model, int courseNo) {
+	public String addAttendance(HttpSession session, Model model, int courseNo) {
 		Emp loginProfessor = getLoginProfessor(session);
+		
 		List<CourseStudent> studentList = professorService.getStudentListByCourse(courseNo);
 		model.addAttribute("studentList", studentList);
 		model.addAttribute("courseNo", courseNo);
@@ -51,14 +181,22 @@ public class ProfessorController {
 	
 	// 출석체크 액션
 	@PostMapping("/professor/addAttendance")
-	public String attendanceList(HttpSession session, Model model, Attendance a) {
+	public String addAttendance(HttpSession session, @RequestParam("studentNo") int[] studentNos,
+	        @RequestParam("attState") String[] attStates, int courseNo) {
 		Emp loginProfessor = getLoginProfessor(session);
-		a.setEmpNo(loginProfessor.getEmpNo());
-		model.addAttribute("a", a);
 		
-		professorService.insertAttendance(a);
+		for (int i = 0; i < studentNos.length; i++) {
+	        Attendance a = new Attendance();
+	        a.setStudentNo(studentNos[i]);
+	        a.setAttState(attStates[i]);
+	        a.setCourseNo(courseNo);
+		    a.setEmpNo(loginProfessor.getEmpNo());
 		
-		return "redirect:/professor/addAttendance";
+		    professorService.insertAttendance(a);
+		    professorService.insertHistoryFromAddAttendance(a);
+		}   
+		
+		return "redirect:/professor/attendance";
 	}
 	
 	// 출석체크(강의목록)
@@ -305,6 +443,7 @@ public class ProfessorController {
         MultipartFile file = e.getEmpImgFile();
         if (file != null && !file.isEmpty()) {
             String ext = getExtension(file.getOriginalFilename()).toLowerCase();
+            List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif");
             if (!allowedExtensions.contains(ext)) {
                 log.warn("허용되지 않은 파일 형식: {}", file.getOriginalFilename());
                 return; // 기존 파일 유지
@@ -312,11 +451,11 @@ public class ProfessorController {
 
             // UUID로 새 파일명 생성
             String newFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            File dest = new File(uploadDir, newFileName);
-            dest.getParentFile().mkdirs();
+            File saveFile = new File(uploadDir, newFileName);
+            saveFile.getParentFile().mkdirs();
 
             try {
-                file.transferTo(dest);
+                file.transferTo(saveFile);
 
                 // 기존 파일 삭제
                 if (e.getEmpImg() != null && !e.getEmpImg().isBlank()) {

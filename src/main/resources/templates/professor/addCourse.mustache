@@ -2,12 +2,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>학습관리시스템</title>
-<link rel="stylesheet" href="/css/addCourse.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<title>학습관리시스템</title>
+    <link rel="stylesheet" href="/css/common.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/addCoursePF.css">
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-	<div class="main-content">
+   	<div class="main-content">
     <h2>강의 등록</h2>
     
     <div class="form-container">
@@ -22,7 +24,6 @@
                 <div class="form-group">
                     <label>학과</label>
                      <input type="number" class="form-input" name="deptNo" value="{{loginProfessor.deptNo}}" readonly>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label>정원</label>
@@ -46,8 +47,7 @@
                 <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList" class="cancel-btn">취소</a>
             </div>
         </form>
-    </div>
-</div>
+    	</div>
 <script>
 $(document).ready(function() {
     const $coursePeriod = $("input[name='coursePeriod']");

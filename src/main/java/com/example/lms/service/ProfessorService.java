@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.lms.dto.Attendance;
+import com.example.lms.dto.AttendanceHistory;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.Emp;
@@ -22,9 +23,35 @@ public class ProfessorService {
 	@Autowired
 	ProfessorMapper professorMapper;
 
+	// 출석 수정
+	public int updateHistory(AttendanceHistory ah) {
+		return professorMapper.updateHistory(ah);	
+	}
+	
+	public AttendanceHistory getHistoryByHN(int historyNo) {
+		return professorMapper.getHistoryByHN(historyNo);
+	}
+	
+	public int updateAttendanceFromUpdateHistory(AttendanceHistory ah) {
+		return professorMapper.updateAttendanceFromUpdateHistory(ah);
+	}
+	
+	// 출석내역목록
+	public List<AttendanceHistory> attendanceHistoryList(Map<String, Object> param) {
+		return professorMapper.attendanceHistoryList(param);
+	}
+	
+	public int getHistoryCount(Map<String, Object> param) {
+		return professorMapper.getHistoryCount(param);
+	}
+	
 	// 출석체크
 	public int insertAttendance(Attendance a) {
 		return professorMapper.insertAttendance(a);
+	}
+	
+	public int insertHistoryFromAddAttendance(Attendance a) {
+		return professorMapper.insertHistoryFromAddAttendance(a);
 	}
 	
 	// 출석체크(학생목록)
@@ -118,11 +145,7 @@ public class ProfessorService {
 
 
 
-
-
-
-
-
+	
 
 	
 }

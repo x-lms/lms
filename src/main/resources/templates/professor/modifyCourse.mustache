@@ -9,10 +9,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-    {{ >layouts/header }}
-    <div class="container">
-        {{ >layouts/navProfessor }}
-        <div class="main-content">
+      <div class="main-content">
             <h2>강의 수정</h2>
 
             <div class="form-container">
@@ -52,10 +49,6 @@
                     </div>
                 </form>
             </div>
-        </div>
-    </div>
-    {{ >layouts/footer }}
-
 <script>
 $(document).ready(function() {
     const $coursePeriod = $("input[name='coursePeriod']");

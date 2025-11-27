@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.lms.dto.Attendance;
+import com.example.lms.dto.AttendanceHistory;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.Emp;
@@ -15,8 +16,18 @@ import com.example.lms.dto.Student;
 @Mapper
 public interface ProfessorMapper {
 	
+	// 출석 수정
+	int updateHistory(AttendanceHistory ah);
+	int updateAttendanceFromUpdateHistory(AttendanceHistory ah);
+	AttendanceHistory getHistoryByHN(int historyNo);
+	
+	// 출석내역목록
+	List<AttendanceHistory> attendanceHistoryList(Map<String, Object> param);
+	int getHistoryCount(Map<String, Object> param);
+	
 	// 출석체크
 	int insertAttendance(Attendance a);
+	int insertHistoryFromAddAttendance(Attendance a);
 	
 	// 출석체크 (학생리스트)
 	List<CourseStudent> getStudentListByCourse(int courseNo);
@@ -45,8 +56,7 @@ public interface ProfessorMapper {
 	Emp professorInfo(int empNo);
 	// 내 정보 수정
 	int updateProfessorInfo(Emp e);
+	
 
-
-
-
+	
 }

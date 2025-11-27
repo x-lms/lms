@@ -128,7 +128,7 @@ tbody tr:last-child td {
 tbody td:nth-child(2) {
     font-weight: 500;
     color: #1f2937;
-    text-align: left;
+    text-align: center;
 }
 
 /* 페이지네이션 */

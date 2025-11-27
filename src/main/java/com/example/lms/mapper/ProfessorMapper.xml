@@ -2,6 +2,79 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.ProfessorMapper">
 	
+	<!-- 출석수정 -->
+	<update id="updateHistory" parameterType="com.example.lms.dto.AttendanceHistory">
+		UPDATE attendance_history
+	    SET
+	        state_after = #{stateAfter},
+	        history_comment = #{historyComment},
+	        history_file = #{historyFile}
+	    WHERE history_no = #{historyNo};
+	</update>
+	
+	<update id="updateAttendanceFromUpdateHistory" parameterType="com.example.lms.dto.AttendanceHistory">
+	    UPDATE attendance
+	    SET
+	        att_state= #{stateAfter}
+	    WHERE att_no = #{attNo};
+	</update>
+	
+	<select id="getHistoryByHN" parameterType="int" resultType="com.example.lms.dto.AttendanceHistory">
+		SELECT
+		  	history_no historyNo,
+	        att_no attNo,
+	        course_no courseNo,
+	        state_before stateBefore,
+	        COALESCE(state_after, '') stateAfter,
+	        COALESCE(history_comment, '') historyComment,
+	       	history_file historyFile,
+	        createdate
+		FROM attendance_history
+		WHERE history_no = #{historyNo}
+	</select>
+	
+	<!-- 출석내역목록 -->
+	<select id="attendanceHistoryList" parameterType="map" resultType="com.example.lms.dto.AttendanceHistory">
+		SELECT
+		  	history_no historyNo,
+	        att_no attNo,
+	        course_no courseNo,
+	        state_before stateBefore,
+	        COALESCE(state_after, '') stateAfter,
+	        COALESCE(history_comment, '') historyComment,
+	       	history_file historyFile,
+	        createdate
+		FROM attendance_history
+		<where>
+	        <if test="attNo != null">
+	            att_no = #{attNo}
+	        </if>
+	    </where>
+		order by att_no desc
+		limit #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<select id="getHistoryCount" parameterType="map" resultType="int">
+		select count(*)
+		from attendance_history
+		<where>
+	        <if test="attNo != null">
+	            att_no = #{attNo}
+	        </if>
+	    </where>
+	</select>
+	
+	<!-- 출석체크 -->
+	<insert id="insertAttendance" parameterType="com.example.lms.dto.Attendance" useGeneratedKeys="true" keyProperty="attNo">
+		INSERT INTO attendance(student_no, course_no, emp_no, att_date, att_state)
+		VALUES (#{studentNo}, #{courseNo}, #{empNo}, SYSDATE(), #{attState});
+	</insert>	
+	
+	<insert id="insertHistoryFromAddAttendance" parameterType="com.example.lms.dto.Attendance">
+	    INSERT INTO attendance_history(att_no, course_no, state_before)
+	    VALUES (#{attNo}, #{courseNo}, #{attState})  
+	</insert>
+	
 	<!-- 출석체크(학생리스트) -->
 	<select id="getStudentListByCourse" parameterType="int" resultType="com.example.lms.dto.CourseStudent">
 	    SELECT 
@@ -16,14 +89,8 @@
 	    JOIN course_student cs ON s.student_no = cs.student_no
 	    WHERE cs.course_no = #{courseNo}
 	    ORDER BY s.student_name ASC
-</select>
-	
-	<!-- 출석체크 -->
-	<insert id="insertAttendance" parameterType="com.example.lms.dto.Attendance">
-		INSERT INTO attendance(student_no, course_no, emp_no, att_date, att_state)
-		VALUES (#{studentNo}, #{courseNo}, #{empNo}, SYSDATE(), #{attState});
-	</insert>	
-		
+	</select>
+			
 	<!-- 출석체크(강의목록) -->	
 	<select id="getAttandance" parameterType="map" resultType="com.example.lms.dto.Course">
 		select
