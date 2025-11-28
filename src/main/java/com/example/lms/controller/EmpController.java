@@ -71,4 +71,15 @@ public class EmpController {
 	}
 	
 	// 공지사항 삭제
+	@PostMapping("/emp/deleteNotice")
+	public String deleteNotice(int noticeNo, HttpServletRequest request) {
+		String uploadPath = request.getServletContext().getRealPath("/upload");
+		empService.deleteNotice(noticeNo, uploadPath);
+		 return "redirect:/public/noticeList";
+	}
+	// 교수 추가
+	@GetMapping("/emp/addProfessor")
+	public String addProfessor() {
+		return "/emp/addProfessor";
+	}
 }

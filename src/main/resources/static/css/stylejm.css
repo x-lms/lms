@@ -703,6 +703,63 @@
 	border-radius: 4px;
 }
 
+/* 이메일 입력 그룹 */
+.email-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.email-prefix {
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.email-prefix:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.email-separator {
+    font-size: 16px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.email-domain {
+    padding: 12px 14px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #6b7280;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* 셀렉트 박스 */
+.form-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+    background: white;
+    cursor: pointer;
+}
+
+.form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
 .btn-file-delete {
 	padding: 6px 14px;
 	background: white;

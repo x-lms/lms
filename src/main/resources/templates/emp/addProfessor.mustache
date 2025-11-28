@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습관리시스템 - 교수 추가</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+    <!-- include -->
+    {{>layouts/header}}
+    <div class="container">
+        {{>layouts/navEmp}}
+        <div class="main-content">
+            <div class="page-header">
+                <h2 class="page-title">교수 추가</h2>
+            </div>
+            
+            <div class="notice-form-container">
+                <form class="notice-form" action="/professor/add" method="post">
+                    <div class="form-row">
+                        <label class="form-label required">이름</label>
+                        <input type="text" name="empName" class="form-input" placeholder="교수 이름을 입력하세요" required>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label required">이메일</label>
+                        <div class="email-input-group">
+                            <input type="text" name="empEmailPrefix" class="email-prefix" placeholder="이메일" required>
+                            <span class="email-separator">@</span>
+                            <span class="email-domain">kru.com</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label required">비밀번호</label>
+                        <input type="password" name="empPw" class="form-input" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label required">학과</label>
+                        <select name="deptNo" class="form-select" required>
+                            <option value="">학과를 선택하세요</option>
+                            <option value="1">컴퓨터공학과</option>
+                            <option value="2">경영학과</option>
+                            <option value="3">전자공학과</option>
+                            <option value="4">기계공학과</option>
+                            <option value="5">화학공학과</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="/professor" class="btn-secondary">취소</a>
+                        <button type="submit" class="btn-primary">등록</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{>layouts/footer}}
+</body>
+</html>

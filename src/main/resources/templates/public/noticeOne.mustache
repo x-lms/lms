@@ -55,7 +55,9 @@
 						{{/fileList}}
 					</ul>
 				</div>
-
+				<form id="deleteForm" action="{{springMacroRequestContext.request.contextPath}}/emp/deleteNotice" method="post">
+					<input type="hidden" name="noticeNo" value="{{noticeNo}}">
+				</form>
 				<div class="notice-detail-actions">
 					<a href="{{springMacroRequestContext.request.contextPath}}/public/noticeList" class="btn-secondary">목록</a>
 					<div class="action-right">
@@ -67,12 +69,11 @@
 		</div>
 	</div>
 	{{>layouts/footer}}
-
+	
 	<script>
 		function deleteNotice() {
-			if(confirm('공지사항을 삭제하시겠습니까?')) {
-				// 삭제 로직
-				location.href = '{{springMacroRequestContext.request.contextPath}}/emp/deleteNotice';
+			if (confirm('공지사항을 삭제하시겠습니까?')) {
+				document.getElementById('deleteForm').submit();
 			}
 		}
 	</script>

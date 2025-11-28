@@ -14,7 +14,7 @@
 	</update>
 	
 	<!-- 공지사항 삭제 -->
-	<delete id="deleteNotice" parameterType="com.example.lms.dto.Notice">
+	<delete id="deleteNotice" parameterType="int">
 		DELETE FROM notice WHERE notice_no = #{noticeNo}
 	</delete>
 	
@@ -27,5 +27,8 @@
 	<!-- 공지사항 파일 삭제 -->
 	<delete id="deleteNoticeFile" parameterType="com.example.lms.dto.NoticeFile">
 		DELETE FROM notice_file WHERE file_no = #{fileNo}
+	</delete>
+	<delete id="deleteNoticeFileByNoticeNo" parameterType="int">
+		DELETE FROM notice_file WHERE notice_no = #{noticeNo}
 	</delete>
 </mapper>

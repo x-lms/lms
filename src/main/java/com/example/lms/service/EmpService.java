@@ -1,17 +1,21 @@
 package com.example.lms.service;
 
 import java.io.File;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.lms.dto.*;
+import com.example.lms.dto.Notice;
+import com.example.lms.dto.NoticeFile;
 import com.example.lms.mapper.EmpMapper;
 import com.example.lms.mapper.PublicMapper;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 @Transactional
 public class EmpService {
@@ -86,6 +90,37 @@ public class EmpService {
 				throw new RuntimeException("파일 저장 실패: " + originName, e);
 			}
 		}
+	}
+	
+	public void deleteNotice(int noticeNo, String uploadPath) {
+		// 1) notice에 연결된 파일 목록 조회
+		List<NoticeFile> files = publicMapper.selectNoticeFile(noticeNo);
+		
+		// 2) 물리파일 삭제 시도 (실패해도 로그만 남기고 진행)
+		if (files != null && !files.isEmpty()) {
+			for(NoticeFile nf : files) {
+				try {
+					if(nf.getFileName() != null) {
+						File f = new File(uploadPath, nf.getFileName());
+						if(f.exists()) {
+							boolean deleted = f.delete();
+							if(!deleted) {
+								// 삭제 실패 : 로그로 남김
+								log.debug("파일삭제 실패: " + f.getAbsolutePath());
+							}
+						}
+					}
+				} catch(Exception e) {
+					log.debug("파일 삭제 주 예외: " + e.getMessage());
+				}
+			}
+		}
+		
+		// 3) notice_file 삭제
+		empMapper.deleteNoticeFileByNoticeNo(noticeNo);
+		
+		// 4) 공지 테이블에서 삭제
+		empMapper.deleteNotice(noticeNo);
 	}
 }
 
