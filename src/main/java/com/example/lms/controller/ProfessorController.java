@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,13 +24,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.lms.dto.Attendance;
 import com.example.lms.dto.AttendanceHistory;
+import com.example.lms.dto.AttendanceSummary;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Dept;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.PageInfo;
+import com.example.lms.dto.Project;
 import com.example.lms.dto.Student;
+import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.DeptService;
 import com.example.lms.service.ProfessorService;
 
@@ -49,6 +53,39 @@ public class ProfessorController {
 	// 파일 위치, 확장자
 	private final String uploadDir = "C:/lms/uploads";
 		
+	// 과제목록
+	@GetMapping("/professor/projectList")
+	public String projectList(HttpSession session, Model model,Project p, @RequestParam(defaultValue = "1") int currentPage) {
+		Emp loginProfessor = getLoginProfessor(session);
+		
+		int rowPerPage = 10;       // 한 페이지에 표시할 강의 수
+	    int pageBlock = 10;        // 한 블록에 표시할 페이지 수
+
+	    // 강의 리스트
+	    List<Project> projectList = professorService.projectListByPage(loginProfessor.getEmpNo(), currentPage);
+
+	    // 전체 강의 수
+	    int totalCount = professorService.getProjectCount(loginProfessor.getEmpNo());
+
+	    // PageInfo 생성
+	    PageInfo pageInfo = getPageInfo(totalCount, currentPage, rowPerPage, pageBlock);
+
+	    // Mustache에서 편하게 쓰기 위해 pageList에 isCurrent 표시
+	    List<Map<String,Object>> pageListWithCurrent = new ArrayList<>();
+	    for(int page : pageInfo.getPageList()) {
+	        Map<String,Object> m = new HashMap<>();
+	        m.put("page", page);
+	        m.put("isCurrent", page == pageInfo.getCurrentPage());
+	        pageListWithCurrent.add(m);
+	    }
+	    log.debug("projectList : " + projectList);
+
+	    model.addAttribute("projectList", projectList);
+	    model.addAttribute("pageInfo", pageInfo);
+	    model.addAttribute("pageList", pageListWithCurrent);
+		return "professor/projectList";
+	}
+	
 	// 출석수정 폼
 	@GetMapping("/professor/modifyHistory")
 	public String updateHistory(HttpSession session, Model model, int historyNo) {
@@ -178,12 +215,14 @@ public class ProfessorController {
 	@GetMapping("/professor/addAttendance")
 	public String addAttendance(HttpSession session, Model model, int courseNo) {
 		Emp loginProfessor = getLoginProfessor(session);
-		
-		List<CourseStudent> studentList = professorService.getStudentListByCourse(courseNo);
-		model.addAttribute("studentList", studentList);
-		model.addAttribute("courseNo", courseNo);
-							
-		return "professor/addAttendance";
+
+	    // 학생 + 출석 요약
+	    List<CourseStudent> studentList = professorService.getStudentListByCourse(courseNo);
+
+	    model.addAttribute("studentList", studentList);
+	    model.addAttribute("courseNo", courseNo);
+
+	    return "professor/addAttendance";
 	}
 	
 	// 출석체크 액션
@@ -434,8 +473,17 @@ public class ProfessorController {
 	
 	// 교수 홈
 	@GetMapping("/professor/professorHome")
-	public String professorHome(HttpSession session) {
+	public String professorHome(HttpSession session,  Model model) {
 		Emp loginProfessor = getLoginProfessor(session);
+		
+		// 1. 강의 시간표
+	    List<TimetableCell> timetable = professorService.getFullTimetable(loginProfessor.getEmpNo());
+	    model.addAttribute("timetable", timetable);
+
+	    // 2. 학사 일정 / 달력
+	    // List<Map<String, String>> schedule = professorService.getProfessorSchedule();
+	    // model.addAttribute("schedule", schedule);
+		
 		return "professor/professorHome";
 	}
 	

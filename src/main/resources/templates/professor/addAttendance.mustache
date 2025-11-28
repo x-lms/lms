@@ -25,6 +25,7 @@
                     <th>이름</th>
                     <th>이메일</th>
                     <th>전화번호</th>
+                    <th>총 출결현황</th>
                     <th>출석 상태</th>
                 </tr>
             </thead>
@@ -39,7 +40,12 @@
                     <td>{{studentName}}</td>
                     <td>{{studentEmail}}</td>
                     <td>{{studentPhone}}</td>
-                    <td>
+                    <td>출석일: {{attendanceSummary.total}} <br>
+					    결석일: {{attendanceSummary.absent}} <br>
+					    지각일: {{attendanceSummary.late}} <br>
+					    조퇴일: {{attendanceSummary.early}}
+					</td>
+					<td>
                         <select name="attState">
                         	<option value="">선택</option>
                             <option value="출석">출석</option>

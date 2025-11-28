@@ -2,6 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.ProfessorMapper">
 	
+	<!-- 과제목록 -->
+	<select id="projectListByPage" parameterType="map" resultType="com.example.lms.dto.Project">
+		select 
+			project_no projectNo,
+			course_no courseNo,
+			project_name projectName,
+			emp_no empNo,
+			project_deadline projectDeadline
+		from project
+		where emp_no = #{empNo}
+		order by project_no = #{projectNo}
+		limit #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<select id="getProjectCount" parameterType="map" resultType="com.example.lms.dto.Project">
+		select count(*)
+		from project
+		where emp_no = #{empNo}
+	</select>
+	
 	<!-- 출석수정 -->
 	<update id="updateHistory" parameterType="com.example.lms.dto.AttendanceHistory">
 		UPDATE attendance_history
@@ -92,6 +112,20 @@
 	    WHERE cs.course_no = #{courseNo}
 	    ORDER BY s.student_name ASC
 	</select>
+	<!-- 총 출결상태 -->	
+	<select id="getAttendanceSummaryByCourse" parameterType="int" resultType="com.example.lms.dto.AttendanceSummary">
+	    SELECT 
+	        cs.student_no studentNo,
+	        COUNT(a.att_no) total,                     
+	        SUM(CASE WHEN a.att_state = '결석' THEN 1 ELSE 0 END) absent,
+	        SUM(CASE WHEN a.att_state = '지각' THEN 1 ELSE 0 END) late,
+	        SUM(CASE WHEN a.att_state = '조퇴' THEN 1 ELSE 0 END) early
+	    FROM course_student cs
+	    LEFT JOIN attendance a 
+	    ON cs.student_no = a.student_no AND cs.course_no = a.course_no
+	    WHERE cs.course_no = #{courseNo}
+	    GROUP BY cs.student_no
+	</select>		
 			
 	<!-- 출석체크(강의목록) -->	
 	<select id="getAttandance" parameterType="map" resultType="com.example.lms.dto.Course">
@@ -257,6 +291,32 @@
 			emp_birth empBirth, emp_phone empPhone, emp_img empImg 
 		from emp
 		where emp_no = #{empNo}
+	</select>
+
+	<!-- 교수 시간표(홈 화면) -->
+	<select id="selectAllCourseTimes" parameterType="int" resultType="com.example.lms.dto.CourseTime">
+	    SELECT 
+	        ct.course_time_no courseTimeNo,
+	        c.course_name courseName,
+	        ct.course_location courseLocation,
+	        ct.course_date coursedate,
+	        ct.course_time_start courseTimeStart,
+	        ct.course_time_end courseTimeEnd
+	    FROM course_time ct
+	    JOIN course c ON ct.course_no = c.course_no
+	    WHERE c.emp_no = #{empNo}
+	    ORDER BY ct.course_time_start
+	</select>
+	
+	<!-- 전체 학사 일정 -->
+	<select id="getAcademicSchedule" resultType="map">
+	    SELECT 
+	    	schedule_no schedulNo,
+	    	schedule_writer scheduleWriter,
+	    	schedule_title scheduleTitle,
+	    	schedule_contents scheduleContents,
+	    	schedule_date scheduleDate
+	    FROM schedule 
 	</select>
 
 </mapper>

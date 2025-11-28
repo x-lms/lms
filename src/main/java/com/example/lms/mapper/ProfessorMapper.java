@@ -7,15 +7,22 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.example.lms.dto.Attendance;
 import com.example.lms.dto.AttendanceHistory;
+import com.example.lms.dto.AttendanceSummary;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
+import com.example.lms.dto.Project;
 import com.example.lms.dto.Student;
+import com.example.lms.dto.TimetableCell;
 
 
 @Mapper
 public interface ProfessorMapper {
+	
+	// 과제 목록
+	List<Project> projectListByPage(Map<String, Object> m);
+	int getProjectCount(Map<String, Object> m);
 	
 	// 출석 수정
 	int updateHistory(AttendanceHistory ah);
@@ -32,6 +39,8 @@ public interface ProfessorMapper {
 	
 	// 출석체크 (학생리스트)
 	List<CourseStudent> getStudentListByCourse(int courseNo);
+	// 총 출결상태
+	List<AttendanceSummary> getAttendanceSummaryByCourse(int courseNo);
 	
 	// 출석체크 (강의목록)
 	List<Course> getAttandance(Map<String, Object> m);
@@ -62,6 +71,12 @@ public interface ProfessorMapper {
 	Emp professorInfo(int empNo);
 	// 내 정보 수정
 	int updateProfessorInfo(Emp e);
+	
+	// 홈 화면
+	List<CourseTime> selectAllCourseTimes(int empNo);
+	List<Map<String, String>> getProfessorSchedule();
+	
+	
 	
 	
 

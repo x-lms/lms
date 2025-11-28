@@ -1,5 +1,6 @@
 package com.example.lms.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,11 +10,14 @@ import org.springframework.stereotype.Service;
 
 import com.example.lms.dto.Attendance;
 import com.example.lms.dto.AttendanceHistory;
+import com.example.lms.dto.AttendanceSummary;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
+import com.example.lms.dto.Project;
 import com.example.lms.dto.Student;
+import com.example.lms.dto.TimetableCell;
 import com.example.lms.mapper.ProfessorMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +28,27 @@ import lombok.extern.slf4j.Slf4j;
 public class ProfessorService {
 	@Autowired
 	ProfessorMapper professorMapper;
+	
+	// 과제 목록
+	public List<Project> projectListByPage(int empNo, int currentPage) {
+		int rowPerPage = 10;
+		int beginRow = (currentPage - 1) * rowPerPage;
+		Map<String, Object> m = new HashMap<>();
+		m.put("empNo", empNo);
+		m.put("rowPerPage", rowPerPage);
+		m.put("beginRow", beginRow);
+		List<Project> projectList = professorMapper.projectListByPage(m);
+		
+		return projectList;
+	}
+	
+	public int getProjectCount(int empNo) {
+		Map<String, Object> m = new HashMap<>();
+		m.put("empNo", empNo);
+		return professorMapper.getProjectCount(m);
+	}
 
+	
 	// 출석 수정
 	public int updateHistory(AttendanceHistory ah) {
 		return professorMapper.updateHistory(ah);	
@@ -56,11 +80,28 @@ public class ProfessorService {
 		return professorMapper.insertHistoryFromAddAttendance(a);
 	}
 	
-	// 출석체크(학생목록)
+	// 출석체크(학생목록) 출결상태
 	public List<CourseStudent> getStudentListByCourse(int courseNo) {
-		return professorMapper.getStudentListByCourse(courseNo);
+		List<CourseStudent> studentList = professorMapper.getStudentListByCourse(courseNo);
+        List<AttendanceSummary> summaryList = professorMapper.getAttendanceSummaryByCourse(courseNo);
+
+        // Map으로 변환
+        Map<Integer, AttendanceSummary> summaryMap = new HashMap<>();
+        for (AttendanceSummary s : summaryList) {
+            // 지각 3회 -> 결석 1회
+            s.setAbsent(s.getAbsent() + s.getLate() / 3);
+            s.setTotal(s.getTotal() - s.getAbsent());
+            summaryMap.put(s.getStudentNo(), s);
+        }
+
+        // 학생 DTO에 AttendanceSummary 연결
+        for (CourseStudent cs : studentList) {
+            cs.setAttendanceSummary(summaryMap.get(cs.getStudentNo()));
+        }
+
+        return studentList;
 	}
-	
+		
 	// 출석체크(강의목록)
 	public List<Course> getAttendance(int empNo) {
 		Map<String, Object> m = new HashMap<>();
@@ -161,15 +202,59 @@ public class ProfessorService {
 	public Emp professorInfo(int empNo) {
 		return professorMapper.professorInfo(empNo);
 	}
-
 	
+	// 홈 화면
+	public List<TimetableCell> getFullTimetable(int empNo) {
+		List<CourseTime> courseTimes  = professorMapper.selectAllCourseTimes(empNo);
+		
+		// 1~9교시 기본 셀 생성
+	    List<TimetableCell> timetable = new ArrayList<>();
+	    for (int i = 1; i <= 9; i++) {
+	        TimetableCell cell = new TimetableCell();
+	        cell.setPeriod(i);
+	        timetable.add(cell);
+	    }
 
-	
+	    // 각 CourseTime을 맞는 교시에 채우기
+	    for (CourseTime ct : courseTimes) {
+	        int period = getPeriodFromTime(ct.getCourseTimeStart());
+	        if (period <= 0 || period > 9) continue;
 
+	        TimetableCell cell = timetable.get(period - 1); // 0-based
+	        switch (ct.getCoursedate()) {
+	            case "월": cell.setMon(ct.getCourseName()); break;
+	            case "화": cell.setTue(ct.getCourseName()); break;
+	            case "수": cell.setWed(ct.getCourseName()); break;
+	            case "목": cell.setThu(ct.getCourseName()); break;
+	            case "금": cell.setFri(ct.getCourseName()); break;
+	        }
+	    }
+		
+		return timetable;
+	}
 
-
-
-	
+	 // 시간별 교시 매핑
+    private int getPeriodFromTime(String startTime) {
+        // startTime 형식: "09:00"
+        int hour = Integer.parseInt(startTime.split(":")[0]);
+        switch (hour) {
+            case 9: return 1;
+            case 10: return 2;
+            case 11: return 3;
+            case 12: return 4;
+            case 13: return 5;
+            case 14: return 6;
+            case 15: return 7;
+            case 16: return 8;
+            case 17: return 9;
+            default: return 0; // 범위 밖
+        }
+    }
+    
+    // 캘린더
+	public List<Map<String, String>> getProfessorSchedule() {		
+		return professorMapper.getProfessorSchedule();
+	}
 
 	
 }

@@ -12,4 +12,6 @@ public class CourseStudent {
     private String studentPhone;
     private String studentState;
     private String studentImg;
+    
+    private AttendanceSummary attendanceSummary;
 }
