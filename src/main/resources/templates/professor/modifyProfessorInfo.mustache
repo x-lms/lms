@@ -22,9 +22,14 @@
 		</p>
         
         <p>
-            <label>학과 번호: </label>
-            <input type="text" name="deptNo" value="{{e.deptNo}}">
-        </p>
+		    <label>학과 선택: </label>
+		    <select name="deptNo">
+			    <option value="" {{#noDeptSelected}}selected{{/noDeptSelected}}>학과 없음</option>
+			    {{#deptList}}
+			        <option value="{{deptNo}}" {{#selected}}selected{{/selected}}>{{deptName}}</option>
+			    {{/deptList}}
+			</select>>
+		</p>
 
         <p>
             <label>비밀번호: </label>

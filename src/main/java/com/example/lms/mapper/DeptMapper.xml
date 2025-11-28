@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.lms.mapper.DeptMapper">
+	
+	<select id="getDeptList" resultType="com.example.lms.dto.Dept">
+		select
+			dept_no deptNo,
+			dept_name deptName	 
+		from dept
+		order by dept_no desc
+	</select>
+	
+	<select id="getDeptByNo" parameterType="int" resultType="com.example.lms.dto.Dept">
+		select
+			dept_no deptNo,
+			dept_name deptName	 
+		from dept
+		where dept_no = #{deptNo}
+	</select>	
+	
+</mapper>

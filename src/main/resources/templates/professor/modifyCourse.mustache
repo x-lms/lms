@@ -37,7 +37,20 @@
                         <input type="text" class="form-input" name="coursePeriod" maxlength="17" value="{{c.coursePeriod}}" placeholder="예: 2024-03 ~ 2024-06" required>
                         <span class="help-text format">형식: YYYY-MM ~ YYYY-MM</span>
                     </div>
-
+						
+					<div class="form-group">
+					    <label>강의시간(요일, 시작시간, 종료시간) / 위치 <span class="required">*</span></label>
+					    <div class="form-row">
+					        <select class="form-input" name="coursedate" required>
+							    {{{dayOptions}}}  <!-- Mustache triple braces 사용: HTML 그대로 출력 -->
+							</select>
+					
+					        <input type="time" class="form-input" name="courseTimeStart" value="{{ct.courseTimeStart}}" required>
+					        <input type="time" class="form-input" name="courseTimeEnd" value="{{ct.courseTimeEnd}}" required>
+					        <input type="text" class="form-input" name="courseLocation" value="{{ct.courseLocation}}" placeholder="강의실 위치" required>
+					    </div>
+					</div>
+						
                     <div class="form-group">
                         <label>강의 계획</label>
                         <textarea class="form-textarea" name="coursePlan" placeholder="강의 계획을 입력하세요">{{c.coursePlan}}</textarea>

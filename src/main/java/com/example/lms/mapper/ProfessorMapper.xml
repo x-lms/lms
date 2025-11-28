@@ -8,7 +8,8 @@
 	    SET
 	        state_after = #{stateAfter},
 	        history_comment = #{historyComment},
-	        history_file = #{historyFile}
+	        history_file = #{historyFile},
+	        history_file_original = #{historyFileOriginal}
 	    WHERE history_no = #{historyNo};
 	</update>
 	
@@ -43,6 +44,7 @@
 	        COALESCE(state_after, '') stateAfter,
 	        COALESCE(history_comment, '') historyComment,
 	       	history_file historyFile,
+	       	history_file_original historyFileOriginal,
 	        createdate
 		FROM attendance_history
 		<where>
@@ -104,22 +106,24 @@
 	<!-- 학생리스트 -->
 	<select id="studentListByPage" parameterType="map" resultType="com.example.lms.dto.Student">
 		SELECT
-		    student_no studentNo,
-		    dept_no deptNo,
-		    student_pw studentPw,
-		    student_name studentName,
-		    student_state studentState,
-		    student_address studentAddress,
-		    student_phone studentPhone,
-		    student_birth studentBirth,
-		    student_img studentImg,
-		    student_email studentEmail
-		FROM student
-		where dept_no = #{deptNo}
+		    s.student_no studentNo,
+		    s.dept_no deptNo,
+		    d.dept_name deptName,
+		    s.student_pw studentPw,
+		    s.student_name studentName,
+		    s.student_state studentState,
+		    s.student_address studentAddress,
+		    s.student_phone studentPhone,
+		    s.student_birth studentBirth,
+		    s.student_img studentImg,
+		    s.student_email studentEmail
+		FROM student s
+		JOIN dept d ON s.dept_no = d.dept_no
+		where s.dept_no = #{deptNo}
 			<if test="searchWord != null and searchWord != ''">
 			 and student_name like concat('%', #{searchWord},'%')
 			</if>
-		order by student_name asc
+		order by s.student_name asc
 		limit #{beginRow}, #{rowPerPage}
 	</select>
 	
@@ -138,6 +142,11 @@
 	    DELETE FROM course
 	    WHERE course_no = #{courseNo};
 	</delete>
+
+	<delete id="deleteCourseTime" parameterType="int">
+	    DELETE FROM course_time
+	    WHERE course_no = #{courseNo};
+	</delete>
 	
 	<!-- 강의 수정 -->
 	<update id="updateCourse" parameterType="com.example.lms.dto.Course">
@@ -150,6 +159,25 @@
 	    WHERE course_no = #{courseNo};
 	</update>	
 	
+	<select id="getCourseTime" parameterType="int" resultType="com.example.lms.dto.CourseTime">
+		SELECT
+	        course_time_no courseTimeNo, course_no courseNo,
+	        course_location courseLocation, course_date coursedate, 
+	        course_time_start courseTimeStart, course_time_end courseTimeEnd
+	    FROM course_time
+	    WHERE course_no = #{courseNo};
+	</select> 
+	
+	<update id="updateCourseTime" parameterType="com.example.lms.dto.CourseTime">
+	    UPDATE course_time
+	    SET
+	        course_location = #{courseLocation},
+	        course_date = #{coursedate},
+	        course_time_start = #{courseTimeStart},
+	        course_time_end = #{courseTimeEnd}
+	    WHERE course_no = #{courseNo};
+	</update>	
+	
 	<!-- 강의 상세보기 -->
 	<select id="courseOne" parameterType="int" resultType="com.example.lms.dto.Course">
 		SELECT
@@ -159,6 +187,15 @@
 	    FROM course
 	    WHERE course_no = #{courseNo};
 	</select>
+	
+	<select id="getCourseTimeList" parameterType="int" resultType="com.example.lms.dto.CourseTime">
+		SELECT
+	        course_time_no courseTimeNo, course_no courseNo,
+	        course_location courseLocation, course_date coursedate, 
+	        course_time_start courseTimeStart, course_time_end courseTimeEnd
+	    FROM course_time
+	    WHERE course_no = #{courseNo};
+	</select> 
 		
 	<!-- 강의등록 -->
 	<insert id="insertCourse" parameterType="com.example.lms.dto.Course" useGeneratedKeys="true" keyProperty="courseNo">
@@ -166,6 +203,13 @@
 			(course_name, dept_no, emp_no, max_cnt, current_cnt, course_period, course_plan)
 		values
 			(#{courseName}, #{deptNo}, #{empNo}, #{maxCnt}, 0, #{coursePeriod}, #{coursePlan})
+	</insert>
+
+	<insert id="insertCourseTime" parameterType="com.example.lms.dto.CourseTime">
+		insert into course_time
+			(course_no, course_location, course_date, course_time_start, course_time_end)
+		values
+			(#{courseNo}, #{courseLocation}, #{coursedate}, #{courseTimeStart}, #{courseTimeEnd})
 	</insert>
 	
 	<!-- 강의리스트 -->	

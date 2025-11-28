@@ -54,6 +54,33 @@
                     </div>
                 </div>
 
+	           <div class="detail-section">
+				   <h3 class="section-title">강의 시간표</h3>
+		   	  	    <table class="time-table">
+				        <thead>
+				            <tr>
+				                <th>요일</th>			           
+				                <th>시간</th>
+				                <th>강의실</th>
+				            </tr>
+				        </thead>
+				        <tbody>
+				            {{#courseTimeList}}
+				            <tr>
+				                <td>{{coursedate}}</td> 
+				                <td>{{courseTimeStart}} ~ {{courseTimeEnd}}</td>
+				                <td>{{courseLocation}}</td>
+				            </tr>
+				            {{/courseTimeList}}
+				            {{^courseTimeList}}
+				            <tr>
+				                <td colspan="4">강의 시간표가 등록되지 않았습니다.</td>
+				            </tr>
+				            {{/courseTimeList}}
+				        </tbody>
+			    	</table>
+				</div>
+			
                 <div class="detail-section">
                     <h3 class="section-title">강의 계획</h3>
                     <div class="plan-content">
@@ -61,6 +88,7 @@
                     </div>
                 </div>
             </div>
+            
 
             <div class="button-group">
                 <!-- 목록으로 이동 -->

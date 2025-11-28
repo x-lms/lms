@@ -13,6 +13,7 @@ public class AttendanceHistory {
 	private String stateAfter;
 	private String historyComment;
 	private String historyFile;
+	private String historyFileOriginal;
 	private MultipartFile newFile; 
 	private String createdate;
 }

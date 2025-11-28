@@ -76,7 +76,7 @@
 			<artifactId>mybatis-spring-boot-starter-test</artifactId>
 			<version>3.0.5</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency>	
 	</dependencies>
 
 	<build>

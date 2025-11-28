@@ -58,7 +58,25 @@
 							</div>
 							<div class="info-value">{{e.deptNo}}</div>
 						</div>
-
+						
+						<div class="info-item">
+						    <div class="info-label">
+						        <!-- 학과 아이콘 (사용 중인 아이콘 스타일과 통일) -->
+						        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8M8 15h8M4 7h.01M4 11h.01M4 15h.01M20 7h.01M20 11h.01M20 15h.01" />
+						        </svg>
+						        학과
+						    </div>
+						    <div class="info-value">
+						        {{#e.deptName}}
+						            {{e.deptName}}
+						        {{/e.deptName}}
+						        {{^e.deptName}}
+						            학과 없음
+						        {{/e.deptName}}
+						    </div>
+						</div>
+						
 						<div class="info-item">
 							<div class="info-label">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -7,7 +7,7 @@ public class CourseTime {
 	private int courseTimeNo;
 	private int courseNo;
 	private String courseLocation;
-	private String coursedate;
+	private String coursedate; // 요일
 	private String courseTimeStart;
 	private String courseTimeEnd;
 }

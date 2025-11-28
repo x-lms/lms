@@ -42,10 +42,28 @@
                 <textarea class="form-textarea" name="coursePlan" placeholder="강의 계획을 입력하세요"></textarea>
             </div>
             
+           <div class="form-group">
+			    <label>강의시간(요일,시작시간, 종료시간) / 위치 <span class="required">*</span></label>
+			    <div class="form-row">
+			        <select class="form-input" name="coursedate">
+			            <option value="월">월</option>
+			            <option value="화">화</option>
+			            <option value="수">수</option>
+			            <option value="목">목</option>
+			            <option value="금">금</option>
+			        </select>
+			       
+			        <input type="time" class="form-input" name="courseTimeStart">
+			        <input type="time" class="form-input" name="courseTimeEnd">
+			        
+			        <input type="text" class="form-input" name="courseLocation" placeholder="강의실 위치">
+			    </div>		    
+			</div>
+            
             <div class="button-group">
                 <button type="submit" class="submit-btn">등록</button>
                 <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList" class="cancel-btn">취소</a>
-            </div>
+            </div>	
         </form>
     	</div>
 <script>

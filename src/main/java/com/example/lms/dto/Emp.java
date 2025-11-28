@@ -7,7 +7,8 @@ import lombok.Data;
 @Data
 public class Emp {
 	private int empNo;
-	private int deptNo; 
+	private Integer deptNo; 
+	 private String deptName;
 	private int empRole;
 	private String empPw;
 	private String empName;

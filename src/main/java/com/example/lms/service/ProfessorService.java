@@ -11,11 +11,13 @@ import com.example.lms.dto.Attendance;
 import com.example.lms.dto.AttendanceHistory;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
+import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Student;
 import com.example.lms.mapper.ProfessorMapper;
 
 import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 @Service
@@ -94,10 +96,16 @@ public class ProfessorService {
 	public Course getCourseOne(int courseNo) {
 		return professorMapper.courseOne(courseNo);
 	}
+	public List<CourseTime> getCourseTimeList(int courseNo) {
+		return professorMapper.getCourseTimeList(courseNo);
+	}
 	
 	// 강의 등록
 	public int insertCourse(Course c) {
 		return professorMapper.insertCourse(c);		
+	}
+	public int insertCourseTime(CourseTime ct) {
+		return professorMapper.insertCourseTime(ct);		
 	}
 	
 	// 강의 수정
@@ -105,9 +113,20 @@ public class ProfessorService {
 		return professorMapper.updateCourse(c);		
 	}
 	
+	public CourseTime getCourseTime(int courseNo) {
+		return professorMapper.getCourseTime(courseNo);
+	}
+
+	public int updateCourseTime(CourseTime ct) {
+		return professorMapper.updateCourseTime(ct);			
+	}
+	
 	// 강의 삭제
 	public int deleteCourse(int courseNo) {
 		return professorMapper.deleteCourse(courseNo);		
+	}
+	public int deleteCourseTime(int courseNo) {
+		return professorMapper.deleteCourseTime(courseNo);		
 	}
 		
 	// 강의리스트
@@ -142,6 +161,11 @@ public class ProfessorService {
 	public Emp professorInfo(int empNo) {
 		return professorMapper.professorInfo(empNo);
 	}
+
+	
+
+	
+
 
 
 

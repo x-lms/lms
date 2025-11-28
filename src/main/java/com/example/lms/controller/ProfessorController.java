@@ -25,9 +25,12 @@ import com.example.lms.dto.Attendance;
 import com.example.lms.dto.AttendanceHistory;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
+import com.example.lms.dto.CourseTime;
+import com.example.lms.dto.Dept;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.PageInfo;
 import com.example.lms.dto.Student;
+import com.example.lms.service.DeptService;
 import com.example.lms.service.ProfessorService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,6 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ProfessorController {
 	@Autowired
 	ProfessorService professorService;
+	@Autowired
+	DeptService deptService;
 	
 	// 파일 위치, 확장자
 	private final String uploadDir = "C:/lms/uploads";
@@ -54,7 +59,7 @@ public class ProfessorController {
 		model.addAttribute("ah", ah);
 		
 				
-		return "/professor/modifyHistory";
+		return "professor/modifyHistory";
 	}
 	
 	// 출석수정 액션
@@ -65,8 +70,9 @@ public class ProfessorController {
 		// 새 파일 업로드 처리
 		MultipartFile newFile = ah.getNewFile();
 	    if (newFile != null && !newFile.isEmpty()) {
-	        // 유니크 파일명 생성
-	        String fileName = UUID.randomUUID().toString() + "_" + newFile.getOriginalFilename();
+	        
+	    	String originalName = newFile.getOriginalFilename(); // 원본 파일명
+	    	String fileName = UUID.randomUUID().toString() + "_" + originalName;
 
 	        File saveFile = new File(uploadDir, fileName);
 
@@ -78,6 +84,7 @@ public class ProfessorController {
 
 	        // DTO에 새 파일명 저장
 	        ah.setHistoryFile(fileName);
+	        ah.setHistoryFileOriginal(originalName);
 	    }
 	    	   
 	    // 데이터 수정
@@ -164,7 +171,7 @@ public class ProfessorController {
 	    
 	    log.debug("historyList : " + historyList);
 	   	    
-		return "/professor/attendanceHistoryList";
+		return "professor/attendanceHistoryList";
 	}
 	
 	// 출석체크 폼
@@ -176,7 +183,7 @@ public class ProfessorController {
 		model.addAttribute("studentList", studentList);
 		model.addAttribute("courseNo", courseNo);
 							
-		return "/professor/addAttendance";
+		return "professor/addAttendance";
 	}
 	
 	// 출석체크 액션
@@ -206,7 +213,7 @@ public class ProfessorController {
 		List<Course> courseList = professorService.getAttendance(loginProfessor.getEmpNo());
 		model.addAttribute("courseList", courseList);
 		log.debug("courseList : " + courseList);
-		return "/professor/attendance";
+		return "professor/attendance";
 	}
 	
 	// 학생리스트
@@ -219,7 +226,7 @@ public class ProfessorController {
 
 	    // 학생 리스트
 	    List<Student> studentList = professorService.studentListByPage(loginProfessor.getDeptNo(), currentPage, searchWord);
-
+	    	    
 	    // 전체 학생 수
 	    int totalCount = professorService.getStudentCount(loginProfessor.getDeptNo(), searchWord);
 
@@ -242,7 +249,7 @@ public class ProfessorController {
 	    model.addAttribute("pageInfo", pageInfo);
 	    model.addAttribute("pageList", pageListWithCurrent);
 	    
-		return "/professor/studentList";
+		return "professor/studentList";
 	}
 	
 	// 강의 상세보기
@@ -251,8 +258,11 @@ public class ProfessorController {
 		Emp loginProfessor = getLoginProfessor(session);
 		
 		Course course = professorService.getCourseOne(courseNo);
-		model.addAttribute("course", course);
-		return "/professor/courseOne";
+		List<CourseTime> courseTimeList = professorService.getCourseTimeList(courseNo);
+		    
+	    model.addAttribute("course", course);
+	    model.addAttribute("courseTimeList", courseTimeList);
+		return "professor/courseOne";
 	}
 	
 	
@@ -262,17 +272,33 @@ public class ProfessorController {
 		Emp loginProfessor = getLoginProfessor(session);
 		
 		Course c = professorService.getCourseOne(courseNo);
-		model.addAttribute("c", c);
+		CourseTime ct = professorService.getCourseTime(courseNo);
 		
-		return "/professor/modifyCourse";
+		// 서버에서 HTML option 태그 완전히 만들어서 보냄
+	    StringBuilder dayOptions = new StringBuilder();
+	    String[] days = {"월","화","수","목","금"};
+	    for(String day : days) {
+	        if(day.equals(ct.getCoursedate())) {
+	            dayOptions.append("<option value='").append(day).append("' selected>").append(day).append("</option>");
+	        } else {
+	            dayOptions.append("<option value='").append(day).append("'>").append(day).append("</option>");
+	        }
+	    }
+	    
+		model.addAttribute("c", c);
+		model.addAttribute("ct", ct);
+		model.addAttribute("dayOptions", dayOptions.toString());
+		
+		return "professor/modifyCourse";
 	}
 	
 	// 강의 수정 액션
 	@PostMapping("/professor/modifyCourse")
-	public String courseUpdate(HttpSession session, Course course) {
+	public String courseUpdate(HttpSession session, Course course, CourseTime ct) {
 		Emp loginProfessor = getLoginProfessor(session);
 
 	    professorService.updateCourse(course);
+	    professorService.updateCourseTime(ct);
 
 	    return "redirect:/professor/courseOne?courseNo=" + course.getCourseNo();
 	}
@@ -282,23 +308,30 @@ public class ProfessorController {
 	public String courseDelete(HttpSession session, int courseNo) {
 		Emp loginProfessor = getLoginProfessor(session);
 
+		professorService.deleteCourseTime(courseNo);
 	    professorService.deleteCourse(courseNo);
+	    
 	    return "redirect:/professor/courseList";
 	}
-	
+		
 	// 강의 등록 폼
 	@GetMapping("/professor/addCourse")
 	public String addCourse(HttpSession session) {
 		Emp loginProfessor = getLoginProfessor(session);
-		return "/professor/addCourse";
+		return "professor/addCourse";
 	}
 	
 	// 강의 등록 액션
 	@PostMapping("/professor/addCourse")
-	public String addCourse(HttpSession session, Course c) {
+	public String addCourse(HttpSession session, Course c, CourseTime ct) {	
 		Emp loginProfessor = getLoginProfessor(session);
 		
 		professorService.insertCourse(c);
+		
+		ct.setCourseNo(c.getCourseNo());
+		professorService.insertCourseTime(ct);
+		
+		log.debug("ct :" + ct);
 		
 		return "redirect:/professor/courseList";
 	}
@@ -335,7 +368,7 @@ public class ProfessorController {
 	    model.addAttribute("pageInfo", pageInfo);
 	    model.addAttribute("pageList", pageListWithCurrent);
 		
-		return "/professor/courseList";
+		return "professor/courseList";
 	}
 	
 	// 교수 정보 수정 폼	
@@ -345,8 +378,13 @@ public class ProfessorController {
 
         Emp e = professorService.professorInfo(loginProfessor.getEmpNo());
         normalizeEmpFields(e);
-
+        
+        List<Dept> deptList = deptService.getDeptList();
+        boolean noDeptSelected = (loginProfessor.getDeptNo() == null);
+              
         model.addAttribute("e", e);
+        model.addAttribute("noDeptSelected", noDeptSelected);
+        model.addAttribute("deptList", deptList);
 	    
 		return "professor/modifyProfessorInfo";
 	}
@@ -375,7 +413,18 @@ public class ProfessorController {
 	public String professorInfo(HttpSession session, Model model) {
 		Emp loginProfessor = getLoginProfessor(session);
 
+		
         Emp e = professorService.professorInfo(loginProfessor.getEmpNo());
+        // deptName 세팅
+        if (e.getDeptNo() != null) {
+            Dept dept = deptService.getDeptByNo(e.getDeptNo());
+            if (dept != null) {
+                e.setDeptName(dept.getDeptName());
+            } else {
+                e.setDeptName(null); // 존재하지 않으면 null
+            }
+        }
+        
         normalizeEmpFields(e);
 
         model.addAttribute("e", e);

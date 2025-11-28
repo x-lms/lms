@@ -7,6 +7,7 @@ import lombok.Data;
 public class Student {
 private int studentNo;
 private int deptNo;
+private String deptName;   // 추가
 private String studentPw;
 private String studentName;
 private String studentState; // 상태 (재학/휴학 등)

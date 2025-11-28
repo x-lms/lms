@@ -44,7 +44,7 @@
                     <td>{{historyComment}}</td>
                     <td>
 					    {{#historyFile}}
-					        현재 파일:
+					        현재 파일: {{historyFileOriginal}}
 					        <a href="/professor/downloadHistoryFile?fileName={{historyFile}}" target="_blank">열기</a> |
 					        <a href="/professor/downloadHistoryFile?fileName={{historyFile}}" download>다운로드</a>
 					    {{/historyFile}}

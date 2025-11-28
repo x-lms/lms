@@ -9,6 +9,7 @@ import com.example.lms.dto.Attendance;
 import com.example.lms.dto.AttendanceHistory;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
+import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Student;
 
@@ -41,12 +42,17 @@ public interface ProfessorMapper {
 	
 	// 강의 상세보기
 	Course courseOne(int courseNo);
+	List<CourseTime> getCourseTimeList(int courseNo);
 	// 강의등록
 	int insertCourse(Course c);
+	int insertCourseTime(CourseTime ct);
 	// 강의수정
 	int updateCourse(Course c);
+	CourseTime getCourseTime(int courseNo);
+	int updateCourseTime(CourseTime ct);
 	// 강의삭제
 	int deleteCourse(int courseNo);
+	int deleteCourseTime(int courseNo);
 	
 	// 강의리스트
 	List<Course> courseListByPage(Map<String, Object> m);
@@ -56,6 +62,9 @@ public interface ProfessorMapper {
 	Emp professorInfo(int empNo);
 	// 내 정보 수정
 	int updateProfessorInfo(Emp e);
+	
+	
+
 	
 
 	
