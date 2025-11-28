@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.lms.dto.Notice;
-import com.example.lms.dto.NoticeFile;
+import com.example.lms.dto.*;
 import com.example.lms.mapper.EmpMapper;
 import com.example.lms.mapper.PublicMapper;
 
@@ -92,6 +91,7 @@ public class EmpService {
 		}
 	}
 	
+	// 공지사항 삭제
 	public void deleteNotice(int noticeNo, String uploadPath) {
 		// 1) notice에 연결된 파일 목록 조회
 		List<NoticeFile> files = publicMapper.selectNoticeFile(noticeNo);
@@ -121,6 +121,39 @@ public class EmpService {
 		
 		// 4) 공지 테이블에서 삭제
 		empMapper.deleteNotice(noticeNo);
+	}
+	
+	// 학과 목록 불러오기
+	public List<Dept> getDeptList() {
+		return empMapper.selectDeptList();
+	}
+	
+	// 교수 추가
+	public void addProfessor(Emp emp) {
+		emp.setEmpRole(2);
+		empMapper.insertProfessor(emp);
+	}
+	
+	// 교수 목록
+	private static final int ROW_PER_PAGE = 15;	// 한 페이지에 교수 수
+	public List<ProfessorInfo> getProfessorList(int currentPage, String searchName, String searchDept) {
+		int beginRow = (currentPage - 1) * ROW_PER_PAGE;
+		SearchList sl = new SearchList();
+		sl.setBeginRow(beginRow);
+		sl.setRowPerPage(ROW_PER_PAGE);
+		sl.setSearchWord(searchName);
+		sl.setSearchCategory(searchDept);
+		
+		return empMapper.selectProfessorList(sl);
+	}
+	public int countPrf(String searchName, String searchDept) {
+		SearchList sl = new SearchList();
+		sl.setSearchWord(searchName);
+		sl.setSearchCategory(searchDept);
+		return empMapper.countProfessor(sl);
+	}
+	public int getRowPerPage() {
+		return ROW_PER_PAGE;
 	}
 }
 

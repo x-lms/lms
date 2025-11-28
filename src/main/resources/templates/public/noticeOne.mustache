@@ -13,7 +13,15 @@
 	<!-- include -->
 	{{>layouts/header}}
 	<div class="container">
-		{{>layouts/navEmp}}
+		{{#loginStudent}}
+			{{ >layouts/navStudent }}
+		{{/loginStudent}}
+		{{#loginProfessor}}
+			{{ >layouts/navProfessor }}
+		{{/loginProfessor}}
+		{{#loginEmp}}
+			{{ >layouts/navEmp }}
+		{{/loginEmp}}
 		<div class="main-content">
 			<div class="page-header">
 				<h2 class="page-title">공지사항</h2>
@@ -60,10 +68,12 @@
 				</form>
 				<div class="notice-detail-actions">
 					<a href="{{springMacroRequestContext.request.contextPath}}/public/noticeList" class="btn-secondary">목록</a>
-					<div class="action-right">
-						<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifyNotice?noticeNo={{noticeNo}}" class="btn-edit">수정</a>
-						<button type="button" class="btn-delete" onclick="deleteNotice()">삭제</button>
-					</div>
+					{{#loginEmp}}
+						<div class="action-right">
+							<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifyNotice?noticeNo={{noticeNo}}" class="btn-edit">수정</a>
+							<button type="button" class="btn-delete" onclick="deleteNotice()">삭제</button>
+						</div>
+					{{/loginEmp}}
 				</div>
 			</div>
 		</div>

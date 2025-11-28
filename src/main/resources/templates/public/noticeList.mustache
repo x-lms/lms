@@ -13,7 +13,15 @@
 	<!-- include -->
 	{{ >layouts/header }}
 	<div class="container">
-		{{ >layouts/navEmp }}
+		{{#loginStudent}}
+			{{ >layouts/navStudent }}
+		{{/loginStudent}}
+		{{#loginProfessor}}
+			{{ >layouts/navProfessor }}
+		{{/loginProfessor}}
+		{{#loginEmp}}
+			{{ >layouts/navEmp }}
+		{{/loginEmp}}
 		<div class="main-content">
 			<div class="page-header">
 				<h2 class="page-title">공지사항</h2>
@@ -34,8 +42,8 @@
 			            <tr>
 			                <th class="col-num">번호</th>
 			                <th>제목</th>
-			                <th class="col-author">작성자</th>
-			                <th class="col-date">등록일</th>
+			                <th class="col100">작성자</th>
+			                <th class="col100">등록일</th>
 			            </tr>
 			        </thead>
 			        <tbody>
@@ -48,15 +56,17 @@
 									<span class="badge badge-new">NEW</span>
 								{{/isNew}}
 							</td>
-							<td class="col-author">{{notice.noticeWriter}}</td>
-							<td class="col-date">{{notice.createdate}}</td>
+							<td class="col100">{{notice.noticeWriter}}</td>
+							<td class="col100">{{notice.createdate}}</td>
 						</tr>
 			        {{/noticeList}}
 			        </tbody>
 			    </table>
-			    <div class="btn-box">
-			    	<a href="{{springMacroRequestContext.request.contextPath}}/emp/addNotice" class="add-btn">추가</a>
-			    </div>
+			    {{#loginEmp}}
+				    <div class="btn-box">
+				    	<a href="{{springMacroRequestContext.request.contextPath}}/emp/addNotice" class="add-btn">추가</a>
+				    </div>
+			    {{/loginEmp}}
 			    <div class="pagination">
 					{{#prePage}}
 						 <a href="{{springMacroRequestContext.request.contextPath}}/public/noticeList?currentPage={{prePage}}&searchWord={{searchWord}}" class="page-btn">이전</a>

@@ -100,18 +100,27 @@
 	background: #f8fafc;
 }
 
+.col-name {
+	text-align: center;
+}
+
 .col-num {
 	width: 70px;
 	text-align: center;
 }
 
-.col-author {
+.col100 {
 	width: 100px;
 	text-align: center;
 }
 
-.col-date {
-	width: 100px;
+.col150 {
+	width: 150px;
+	text-align: center;
+}
+
+.col200 {
+	width: 200px;
 	text-align: center;
 }
 
@@ -545,6 +554,8 @@
 	border-radius: 12px;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	padding: 30px;
+	max-width: 800px;
+	margin: 0 auto;
 }
 
 .form-actions {
@@ -705,59 +716,76 @@
 
 /* 이메일 입력 그룹 */
 .email-input-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .email-prefix {
-    flex: 1;
-    padding: 12px 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.3s ease;
+	flex: 1;
+	padding: 12px 14px;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	font-size: 14px;
+	outline: none;
+	transition: all 0.3s ease;
 }
 
 .email-prefix:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+	border-color: #3b82f6;
+	box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .email-separator {
-    font-size: 16px;
-    color: #6b7280;
-    font-weight: 600;
+	font-size: 16px;
+	color: #6b7280;
+	font-weight: 600;
 }
 
 .email-domain {
-    padding: 12px 14px;
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #6b7280;
-    min-width: 100px;
-    text-align: center;
+	padding: 12px 14px;
+	background: #f3f4f6;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #6b7280;
+	min-width: 200px;
+	text-align: center;
 }
 
 /* 셀렉트 박스 */
 .form-select {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.3s ease;
-    background: white;
-    cursor: pointer;
+	width: 100%;
+	padding: 12px 14px;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	font-size: 14px;
+	outline: none;
+	transition: all 0.3s ease;
+	background: white;
+	cursor: pointer;
 }
 
 .form-select:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+	border-color: #3b82f6;
+	box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* 검색 셀렉트 박스 */
+.search-select {
+	padding: 8px 14px;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	font-size: 14px;
+	outline: none;
+	transition: border-color 0.3s;
+	background: white;
+	cursor: pointer;
+	min-width: 140px;
+}
+
+.search-select:focus {
+	border-color: #3b82f6;
 }
 
 .btn-file-delete {
@@ -829,7 +857,7 @@
 	border-top: 1px solid #e5e7eb;
 }
 
-.attachments-title  {
+.attachments-title {
 	font-size: 15px;
 	font-weight: 600;
 	color: #374151;
@@ -894,60 +922,44 @@
 }
 
 /* ==================== 반응형 디자인 ==================== */
-@media (max-width: 768px) {
+@media ( max-width : 768px) {
 	.notice-form-container {
 		padding: 20px;
 	}
-	
-	.radio-group,
-	.checkbox-group {
+	.radio-group, .checkbox-group {
 		flex-direction: column;
 		gap: 12px;
 	}
-	
 	.form-actions {
 		flex-direction: column-reverse;
 	}
-	
-	.btn-primary,
-	.btn-secondary {
+	.btn-primary, .btn-secondary {
 		width: 100%;
 		text-align: center;
 	}
-	
-	.notice-detail-header,
-	.notice-detail-content,
-	.notice-detail-attachments,
-	.notice-detail-actions {
+	.notice-detail-header, .notice-detail-content,
+		.notice-detail-attachments, .notice-detail-actions {
 		padding: 20px;
 	}
-	
 	.notice-detail-title {
 		font-size: 20px;
 	}
-	
 	.notice-detail-meta {
 		flex-wrap: wrap;
 		gap: 8px;
 	}
-	
 	.meta-divider {
 		display: none;
 	}
-	
 	.notice-detail-actions {
 		flex-direction: column;
 		gap: 12px;
 	}
-	
 	.action-right {
 		width: 100%;
 		flex-direction: column;
 	}
-	
-	.btn-secondary,
-	.btn-edit,
-	.btn-delete {
+	.btn-secondary, .btn-edit, .btn-delete {
 		width: 100%;
 		text-align: center;
 	}

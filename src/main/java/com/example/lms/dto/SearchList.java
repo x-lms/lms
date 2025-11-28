@@ -6,5 +6,6 @@ import lombok.Data;
 public class SearchList {
 	private int rowPerPage;
 	private int beginRow;
+	private String searchCategory;
 	private String searchWord;
 }

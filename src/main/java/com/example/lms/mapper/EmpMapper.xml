@@ -31,4 +31,38 @@
 	<delete id="deleteNoticeFileByNoticeNo" parameterType="int">
 		DELETE FROM notice_file WHERE notice_no = #{noticeNo}
 	</delete>
+	
+	<!-- 학과 목록 불러오기 -->
+	<select id="selectDeptList" resultType="com.example.lms.dto.Dept">
+		SELECT dept_no deptNo, dept_name deptName FROM dept
+	</select>
+	<!-- 교수 추가 -->
+	<insert id="insertProfessor">
+		INSERT INTO emp (emp_name, emp_email, emp_pw, dept_no, emp_role)
+		VALUES (#{empName}, #{empEmail}, #{empPw}, #{deptNo}, #{empRole})
+	</insert>
+	<!-- 교수 리스트 -->
+	<select id="selectProfessorList" parameterType="com.example.lms.dto.SearchList" resultType="com.example.lms.dto.ProfessorInfo">
+		SELECT e.emp_no prfNo, e.emp_name prfName, e.dept_no deptNo, IFNULL(d.dept_name, '미배정') deptName, e.emp_email prfEmail, IFNULL(e.emp_phone, ' ') prfPhone
+		FROM emp e LEFT OUTER JOIN (SELECT dept_no, dept_name FROM dept) d ON e.dept_no = d.dept_no
+		WHERE e.emp_role = 2
+		<if test="searchWord != null and searchWord.trim() != ''">
+			AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+		<if test="searchCategory != null and searchCategory.trim() != ''">
+			AND e.dept_no = #{searchCategory}
+		</if>
+		ORDER BY e.emp_no DESC LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	<select id="countProfessor" parameterType="com.example.lms.dto.SearchList" resultType="int">
+		SELECT COUNT(e.emp_no)
+		FROM emp e LEFT OUTER JOIN (SELECT dept_no, dept_name FROM dept) d ON e.dept_no = d.dept_no
+		WHERE e.emp_role = 2
+		<if test="searchWord != null and searchWord.trim() != ''">
+			AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+		<if test="searchCategory != null and searchCategory.trim() != ''">
+			AND e.dept_no = #{searchCategory}
+		</if>
+	</select>
 </mapper>

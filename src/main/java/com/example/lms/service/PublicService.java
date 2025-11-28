@@ -14,7 +14,6 @@ import com.example.lms.mapper.PublicMapper;
 public class PublicService {
 	@Autowired
 	PublicMapper publicMapper;
-	private static final int ROW_PER_PAGE = 10;	// 한 페이지에 보여질 글 수
 	
 	public Student loginStudent(LoginUser lu) {
 		return publicMapper.selectLoginStudent(lu);
@@ -27,6 +26,7 @@ public class PublicService {
 	}
 	
 	// 공지사항 리스트
+	private static final int ROW_PER_PAGE = 10;	// 한 페이지에 보여질 글 수
 	public List<Notice> getNoticeList(int currentPage, String searchWord) {
 		int beginRow = (currentPage - 1) * ROW_PER_PAGE;
 		SearchList sl = new SearchList();
