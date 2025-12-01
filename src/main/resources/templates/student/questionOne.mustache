@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>질문 상세보기</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/questionOne.css">
+</head>
+<body>
+{{> layouts/header }}
+
+<div class="container">
+    {{> layouts/navStudent }}
+
+    <div class="main-content">
+        <h2 class="page-title">질문 상세보기</h2>
+
+        <div class="question-detail-box">
+            <div><b>강의명:</b> {{question.courseName}}</div>
+            <div><b>제목:</b> {{question.questionTitle}}</div>
+            <div><b>작성일:</b> {{question.createdate}}</div>
+            <div><b>답변 상태:</b> 
+                {{#question.answered}}답변 완료{{/question.answered}}
+                {{^question.answered}}미답변{{/question.answered}}
+            </div>
+
+            <div><b>질문 내용:</b></div>
+            <div class="question-contents">{{question.questionContents}}</div>
+
+            {{#question.answerContents}}
+            <div class="answer-block">
+                <div><b>답변 내용:</b></div>
+                <div class="answer-contents">{{question.answerContents}}</div>
+            </div>
+            {{/question.answerContents}}
+
+            <!-- 답변 전일 경우 수정 버튼 표시 -->
+            {{^question.answered}}
+                <a href="/student/questionModify?questionNo={{question.questionNo}}" class="edit-btn">질문 수정</a>
+            {{/question.answered}}
+
+        </div>
+
+        <a href="/student/questionList" class="back-btn">목록으로 돌아가기</a>
+    </div>
+</div>
+
+{{> layouts/footer }}
+</body>
+</html>

@@ -1,0 +1,73 @@
+/* 전체 상세 박스 */
+.question-detail-box {
+    background: #fff;
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+    margin-top: 25px;
+    font-size: 17px;
+    color: #333;
+}
+
+.question-detail-box b {
+    display: inline-block;
+    width: 120px;
+    color: #2c3e50;
+}
+
+/* 질문 내용 박스 */
+.question-contents {
+    background: #f8f9fc;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* ---- 교수 답변 박스 ---- */
+.answer-box {
+    background: #eef5ff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #d0d9ef;
+    margin-top: 30px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+}
+
+.answer-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.answer-contents {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #cfd8ea;
+    font-size: 16px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+/* 목록으로 가기 버튼 */
+.back-btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 10px 18px;
+    background: #4a68d8;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.back-btn:hover {
+    background: #3b55b0;
+}

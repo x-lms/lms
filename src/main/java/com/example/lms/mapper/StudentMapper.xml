@@ -21,20 +21,24 @@
         WHERE student_no = #{studentNo}
     </select>
 
-    <!-- 학생 수정 -->
-    <update id="updateStudent" parameterType="com.example.lms.dto.Student">
-        UPDATE student
-        SET
+   <!-- 학생 수정 -->
+<update id="updateStudent" parameterType="com.example.lms.dto.Student">
+    UPDATE student
+    <set>
+        <if test="studentPw != null and studentPw != ''">
             student_pw = #{studentPw},
-            student_name = #{studentName},
-            student_state = #{studentState},
-            student_address = #{studentAddress},
-            student_phone = #{studentPhone},
-            student_birth = #{studentBirth},
-            student_img = #{studentImg},
-            student_email = #{studentEmail}
-        WHERE student_no = #{studentNo}
-    </update>
+        </if>
+        student_name = #{studentName},
+        student_state = #{studentState},
+        student_address = #{studentAddress},
+        student_phone = #{studentPhone},
+        student_birth = #{studentBirth},
+        student_img = #{studentImg},
+        student_email = #{studentEmail}
+    </set>
+    WHERE student_no = #{studentNo}
+</update>
+
 
     <!-- 수강중 강의 -->
     <select id="selectCoursesByStudentNo" parameterType="int" resultType="com.example.lms.dto.Course">
@@ -207,10 +211,62 @@
 		    WHERE course_no = #{courseNo}
 </select>
  
- <delete id="deleteStudentCourse" parameterType="map">
-    DELETE FROM registration
-    WHERE student_no = #{studentNo} AND course_no = #{courseNo}
-</delete>
-    
-    
+	 <delete id="deleteStudentCourse" parameterType="map">
+	    DELETE FROM registration
+	    WHERE student_no = #{studentNo} AND course_no = #{courseNo}
+	</delete>
+ 
+<!-- 교수 번호 조회 -->
+    <select id="selectProfessorNoByCourseNo" resultType="Integer">
+        SELECT emp_no
+        FROM course
+        WHERE course_no = #{courseNo}
+    </select>
+
+    <insert id="insertQuestion" parameterType="com.example.lms.dto.Question">
+    INSERT INTO question 
+      (student_no, professor_no, course_no,question_title, question_contents, createdate)
+    VALUES 
+      (#{studentNo}, #{professorNo}, #{courseNo},#{questionTitle}, #{questionContents}, NOW())
+</insert>
+
+<select id="selectQuestionsByStudent" resultType="com.example.lms.dto.Question">
+    SELECT 
+	    question_no AS questionNo,
+	    student_no AS studentNo,
+	    professor_no AS professorNo,
+	    course_no AS courseNo,
+	    question_title AS questionTitle,
+	    question_contents AS questionContents,
+	    answer_status AS answerStatus,
+	    answer_contents AS answerContents,
+	    createdate
+	FROM question
+	WHERE student_no = #{studentNo}
+	ORDER BY createdate DESC
+</select>
+
+
+<!-- 강의명 가져오기 -->
+<select id="selectCourseNameByCourseNo" resultType="string" parameterType="int">
+    SELECT course_name
+    FROM course
+    WHERE course_no = #{courseNo}
+</select>
+
+<select id="selectQuestionByQuestionNo" parameterType="int" resultType="com.example.lms.dto.Question">
+    SELECT 
+        question_no AS questionNo,
+        student_no AS studentNo,
+        professor_no AS professorNo,
+        course_no AS courseNo,
+        question_title AS questionTitle,
+        question_contents AS questionContents,
+        answer_status AS answerStatus,
+        answer_contents AS answerContents,
+        createdate
+    FROM question
+    WHERE question_no = #{questionNo}
+</select>
+
 </mapper>

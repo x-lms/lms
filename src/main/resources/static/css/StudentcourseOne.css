@@ -1,67 +1,108 @@
+/* 전체 상세 박스 */
 .detail-box {
     background: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    margin-top: 20px;
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    margin-top: 25px;
 }
 
+/* 강의 제목 */
 .detail-title {
-    font-size: 28px; /* 글씨 크게 */
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #333;
 }
 
+/* 강의 기본 정보 */
 .course-info div {
-    margin-bottom: 8px;
-    font-size: 16px; /* 글씨 조금 키움 */
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #444;
 }
 
+/* 섹션 타이틀 */
 .section-title {
     font-size: 20px;
-    font-weight: bold;
-    margin-top: 25px;
-    margin-bottom: 10px;
+    font-weight: 600;
+    margin: 30px 0 12px 0;
+    color: #2c3e50;
 }
 
+/* 강의 계획 텍스트 박스 */
 .course-plan-text {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 6px;
-    font-size: 16px;
-    line-height: 1.5;
-    white-space: pre-wrap; /* 줄바꿈 유지 */
+    background: #f8f9fc;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-wrap;
+    border: 1px solid #e5e7eb;
 }
 
+/* 테이블 리스트 박스 */
 .list-box {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 6px;
+    background: #f8f9fc;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
 }
 
+/* 테이블 기본 스타일 */
 table {
     width: 100%;
     border-collapse: collapse;
     font-size: 15px;
+    color: #333;
 }
 
-table th, table td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+table th {
+    background: #f0f2f7;
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
     text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
 }
 
-.cancel-btn {
-    padding: 10px 15px;
-    background-color: #e63946;
-    color: white;
-    border-radius: 4px;
+table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+/* 버튼 공통 스타일 */
+button, .question-btn {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
     border: none;
     cursor: pointer;
+    font-size: 15px;
+}
+
+/* 수강 취소 버튼 */
+.cancel-btn {
+    background-color: #e63946;
+    color: white;
     margin-top: 20px;
 }
 
 .cancel-btn:disabled {
-    background: gray;
+    background: #999;
     cursor: not-allowed;
+}
+
+/* 질문하기 버튼 */
+.question-btn {
+    display: inline-block;
+    background-color: #4a68d8;
+    color: white;
+    text-decoration: none;
+    margin-top: 18px;
+}
+
+.question-btn:hover {
+    background-color: #3b55b0;
 }

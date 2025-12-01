@@ -4,6 +4,7 @@ import com.example.lms.dto.Assignment;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Student;
+import com.example.lms.dto.Question; // Question DTO import
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,7 +14,6 @@ import java.util.Map;
 @Mapper
 public interface StudentMapper {
 
-    // ================= 학생/강의 관련 =================
     Student selectStudentDetail(int studentNo);
     int updateStudent(Student student);
     List<Student> selectStudentList();
@@ -26,13 +26,10 @@ public interface StudentMapper {
     void insertStudentCourse(Map<String, Integer> params); // applyCourse용
 
     String selectEmpNameByCourseNo(int courseNo);
-
     List<CourseTime> selectCourseTimesByCourseNo(int courseNo);
-    
-    // ================= 개별 강의 조회 =================
+
     Course selectCourseByCourseNo(int courseNo);
 
-    // ================= 페이징 + 검색 =================
     List<Course> selectCoursesByKeywordWithPaging(
             @Param("studentNo") int studentNo,
             @Param("keyword") String keyword,
@@ -40,10 +37,7 @@ public interface StudentMapper {
             @Param("pageSize") int pageSize
     );
 
-    int countCoursesByKeyword(
-            @Param("studentNo") int studentNo,
-            @Param("keyword") String keyword
-    );
+    int countCoursesByKeyword(@Param("studentNo") int studentNo, @Param("keyword") String keyword);
 
     List<Course> selectAvailableCoursesWithPaging(
             @Param("studentNo") int studentNo,
@@ -54,12 +48,23 @@ public interface StudentMapper {
     int countAvailableCourses(int studentNo);
     List<Assignment> selectAssignmentsByCourseNo(int courseNo);
     Map<String, Object> selectCourseEnrollInfo(int studentNo, int courseNo);
-	
-    //수강 취소
+
     int deleteStudentCourse(Map<String, Integer> params);
+
+    // ========================= 질문 관련 추가 =========================
+    void insertQuestion(Question question);
+
+    // 학생별 질문 조회
+    List<Question> selectQuestionsByStudent(@Param("studentNo") int studentNo);
+
+    // 강의명 조회
+    String selectCourseNameByCourseNo(@Param("courseNo") int courseNo);
     
+    // 질문 번호로 단일 질문 가져오기
+    Question selectQuestionByQuestionNo(@Param("questionNo") int questionNo);
     
+	// 교수 번호 조회
+    int selectProfessorNoByCourseNo(int courseNo);
     
-    
-    
+
 }

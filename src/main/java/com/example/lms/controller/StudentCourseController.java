@@ -2,6 +2,7 @@ package com.example.lms.controller;
 
 import com.example.lms.dto.StudentCourse;
 import com.example.lms.dto.Assignment;
+import com.example.lms.dto.Question;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.StudentService;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -110,6 +112,9 @@ public class StudentCourseController {
 
         return "student/addCourse";
     }
+     
+     
+ 
  // 수강 과목 상세보기
     @GetMapping("/courseOne/{courseNo}")
     public String courseDetail(
@@ -127,7 +132,7 @@ public class StudentCourseController {
 
         
 
-        // 취소 가능 여부 (예: 오늘 < 수강 신청 마감)
+        // 취소 가능 여부 
         boolean cancelable = studentService.isCancelable(studentNo, courseNo);
 
         model.addAttribute("course", course);
@@ -155,5 +160,68 @@ public class StudentCourseController {
         return "redirect:/student/courseList";
 
     }
+ // ========================= 질문 관련 =========================
 
+ // 질문 등록 페이지
+ @GetMapping("/questionWrite/{courseNo}")
+ public String questionWrite(
+         @PathVariable int courseNo,
+         @SessionAttribute("loginStudent") Student loginStudent,
+         Model model) {
+
+     int studentNo = loginStudent.getStudentNo();
+
+     StudentCourse course = studentService.getCourseDetail(studentNo, courseNo);
+     model.addAttribute("courseNo", course.getCourseNo());
+     model.addAttribute("courseName", course.getCourseName());
+     return "student/questionWrite";
+ }
+
+ // 질문 등록 처리
+ @PostMapping("/questionWrite/{courseNo}")
+ public String submitQuestion(
+         @PathVariable int courseNo,
+         @SessionAttribute("loginStudent") Student loginStudent,
+         @RequestParam String questionTitle,
+         @RequestParam String questionContents) {
+
+     int studentNo = loginStudent.getStudentNo();
+     int professorNo = studentService.getProfessorNoByCourseNo(courseNo);
+
+     Question question = new Question();
+     question.setStudentNo(studentNo);
+     question.setProfessorNo(professorNo);
+     question.setCourseNo(courseNo);
+     question.setQuestionTitle(questionTitle);
+     question.setQuestionContents(questionContents);
+
+     studentService.insertQuestion(question);
+
+     return "redirect:/student/courseOne/" + courseNo; // 작성 후 강의 상세로 이동
+ }
+
+ // 질문 목록
+ @GetMapping("/questionList")
+ public String questionList(@SessionAttribute("loginStudent") Student loginStudent, Model model) {
+     int studentNo = loginStudent.getStudentNo();
+
+     // Service에서 courseName까지 채워줌
+     List<Question> questions = studentService.getQuestionsByStudent(studentNo);
+
+     model.addAttribute("questions", questions);
+     return "student/questionList";
+ }
+
+ // 질문 상세보기
+ @GetMapping("/questionOne/{questionNo}")
+ public String questionOne(
+         @PathVariable int questionNo,
+         Model model) {
+
+     Question question = studentService.getQuestionByNo(questionNo); // 필요 시 서비스에 추가
+     model.addAttribute("question", question);
+     return "student/questionOne";
+ }
+
+ 
 }

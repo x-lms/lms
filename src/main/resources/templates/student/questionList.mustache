@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>질문 목록</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/questionWrite.css">
+    <link rel="stylesheet" href="/css/questionList.css">
+</head>
+<body>
+{{> layouts/header }}
+
+<div class="container">
+    {{> layouts/navStudent }}
+
+    <div class="main-content">
+        <h2 class="page-title">질문 목록</h2>
+
+        <div class="list-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>강의</th>
+                        <th>제목</th>
+                        <th>작성일</th>
+                        <th>답변 상태</th>
+                        <th>보기</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#questions}}
+                    <tr>
+                        <td>{{courseName}}</td>
+                        <td>{{questionTitle}}</td>
+                        <td>{{createdate}}</td>
+                        <td>
+                            {{#isAnswered}}답변 완료{{/isAnswered}}
+                            {{^isAnswered}}미답변{{/isAnswered}}
+                        </td>
+                        <td>
+                            <a href="/student/questionOne/{{questionNo}}" class="detail-btn">상세보기</a>
+                        </td>
+                    </tr>
+                    {{/questions}}
+                    {{^questions}}
+                    <tr>
+                        <td colspan="5">작성한 질문이 없습니다.</td>
+                    </tr>
+                    {{/questions}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{> layouts/footer }}
+</body>
+</html>
