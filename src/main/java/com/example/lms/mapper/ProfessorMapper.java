@@ -13,12 +13,29 @@ import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Project;
+import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 
 
 @Mapper
 public interface ProfessorMapper {
+	
+	// 과제 점수 등록
+	int addResultScore(ProjectResult pr);
+	
+	// 결과물 상세보기
+	ProjectResult projectResultOne(int resultNo);
+	
+	// 과제 결과물 목록
+	List<ProjectResult> projectResultList(int projectNo);
+	
+	// 과제 삭제
+	int deleteProjectIfNoResults(int projectNo);
+	int countProjectResults(int projectNo);
+
+	// 과제 등록
+	int addProject(Project p);
 	
 	// 과제 목록
 	List<Project> projectListByPage(Map<String, Object> m);
@@ -43,7 +60,7 @@ public interface ProfessorMapper {
 	List<AttendanceSummary> getAttendanceSummaryByCourse(int courseNo);
 	
 	// 출석체크 (강의목록)
-	List<Course> getAttandance(Map<String, Object> m);
+	List<Course> getCourseAttandance(Map<String, Object> m);
 	
 	// 학생리스트
 	List<Student> studentListByPage(Map<String, Object> m);
@@ -75,6 +92,11 @@ public interface ProfessorMapper {
 	// 홈 화면
 	List<CourseTime> selectAllCourseTimes(int empNo);
 	List<Map<String, String>> getProfessorSchedule();
+
+	
+	
+	
+	
 	
 	
 	

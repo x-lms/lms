@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.lms.dto.Attendance;
 import com.example.lms.dto.AttendanceHistory;
@@ -16,6 +17,7 @@ import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Project;
+import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.mapper.ProfessorMapper;
@@ -28,6 +30,40 @@ import lombok.extern.slf4j.Slf4j;
 public class ProfessorService {
 	@Autowired
 	ProfessorMapper professorMapper;
+	
+	// 과제 점수 등록
+	public int addResultScore(ProjectResult pr) {
+		return professorMapper.addResultScore(pr);
+	}
+	
+	// 과게 결과물 상세보기
+	public ProjectResult projectResultOne(int resultNo) {
+		return professorMapper.projectResultOne(resultNo);
+	}
+
+	// 과제 결과물 목록
+	public List<ProjectResult> projectResultList(int projectNo) {
+		return professorMapper.projectResultList(projectNo);
+	}
+	
+	// 과제 삭제
+	@Transactional
+	public boolean deleteProjectIfNoResults(int projectNo) {
+		int count = professorMapper.countProjectResults(projectNo);
+		if(count > 0 ) {
+			// 결과물 있으면 삭제 X
+			return false;
+		}
+		
+		// 결과물 없으면 삭제 O
+		professorMapper.deleteProjectIfNoResults(projectNo);
+		return true;
+	}
+	
+	// 과제 등록
+	public int addProject(Project p) {
+		return professorMapper.addProject(p);	
+	}
 	
 	// 과제 목록
 	public List<Project> projectListByPage(int empNo, int currentPage) {
@@ -103,10 +139,10 @@ public class ProfessorService {
 	}
 		
 	// 출석체크(강의목록)
-	public List<Course> getAttendance(int empNo) {
+	public List<Course> getCourseAttandance(int empNo) {
 		Map<String, Object> m = new HashMap<>();
 		m.put("empNo", empNo);
-		List<Course> courseList = professorMapper.getAttandance(m);
+		List<Course> courseList = professorMapper.getCourseAttandance(m);
 		
 		return courseList;
 	}
@@ -257,4 +293,9 @@ public class ProfessorService {
 	}
 
 	
+
+	
+
+	
+
 }

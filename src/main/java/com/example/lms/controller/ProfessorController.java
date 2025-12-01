@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import com.example.lms.dto.Dept;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.PageInfo;
 import com.example.lms.dto.Project;
+import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.DeptService;
@@ -40,6 +42,8 @@ import com.example.lms.service.ProfessorService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @Slf4j
@@ -52,7 +56,72 @@ public class ProfessorController {
 	
 	// 파일 위치, 확장자
 	private final String uploadDir = "C:/lms/uploads";
+	
+	
+	// 과제 점수 등록하기
+	@PostMapping("/professor/addResultScore")
+	public String addResultScore(HttpSession session, ProjectResult pr) {
+		Emp loginProfessor = getLoginProfessor(session);
+		Integer resultScore = pr.getResultScore();
+	    if(resultScore != null) {
+	        if(resultScore < 0) resultScore = 0;
+	        if(resultScore > 20) resultScore = 20;
+	        pr.setResultScore(resultScore);
+	    }
 		
+	    professorService.addResultScore(pr);
+		return "redirect:/professor/projectResultList?projectNo=" + pr.getProjectNo();
+	}
+	
+	// 과제 결과물 상세보기
+	@GetMapping("/professor/projectResultOne")
+	public String projectResultOne(HttpSession session, Model model, int resultNo) {
+		Emp loginProfessor = getLoginProfessor(session);
+				
+		ProjectResult pr = professorService.projectResultOne(resultNo);
+		model.addAttribute("pr", pr);
+				
+		return "professor/projectResultOne";
+	}
+	
+	// 과제 결과물 목록
+	@GetMapping("/professor/projectResultList")
+	public String projectResultList(HttpSession session, Model model, int projectNo) {
+		Emp loginProfessor = getLoginProfessor(session);
+		List<ProjectResult> resultList = professorService.projectResultList(projectNo);	    
+	    model.addAttribute("resultList", resultList);
+		
+		return "professor/projectResultList";
+	}
+	
+	// 과제 삭제
+	@PostMapping("/professor/removeProject")
+	public String deleteProjectIfNoResults(HttpSession session, int projectNo) {
+		Emp loginProfessor = getLoginProfessor(session);
+		professorService.deleteProjectIfNoResults(projectNo);
+		return "redirect:/professor/projectList";
+	}
+	
+	// 과제 등록 폼
+	@GetMapping("/professor/addProject") 
+	public String addProject(HttpSession session, Model model) {
+		Emp loginProfessor = getLoginProfessor(session);
+		List<Course> courseList = professorService.getCourseAttandance(loginProfessor.getEmpNo());
+		model.addAttribute("courseList", courseList);
+		
+		return "professor/addProject";
+	}
+
+	// 과제 등록 액션
+	@PostMapping("/professor/addProject") 
+	public String addProject(HttpSession session, Project p) {
+		Emp loginProfessor = getLoginProfessor(session);
+		p.setEmpNo(loginProfessor.getEmpNo());
+		professorService.addProject(p);
+		
+		return "redirect:/professor/projectList";
+	}
+	
 	// 과제목록
 	@GetMapping("/professor/projectList")
 	public String projectList(HttpSession session, Model model,Project p, @RequestParam(defaultValue = "1") int currentPage) {
@@ -78,8 +147,7 @@ public class ProfessorController {
 	        m.put("isCurrent", page == pageInfo.getCurrentPage());
 	        pageListWithCurrent.add(m);
 	    }
-	    log.debug("projectList : " + projectList);
-
+	   
 	    model.addAttribute("projectList", projectList);
 	    model.addAttribute("pageInfo", pageInfo);
 	    model.addAttribute("pageList", pageListWithCurrent);
@@ -249,7 +317,7 @@ public class ProfessorController {
 	@GetMapping("/professor/attendance")
 	public String attendance(HttpSession session, Model model) {
 		Emp loginProfessor = getLoginProfessor(session);
-		List<Course> courseList = professorService.getAttendance(loginProfessor.getEmpNo());
+		List<Course> courseList = professorService.getCourseAttandance(loginProfessor.getEmpNo());
 		model.addAttribute("courseList", courseList);
 		log.debug("courseList : " + courseList);
 		return "professor/attendance";

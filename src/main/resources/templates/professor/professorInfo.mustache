@@ -56,7 +56,14 @@
 								</svg>
 								학과 번호
 							</div>
-							<div class="info-value">{{e.deptNo}}</div>
+							<div class="info-value">
+								{{#e.deptNo}}
+								    {{e.deptNo}}
+								{{/e.deptNo}}
+								{{^e.deptNo}}
+								    학과 없음
+								{{/e.deptNo}}
+							</div>
 						</div>
 						
 						<div class="info-item">

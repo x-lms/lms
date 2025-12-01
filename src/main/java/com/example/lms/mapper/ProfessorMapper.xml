@@ -2,21 +2,80 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.ProfessorMapper">
 	
+	<!-- 과제 점수 등록 -->
+	<update id="addResultScore" parameterType="com.example.lms.dto.ProjectResult">
+		update project_result 
+		set 
+			result_score = #{resultScore}
+		where result_no = #{resultNo}		 
+	</update>
+	
+	<!-- 결과물 상세보기 -->
+	<select id="projectResultOne" parameterType="int" resultType="com.example.lms.dto.ProjectResult">
+		select
+			pr.result_no resultNo,
+			pr.project_no projectNo,
+			pr.student_no studentNo,
+			s.student_name studentName,
+			pr.result_title resultTitle,
+			pr.result_contents resultContents,
+			pr.result_file resultFile,
+			pr.result_score resultScore,
+			pr.createdate
+		from project_result pr
+		left join student s
+		on pr.student_no = s.student_no
+		where pr.result_no = #{resultNo}	
+	</select>
+	
+	<!-- 과제 결과물 목록 -->
+	<select id="projectResultList" parameterType="int" resultType="com.example.lms.dto.ProjectResult">
+		select
+			result_no resultNo,
+			project_no projectNo,
+			student_no studentNo,
+			result_title resultTitle,
+			result_score resultScore,
+			createdate
+		from project_result
+		where project_no = #{projectNo}
+		order by createdate desc		
+	</select>
+	
+	<!-- 과제삭제 -->
+	<delete id="deleteProjectIfNoResults" parameterType="int">
+		DELETE FROM project WHERE project_no = #{projectNo}
+	</delete>
+
+	<!-- 과제 결과물 개수 확인 -->
+	<select id="countProjectResults" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM project_result WHERE project_no = #{projectNo}
+	</select>
+	
+	<!-- 과제등록 -->
+	<insert id="addProject">
+		insert into project(course_no, project_name, emp_no, project_deadline)
+		values(#{courseNo}, #{projectName}, #{empNo}, #{projectDeadline})
+	</insert>
+	
 	<!-- 과제목록 -->
 	<select id="projectListByPage" parameterType="map" resultType="com.example.lms.dto.Project">
 		select 
-			project_no projectNo,
-			course_no courseNo,
-			project_name projectName,
-			emp_no empNo,
-			project_deadline projectDeadline
-		from project
-		where emp_no = #{empNo}
-		order by project_no = #{projectNo}
+			p.project_no projectNo,
+			p.course_no courseNo,
+			c.course_name courseName,
+			p.project_name projectName,
+			p.emp_no empNo,
+			p.project_deadline projectDeadline
+		from project p 
+		inner join course c
+		on p.course_no = c.course_no
+		where p.emp_no = #{empNo}
+		order by p.project_no desc
 		limit #{beginRow}, #{rowPerPage}
 	</select>
 	
-	<select id="getProjectCount" parameterType="map" resultType="com.example.lms.dto.Project">
+	<select id="getProjectCount" parameterType="map" resultType="int">
 		select count(*)
 		from project
 		where emp_no = #{empNo}
@@ -128,7 +187,7 @@
 	</select>		
 			
 	<!-- 출석체크(강의목록) -->	
-	<select id="getAttandance" parameterType="map" resultType="com.example.lms.dto.Course">
+	<select id="getCourseAttandance" parameterType="map" resultType="com.example.lms.dto.Course">
 		select
 			course_no courseNo, course_name courseName, dept_no deptNo,
 			emp_no empNo, max_cnt maxCnt, current_cnt currentCnt,
