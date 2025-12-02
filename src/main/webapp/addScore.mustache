@@ -14,19 +14,18 @@
     <div class="main-content">
 	    <h2>출석체크</h2>
 
-        <form action="{{springMacroRequestContext.request.contextPath}}/professor/addAttendance" method="post">
+        <form action="{{springMacroRequestContext.request.contextPath}}/professor/addScore" method="get">
         <input type="hidden" name="courseNo" value="{{courseNo}}">
                 
         <table>
             <thead>
                 <tr>
-                    <th>학번</th>
+                    <th>학생번호</th>
                     <th>사진</th>
                     <th>이름</th>
                     <th>이메일</th>
                     <th>전화번호</th>
-                    <th>총 출결현황</th>
-                    <th>출석 상태</th>
+                   	<th>점수등록</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,29 +39,13 @@
                     <td>{{studentName}}</td>
                     <td>{{studentEmail}}</td>
                     <td>{{studentPhone}}</td>
-                    <td>출석일: {{attendanceSummary.total}} <br>
-					    결석일: {{attendanceSummary.absent}} <br>
-					    지각일: {{attendanceSummary.late}} <br>
-					    조퇴일: {{attendanceSummary.early}}
+                    <td>
+					<button type="submit">등록</button>
 					</td>
-					<td>
-                        <select name="attState">
-                        	<option value="">선택</option>
-                            <option value="출석">출석</option>
-                            <option value="결석">결석</option>
-                            <option value="지각">지각</option>
-                            <option value="조퇴">조퇴</option>
-                        </select>
-                    </td>
                 </tr>
                 {{/studentList}}
             </tbody>
         </table>
-
-        <p>
-            <button type="submit">출석 체크</button>
-            <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendance">뒤로가기</a>
-        </p>
 		</form>
         </div>
     </div>

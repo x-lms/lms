@@ -2,6 +2,63 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.ProfessorMapper">
 	
+	<!-- 성적 등록 -->
+	<insert id="addScore" parameterType="com.example.lms.dto.Score">
+		insert into score
+			(student_no, emp_no, course_no, score_att, score_project, score_mid, score_fin, score_total, score_grade)
+		values(#{studentNo}, #{empNo}, #{courseNo}, #{scoreAtt}, #{scoreProject}, #{scoreMid}, #{scoreFin}, #{scoreTotal}, #{scoreGrade})
+	</insert>
+	
+	<!-- 성적 목록 -->
+	<select id="getScoreByCourse" parameterType="int" resultType="com.example.lms.dto.Score">
+		 SELECT
+	        score_no scoreNo,
+	        student_no studentNo,
+	        emp_no empNo,
+	        course_no courseNo,
+	        score_att scoreAtt,
+	        score_project scoreProject,
+	        score_mid scoreMid,
+	        score_fin scoreFin,
+	        score_total scoreTotal,
+	        score_grade scoreGrade
+	    FROM score
+	    WHERE course_no = #{courseNo}
+	</select>
+		
+	<!-- 답글 등록 -->
+	<update id="updateAnswer" parameterType="com.example.lms.dto.Question">
+		update question
+		set 
+			answer_contents = #{answerContents},
+			answer_status = #{answerStatus}
+		where question_no = #{questionNo}	
+	</update>
+	
+	<!-- 문의사항 목록 -->
+	<select id="questionListByPage" parameterType="map" resultType="com.example.lms.dto.Question">
+		select
+			q.question_no questionNo,
+			q.student_no studentNo,
+			q.emp_no empNo,
+			q.course_no courseNo,
+			c.course_name courseName,
+			q.question_title questionTitle,
+			q.question_contents questionContents,
+			q.answer_contents answerContents,
+			q.createdate
+		from question q
+		left join course c
+		on q.course_no = c.course_no
+		where q.emp_no = #{empNo}
+		order by q.createdate desc
+		limit #{beginRow}, #{rowPerPage}
+	</select>
+
+	<select id="getQuestionCount" parameterType="map" resultType="int">
+		select count(*) from question where emp_no = #{empNo}
+	</select>
+	
 	<!-- 과제 점수 등록 -->
 	<update id="addResultScore" parameterType="com.example.lms.dto.ProjectResult">
 		update project_result 
@@ -171,6 +228,7 @@
 	    WHERE cs.course_no = #{courseNo}
 	    ORDER BY s.student_name ASC
 	</select>
+	
 	<!-- 총 출결상태 -->	
 	<select id="getAttendanceSummaryByCourse" parameterType="int" resultType="com.example.lms.dto.AttendanceSummary">
 	    SELECT 
@@ -187,7 +245,7 @@
 	</select>		
 			
 	<!-- 출석체크(강의목록) -->	
-	<select id="getCourseAttandance" parameterType="map" resultType="com.example.lms.dto.Course">
+	<select id="getCourseAttandanceAndScore" parameterType="map" resultType="com.example.lms.dto.Course">
 		select
 			course_no courseNo, course_name courseName, dept_no deptNo,
 			emp_no empNo, max_cnt maxCnt, current_cnt currentCnt,

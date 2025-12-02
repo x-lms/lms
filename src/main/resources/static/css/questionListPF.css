@@ -1,0 +1,225 @@
+.question-table {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.question-table thead {
+    background: #f8fafc;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.question-table thead th {
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+}
+
+.question-table tbody td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #4b5563;
+    text-align: center;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+}
+
+.question-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.question-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.question-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* 질문 내용 영역 */
+.content-cell {
+    text-align: left;
+    max-width: 300px;
+    position: relative;
+    vertical-align: top;
+}
+
+.question-content {
+    display: inline-block;
+    max-width: 100%;
+    line-height: 1.5;
+    color: #4b5563;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.toggle-content {
+    margin-left: 8px;
+    padding: 4px 10px;
+    background: #f1f5f9;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggle-content:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* 답글쓰기 버튼 */
+.open-reply {
+    padding: 6px 12px;
+    background: #1e40af;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.open-reply:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.3);
+}
+
+/* 답글 입력 영역 */
+.reply-row {
+    background: #f8fafc;
+    border-left: 4px solid #1e40af;
+}
+
+.reply-row td {
+    padding: 20px !important;
+}
+
+.reply-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.reply-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.reply-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.reply-input::placeholder {
+    color: #9ca3af;
+}
+
+.send-reply {
+    padding: 10px 20px;
+    background: #1e40af;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.send-reply:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.3);
+}
+
+/* 답글 리스트 */
+.answer-list {
+    margin-top: 10px;
+    padding: 15px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.answer-item {
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    line-height: 1.6;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.answer-item:last-child {
+    margin-bottom: 0;
+}
+
+.answer-item strong {
+    color: #1e40af;
+    margin-right: 8px;
+    font-weight: 600;
+}
+
+.toggle-answers {
+    margin-top: 10px;
+    padding: 6px 16px;
+    background: white;
+    border: 1px solid #1e40af;
+    color: #1e40af;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggle-answers:hover {
+    background: #1e40af;
+    color: white;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .question-table {
+        font-size: 12px;
+    }
+    
+    .question-table thead th,
+    .question-table tbody td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+    
+    .content-cell {
+        max-width: 150px;
+    }
+    
+    .reply-box {
+        flex-direction: column;
+    }
+    
+    .reply-input,
+    .send-reply {
+        width: 100%;
+    }
+}

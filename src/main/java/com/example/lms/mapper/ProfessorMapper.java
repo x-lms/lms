@@ -14,6 +14,8 @@ import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Project;
 import com.example.lms.dto.ProjectResult;
+import com.example.lms.dto.Question;
+import com.example.lms.dto.Score;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 
@@ -21,6 +23,19 @@ import com.example.lms.dto.TimetableCell;
 @Mapper
 public interface ProfessorMapper {
 	
+	// 성정 등록
+	int addScore(Score score);
+	
+	// 성적 목록
+	List<Score> getScoreByCourse(int courseNo);
+	
+	// 답글 등록
+	int updateAnswer(Question question);
+	
+	// 문의사항 목록
+	List<Question> questionListByPage(Map<String, Object> m);
+	Integer getQuestionCount(Map<String, Object> m);
+
 	// 과제 점수 등록
 	int addResultScore(ProjectResult pr);
 	
@@ -60,7 +75,7 @@ public interface ProfessorMapper {
 	List<AttendanceSummary> getAttendanceSummaryByCourse(int courseNo);
 	
 	// 출석체크 (강의목록)
-	List<Course> getCourseAttandance(Map<String, Object> m);
+	List<Course> getCourseAttandanceAndScore(Map<String, Object> m);
 	
 	// 학생리스트
 	List<Student> studentListByPage(Map<String, Object> m);
@@ -93,14 +108,6 @@ public interface ProfessorMapper {
 	List<CourseTime> selectAllCourseTimes(int empNo);
 	List<Map<String, String>> getProfessorSchedule();
 
-	
-	
-	
-	
-	
-	
-	
-	
 
 	
 

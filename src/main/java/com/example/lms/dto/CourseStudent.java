@@ -13,5 +13,6 @@ public class CourseStudent {
     private String studentState;
     private String studentImg;
     
-    private AttendanceSummary attendanceSummary;
+    private AttendanceSummary attendanceSummary; // 출결 요약
+     
 }

@@ -18,6 +18,8 @@ import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Project;
 import com.example.lms.dto.ProjectResult;
+import com.example.lms.dto.Question;
+import com.example.lms.dto.Score;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.mapper.ProfessorMapper;
@@ -30,6 +32,57 @@ import lombok.extern.slf4j.Slf4j;
 public class ProfessorService {
 	@Autowired
 	ProfessorMapper professorMapper;
+	
+	// 성적등록 액션
+	public int addScore(Score score) {
+		return professorMapper.addScore(score);	
+	}
+	
+	// 성적등록 폼
+	public List<CourseStudent> getStudentListAndScore(int courseNo) {
+		List<CourseStudent> studentList = professorMapper.getStudentListByCourse(courseNo);
+		List<AttendanceSummary> summaryList = professorMapper.getAttendanceSummaryByCourse(courseNo);
+
+        // Map으로 변환
+		Map<Integer, AttendanceSummary> summaryMap = new HashMap<>();
+	       for (AttendanceSummary s : summaryList) {
+	           summaryMap.put(s.getStudentNo(), s);
+	       }
+	       
+        for (AttendanceSummary s : summaryList) {
+            // 지각 3회 -> 결석 1회
+            s.setAbsent(s.getAbsent() + s.getLate() / 3);
+            s.setAbsent(s.getAbsent() + s.getEarly() / 3);
+            s.setTotal(s.getTotal() - s.getAbsent());
+            summaryMap.put(s.getStudentNo(), s);
+        }
+
+       
+        return studentList;
+	}
+	
+	// 답변 등록
+	public int updateAnswer(Question question) {
+		return professorMapper.updateAnswer(question);
+	}
+	
+	// 문의사항 목록
+	public List<Question> questionListByPage(int currentPage, int empNo) {
+		int rowPerPage = 10;
+		int beginRow = (currentPage - 1) * rowPerPage;
+		Map<String, Object> m = new HashMap<>();
+		m.put("empNo", empNo);
+		m.put("rowPerPage", rowPerPage);
+		m.put("beginRow", beginRow);
+		List<Question> questionList = professorMapper.questionListByPage(m);
+		return questionList;
+	}
+
+	public Integer getQuestionCount(int empNo) {
+		Map<String, Object> m = new HashMap<>();
+		m.put("empNo", empNo);
+		return professorMapper.getQuestionCount(m);
+	}
 	
 	// 과제 점수 등록
 	public int addResultScore(ProjectResult pr) {
@@ -126,6 +179,7 @@ public class ProfessorService {
         for (AttendanceSummary s : summaryList) {
             // 지각 3회 -> 결석 1회
             s.setAbsent(s.getAbsent() + s.getLate() / 3);
+            s.setAbsent(s.getAbsent() + s.getEarly() / 3);
             s.setTotal(s.getTotal() - s.getAbsent());
             summaryMap.put(s.getStudentNo(), s);
         }
@@ -139,10 +193,10 @@ public class ProfessorService {
 	}
 		
 	// 출석체크(강의목록)
-	public List<Course> getCourseAttandance(int empNo) {
+	public List<Course> getCourseAttandanceAndScore(int empNo) {
 		Map<String, Object> m = new HashMap<>();
 		m.put("empNo", empNo);
-		List<Course> courseList = professorMapper.getCourseAttandance(m);
+		List<Course> courseList = professorMapper.getCourseAttandanceAndScore(m);
 		
 		return courseList;
 	}
@@ -293,9 +347,7 @@ public class ProfessorService {
 	}
 
 	
-
 	
 
-	
 
 }

@@ -21,8 +21,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.lms.dto.AjaxResult;
 import com.example.lms.dto.Attendance;
 import com.example.lms.dto.AttendanceHistory;
 import com.example.lms.dto.AttendanceSummary;
@@ -34,6 +36,8 @@ import com.example.lms.dto.Emp;
 import com.example.lms.dto.PageInfo;
 import com.example.lms.dto.Project;
 import com.example.lms.dto.ProjectResult;
+import com.example.lms.dto.Question;
+import com.example.lms.dto.Score;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.DeptService;
@@ -57,6 +61,104 @@ public class ProfessorController {
 	// 파일 위치, 확장자
 	private final String uploadDir = "C:/lms/uploads";
 	
+	// 성적 등록 폼
+	@GetMapping("/professor/addScore")
+	public String addScore(HttpSession session, Model model,int courseNo) {
+		Emp loginProfessor = getLoginProfessor(session);
+		List<CourseStudent> studentList = professorService.getStudentListByCourse(courseNo);
+
+	    model.addAttribute("studentList", studentList);
+	    model.addAttribute("courseNo", courseNo);
+		
+		return "professor/addScore";
+	}
+
+	// 성적 등록 액션
+	@PostMapping("/professor/addScore")
+	public String addScore(HttpSession session,Score score) {
+		Emp loginProfessor = getLoginProfessor(session);
+		
+		score.setEmpNo(loginProfessor.getEmpNo());
+		Double scoreAtt = score.getScoreAtt();
+		int scoreProject = score.getScoreProject();
+		int scoreMid = score.getScoreMid();
+		int scoreFin = score.getScoreFin();
+		Double scoreTotal = scoreAtt + scoreProject + scoreMid + scoreFin;
+		score.setScoreTotal(scoreTotal);
+		String scoreGrade;
+		
+		if (scoreTotal >= 95) scoreGrade = "A+";
+        else if (scoreTotal >= 90) scoreGrade = "A";
+        else if (scoreTotal >= 85) scoreGrade = "B+";
+        else if (scoreTotal >= 80) scoreGrade = "B";
+        else if (scoreTotal >= 75) scoreGrade = "C+";
+        else if (scoreTotal >= 70) scoreGrade = "C";
+        else if (scoreTotal >= 65) scoreGrade = "D+";
+        else if (scoreTotal >= 60) scoreGrade = "D";
+        else scoreGrade = "F";
+		score.setScoreGrade(scoreGrade);
+		
+		professorService.addScore(score);
+		
+		return "redirect:/professor/scoreCourseList";
+	}
+		
+	// 성적 등록(강의목록)
+	@GetMapping("/professor/scoreCourseList")
+	public String score(HttpSession session, Model model) {
+		Emp loginProfessor = getLoginProfessor(session);
+		List<Course> courseList = professorService.getCourseAttandanceAndScore(loginProfessor.getEmpNo());
+		model.addAttribute("courseList", courseList);
+		return "professor/scoreCourseList";
+	}
+	
+	// 답변 등록
+	@PostMapping("/professor/addAnswer")
+	@ResponseBody
+	public AjaxResult addAnswer(HttpSession session, @RequestBody Question question) {
+		Emp loginProfessor = getLoginProfessor(session);
+        question.setEmpNo(loginProfessor.getEmpNo());
+        question.setAnswerStatus("Y"); // 답변 완료 처리
+
+        int row = professorService.updateAnswer(question); // answerContents만 DB UPDATE
+
+        AjaxResult result = new AjaxResult();
+        result.setSuccess(row == 1);
+        return result; // JSON으로 AJAX에 반환
+    }	
+	
+	// 문의사항 목록
+	@GetMapping("/professor/questionList")
+	public String questionList(HttpSession session, Model model, @RequestParam(defaultValue = "1") int currentPage) {
+		Emp loginProfessor = getLoginProfessor(session);
+		
+		int empNo = loginProfessor.getEmpNo();
+		int rowPerPage = 10; 
+	    int pageBlock = 10; 
+	     
+		List<Question> questionList = professorService.questionListByPage(currentPage, empNo);
+		Integer totalCount = professorService.getQuestionCount(empNo);
+		int total = (totalCount != null) ? totalCount : 0;
+		
+	    PageInfo pageInfo = getPageInfo(total, currentPage, rowPerPage, pageBlock);
+	    		
+	    List<Map<String,Object>> pageListWithCurrent = new ArrayList<>();
+	    for(int p : pageInfo.getPageList()) {
+	        Map<String,Object> m = new HashMap<>();
+	        m.put("page", p);
+	        m.put("isCurrent", p == pageInfo.getCurrentPage());
+	        pageListWithCurrent.add(m);
+	    }
+	    
+	 
+	    
+	    model.addAttribute("questionList", questionList);
+	    model.addAttribute("pageInfo", pageInfo);
+	    model.addAttribute("pageList", pageListWithCurrent);
+	    
+	 		
+		return "professor/questionList";
+	}
 	
 	// 과제 점수 등록하기
 	@PostMapping("/professor/addResultScore")
@@ -106,7 +208,7 @@ public class ProfessorController {
 	@GetMapping("/professor/addProject") 
 	public String addProject(HttpSession session, Model model) {
 		Emp loginProfessor = getLoginProfessor(session);
-		List<Course> courseList = professorService.getCourseAttandance(loginProfessor.getEmpNo());
+		List<Course> courseList = professorService.getCourseAttandanceAndScore(loginProfessor.getEmpNo());
 		model.addAttribute("courseList", courseList);
 		
 		return "professor/addProject";
@@ -317,7 +419,7 @@ public class ProfessorController {
 	@GetMapping("/professor/attendance")
 	public String attendance(HttpSession session, Model model) {
 		Emp loginProfessor = getLoginProfessor(session);
-		List<Course> courseList = professorService.getCourseAttandance(loginProfessor.getEmpNo());
+		List<Course> courseList = professorService.getCourseAttandanceAndScore(loginProfessor.getEmpNo());
 		model.addAttribute("courseList", courseList);
 		log.debug("courseList : " + courseList);
 		return "professor/attendance";

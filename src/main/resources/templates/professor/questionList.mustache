@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>학습관리시스템</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/questionListPF.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    {{ >layouts/header }}
+    <div class="container">
+        {{ >layouts/navProfessor }}
+        <div class="main-content">
+            <h2>문의사항 리스트</h2>
+            
+            <table class="question-table">
+                <thead>
+                    <tr>
+                        <th>질문번호</th>
+                        <th>학번</th>
+                        <th>강의제목</th>
+                        <th>질문제목</th>
+                        <th>질문내용</th>
+                        <th>등록일</th>
+                        <th>답글달기</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#questionList}}
+                    <tr class="question-row" data-qno="{{questionNo}}">
+                        <td>{{questionNo}}</td>
+                        <td>{{studentNo}}</td>
+                        <td>{{courseName}}</td>
+                        <td>{{questionTitle}}</td>
+                        <td class="content-cell">
+                            <span class="question-content" data-full="{{questionContents}}">
+                                {{questionContents}}
+                            </span>
+                            <button class="toggle-content">더보기</button>
+                        </td>
+                        <td>{{createdate}}</td>
+                        <td>
+                            <button class="open-reply" data-qno="{{questionNo}}">답글쓰기</button>
+                        </td>
+                    </tr>
+                    
+                    <tr class="reply-row" data-qno="{{questionNo}}" style="display:none;">
+                        <td colspan="7">
+                            <div class="reply-box">
+                                <input type="text" class="reply-input" placeholder="답글을 입력하세요...">
+                                <button class="send-reply">등록</button>
+                            </div>
+                            
+                            {{#answerContents}}
+                            <div class="answer-list">
+                                {{#answerContents}}
+                                <div class="answer-item"><strong>답변:</strong> {{answerContents}}</div>
+                                {{/answerContents}}
+                            </div>
+                            <button class="toggle-answers"></button>
+                            {{/answerContents}}
+                        </td>
+                    </tr>
+                    {{/questionList}}
+                </tbody>
+            </table>
+            
+            <!-- 페이지네이션 -->
+            <div class="pagination">
+                {{#pageInfo.prePage}}
+                <a href="{{springMacroRequestContext.request.contextPath}}/professor/questionList?currentPage={{pageInfo.prePage}}">이전</a>
+                {{/pageInfo.prePage}}
+                
+                {{#pageList}}
+                    {{#isCurrent}}
+                    <strong>{{page}}</strong>
+                    {{/isCurrent}}
+                    {{^isCurrent}}
+                    <a href="{{springMacroRequestContext.request.contextPath}}/professor/questionList?currentPage={{page}}">{{page}}</a>
+                    {{/isCurrent}}
+                {{/pageList}}
+                
+                {{#pageInfo.nextPage}}
+                <a href="{{springMacroRequestContext.request.contextPath}}/professor/questionList?currentPage={{pageInfo.nextPage}}">다음</a>
+                {{/pageInfo.nextPage}}
+            </div>
+        </div>
+    </div>
+    {{ >layouts/footer }}
+    
+<script>
+$(document).ready(function() {
+    const previewLength = 50;
+
+    // 내용 미리보기 처리
+    $(".question-content").each(function() {
+        let fullText = $(this).data("full");
+        if (fullText.length > previewLength) {
+            $(this).text(fullText.substring(0, previewLength) + "...");
+        } else {
+            $(this).siblings(".toggle-content").hide();
+        }
+    });
+    
+    $(".toggle-answers").each(function() {
+        let $btn = $(this);
+        let $list = $btn.closest(".reply-row").find(".answer-list");
+        
+        if ($list.find(".answer-item").length > 0) {
+            $list.show();
+            $btn.show().text("답글접기");
+        } else {
+            $btn.hide();
+        }
+    });
+    
+    // 더보기 / 접기
+    $(".toggle-content").click(function() {
+        let contentDiv = $(this).siblings(".question-content");
+        let fullText = contentDiv.data("full");
+
+        if($(this).text() === "더보기"){
+            contentDiv.text(fullText);
+            $(this).text("접기");
+        } else {
+            contentDiv.text(fullText.substring(0, previewLength) + "...");
+            $(this).text("더보기");
+        }
+    });
+
+    // 답글쓰기 버튼
+    $(".open-reply").click(function() {
+        let qno = $(this).data("qno");
+        let row = $(`.reply-row[data-qno="${qno}"]`);
+        row.slideToggle(300);
+    });
+
+ // 답글 등록
+    $(document).on("click", ".send-reply", function(event){
+    	event.preventDefault(); // ★ 새로고침 방지
+        let replyRow = $(this).closest(".reply-row");
+        let input = $(this).siblings(".reply-input");
+        let replyText = input.val().trim();
+        let answerList = replyRow.find(".answer-list");
+        let toggleBtn = replyRow.find(".toggle-answers");
+
+        if(replyText === ""){
+            alert("답글을 입력하세요.");
+            return;
+        }
+
+        $.ajax({
+            url: "/professor/addAnswer",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                questionNo: replyRow.data("qno"),
+                answerContents: replyText
+            }),
+            success: function(res){
+                if(res.success){
+                    alert("답글 등록 완료!");
+                    input.val("");          // 입력 초기화
+
+                    // 기존 answer-list에 append
+                    answerList.html(`<div class="answer-item">${replyText}</div>`);
+                    
+                    answerList.show();       		 // 리스트 보이기
+                    toggleBtn.show(); // 버튼 보이기 & 텍스트 초기화
+                    
+                } else {
+                    alert("답글 등록 실패");
+                }
+            },
+            error: function(){
+                alert("서버 오류 발생");
+            }
+        });
+    });
+
+    // 답글보기 / 접기
+    $(document).on("click", ".toggle-answers", function(){
+        let $btn = $(this);
+        let $row = $btn.closest(".reply-row");
+        let $list = $row.find(".answer-list");
+
+        $list.slideToggle(200, function(){
+            // 토글 완료 후 버튼 텍스트 변경
+            $btn.text($list.is(":visible") ? "답글접기" : "답글보기");
+        });
+    });
+});
+</script>
+</body>
+</html>
