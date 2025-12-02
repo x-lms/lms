@@ -155,5 +155,20 @@ public class EmpService {
 	public int getRowPerPage() {
 		return ROW_PER_PAGE;
 	}
+	
+	// 교수 정보
+	public ProfessorInfo getProfessorInfo(int prfNo) {
+		return empMapper.selectProfessor(prfNo);
+	}
+	
+	// 교수 정보 수정
+	public void updateProfessor(ProfessorInfo pi) {
+		empMapper.updateProfessor(pi);
+	}
+	
+	// 교수 삭제
+	public void deleteProfessor(int prfNo) {
+		empMapper.deleteProfessor(prfNo);
+	}
 }
 

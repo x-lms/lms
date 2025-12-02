@@ -10,4 +10,6 @@ public class ProfessorInfo {
 	private int deptNo;
 	private String deptName;
 	private String prfPhone;
+	private String prfBirth;
+	private String prfImg;
 }

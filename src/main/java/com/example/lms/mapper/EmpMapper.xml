@@ -65,4 +65,26 @@
 			AND e.dept_no = #{searchCategory}
 		</if>
 	</select>
+	
+	<!-- 교수 정보 -->
+	<select id="selectProfessor" parameterType="int" resultType="com.example.lms.dto.ProfessorInfo">
+		SELECT e.emp_no prfNo, e.emp_name prfName, e.dept_no deptNo, IFNULL(d.dept_name, '미배정') deptName, e.emp_email prfEmail
+				, e.emp_phone prfPhone, e.emp_birth prfBirth
+				, e.emp_img prfImg
+		FROM emp e LEFT OUTER JOIN (SELECT dept_no, dept_name FROM dept) d ON e.dept_no = d.dept_no
+		WHERE e.emp_no = #{prfNo}
+	</select>
+	
+	<!-- 교수정보 수정 -->
+	<update id="updateProfessor" parameterType="com.example.lms.dto.ProfessorInfo">
+		UPDATE emp
+	    SET  emp_name = #{prfName}, emp_email = #{prfEmail}, dept_no = #{deptNo}, emp_phone = #{prfPhone}
+	    	, emp_birth = #{prfBirth}, emp_img = #{prfImg}
+	    WHERE emp_no = #{prfNo}
+	</update>
+	
+	<!-- 교수정보 삭제 -->
+	<delete id="deleteProfessor" parameterType="int">
+		DELETE FROM emp WHERE emp_no = #{prfNo}
+	</delete>
 </mapper>

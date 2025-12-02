@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### UPLOAD (추가) ###
+# upload 내부 파일과 폴더는 모두 무시
+src/main/webapp/upload/*
+
+# 하지만 .gitkeep은 추적해서 폴더 자체는 유지
+!src/main/webapp/upload/.gitkeep

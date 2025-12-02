@@ -1,14 +1,19 @@
 package com.example.lms.controller;
 
+import java.beans.PropertyEditorSupport;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
@@ -20,6 +25,7 @@ import com.example.lms.dto.Notice;
 import com.example.lms.dto.NoticeFile;
 import com.example.lms.dto.ProfessorInfo;
 import com.example.lms.service.EmpService;
+import com.example.lms.service.ProfessorService;
 import com.example.lms.service.PublicService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +34,17 @@ import jakarta.servlet.http.HttpServletRequest;
 public class EmpController {
 	@Autowired EmpService empService;
 	@Autowired PublicService publicService;
-	
+	private final String uploadDir = "C:/lms/uploads";
+	@InitBinder("modifyProfessor")
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(String.class, new PropertyEditorSupport() {
+			@Override
+			public void setAsText(String text) {
+				setValue((text == null || text.trim().isEmpty()) ? null : text.trim());
+			}
+		});
+	}
+
 	@GetMapping("/emp/empHome")
 	public String empHome(@SessionAttribute("loginEmp") Emp loginEmp) {
 		return "/emp/empHome";
@@ -46,11 +62,8 @@ public class EmpController {
 		n.setEmpNo(loginEmp.getEmpNo());
 		n.setNoticeWriter(loginEmp.getEmpName());
 		
-		// 업로드 폴더 절대경로
-		String path = request.getServletContext().getRealPath("/upload");
-		
 		// 서비스 호출
-		empService.insertNotice(n, files, path);
+		empService.insertNotice(n, files, uploadDir);
 		
 		return "redirect:/public/noticeList";
 	}
@@ -70,18 +83,17 @@ public class EmpController {
 	public String modifyNotice(Notice notice, HttpServletRequest request,
 								@RequestParam(value="attachments", required=false) MultipartFile[] files,
 								@RequestParam(value="deleteFileNos", required=false) String deleteFiles) {
-		String path = request.getServletContext().getRealPath("/upload");
-		empService.modifyNotice(notice, files, deleteFiles, path);
+		empService.modifyNotice(notice, files, deleteFiles, uploadDir);
 		return "redirect:/public/noticeOne?noticeNo=" + notice.getNoticeNo();
 	}
 	
 	// 공지사항 삭제
 	@PostMapping("/emp/deleteNotice")
 	public String deleteNotice(int noticeNo, HttpServletRequest request) {
-		String uploadPath = request.getServletContext().getRealPath("/upload");
-		empService.deleteNotice(noticeNo, uploadPath);
+		empService.deleteNotice(noticeNo, uploadDir);
 		return "redirect:/public/noticeList";
 	}
+	
 	// 교수 추가
 	@GetMapping("/emp/addProfessor")
 	public String addProfessor(Model model) {
@@ -111,7 +123,7 @@ public class EmpController {
 		List<ProfessorInfo> prfList = empService.getProfessorList(currentPage, searchName, searchDept);
 		
 		// 페이징 계산
-		int rowPerPage = publicService.getRowPerPage();
+		int rowPerPage = empService.getRowPerPage();
 		int totalCount = empService.countPrf(searchName, searchDept);
 		int totalPage = (int) Math.ceil((double) totalCount / rowPerPage);
 		
@@ -136,10 +148,82 @@ public class EmpController {
 		
 		model.addAttribute("deptList", deptList);
 		model.addAttribute("prfList", prfList);
+		model.addAttribute("pageList", pageList);
 		model.addAttribute("prePage", prePage);
 		model.addAttribute("nextPage", nextPage);
 		model.addAttribute("searchName", searchName);
 		model.addAttribute("searchDept", searchDept);
 		return "/emp/professorList";
+	}
+	
+	// 교수 정보
+	@GetMapping("/emp/professorInfo")
+	public String professorInfo(Model model, int prfNo) {
+		ProfessorInfo pi = empService.getProfessorInfo(prfNo);
+		System.out.println("조회된 교수번호 = " + pi.getPrfNo());
+		model.addAttribute("professor", pi);
+		return "/emp/professorInfo";
+	}
+	
+	// 교수 정보 수정
+	@GetMapping("/emp/modifyProfessor")
+	public String modifyProfessor(Model model, int prfNo) {
+		ProfessorInfo pi = empService.getProfessorInfo(prfNo);
+		List<Dept> deptList = empService.getDeptList();
+		for(Dept d : deptList) {
+			if(pi.getDeptName() != null && (pi.getDeptName()).equals(d.getDeptName())) {
+				d.setSelected(true);
+			}
+		}
+		
+		if(pi.getPrfEmail() != null && pi.getPrfEmail().contains("@")) {
+			String prefix = pi.getPrfEmail().split("@")[0];
+			pi.setPrfEmail(prefix);	//prefix만 넣음
+		}
+		
+		model.addAttribute("professor", pi);
+		model.addAttribute("deptList", deptList);
+		return "/emp/modifyProfessor";
+	}
+	@PostMapping("/emp/modifyProfessor")
+	public String modifyProfessor(ProfessorInfo pi, @RequestParam(value = "prfImgFile", required = false)  MultipartFile file) throws Exception {
+		File dir = new File(uploadDir);
+		if(!dir.exists()) dir.mkdir();
+		
+		String newFileName = null;
+		
+		if(file != null && !file.isEmpty()) {
+			// 새 파일명 생성
+			String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+			newFileName = UUID.randomUUID().toString().replace("-", "") + ext;
+			
+			// 저장
+			File saveFile = new File(uploadDir, newFileName);
+			file.transferTo(saveFile);
+			
+			// 기존 이미지 삭제
+			if(pi.getPrfImg() != null && !pi.getPrfImg().equals("")) {
+				File old = new File(uploadDir, pi.getPrfImg());
+				if(old.exists()) old.delete();
+			}
+			
+			// DB에 저장할 새 파일명 set
+			pi.setPrfImg(newFileName);
+		}
+		
+		// 사진변경 안했을 시 기존 prfImg 유지
+		if(newFileName == null) {
+			pi.setPrfImg(pi.getPrfImg());
+		}
+		pi.setPrfEmail(pi.getPrfEmail() + "@kru.com");
+		empService.updateProfessor(pi);
+		return "redirect:/emp/professorInfo?prfNo=" + pi.getPrfNo();
+	}
+	
+	// 교수정보 삭제
+	@GetMapping("/emp/deleteProfessor")
+	public String delteProfessor(int prfNo) {
+		empService.deleteProfessor(prfNo);
+		return "redirect:/emp/professorList";
 	}
 }

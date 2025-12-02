@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습관리시스템 - 교수 수정</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+    <!-- include -->
+    {{>layouts/header}}
+    <div class="container">
+        {{>layouts/navEmp}}
+        <div class="main-content">
+            <div class="page-header">
+                <h2 class="page-title">교수 정보 수정</h2>
+            </div>
+            
+            <div class="professor-detail-container">
+                <div class="professor-detail-header">
+                    <h3 class="section-title">기본 정보</h3>
+                </div>
+                <form action="/emp/modifyProfessor" method="post" enctype="multipart/form-data">
+				{{#professor}}
+					<input type="hidden" name="prfNo" value="{{prfNo}}">
+					<input type="hidden" name="prfImg" {{#prfImg}}value="{{prfImg}}"{{/prfImg}}>
+                    <div class="professor-detail-content">
+                        <div class="professor-photo-section">
+                            <div class="professor-photo-large">
+                            	{{#prfImg}}
+	                            <img src="/uploads/{{prfImg}}" id="preview">
+								{{/prfImg}}
+								{{^prfImg}}
+	                            <img src="/uploads/default.png" id="preview">
+								{{/prfImg}}
+                            </div>
+                            <div class="photo-upload-box">
+                                <input type="file" name="prfImgFile" id="prfImgFile" class="file-input" accept="image/*">
+                                <label for="prfImgFile" class="photo-upload-btn">사진 변경</label>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-grid-row">
+                                <span class="info-grid-label">이름</span>
+                                <div class="info-grid-value">
+                                    <input type="text" name="prfName" class="form-input" value="{{prfName}}">
+                                </div>
+                            </div>
+                            <div class="info-grid-row">
+                                <span class="info-grid-label">이메일</span>
+                                <div class="info-grid-value">
+                                    <div class="email-input-group">
+                                        <input type="text" name="prfEmail" class="email-prefix" value="{{prfEmail}}">
+                                        <span class="email-separator">@</span>
+                                        <span class="email-domain">kru.com</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-grid-row">
+                                <span class="info-grid-label">학과</span>
+                                <div class="info-grid-value">
+                                    <select name="deptNo" class="form-select" required>
+                                        <option value="">미배정</option>
+                                        {{#deptList}}
+			                        		<option value="{{deptNo}}" {{#selected}}selected{{/selected}}>{{deptName}}</option>
+			                        	{{/deptList}}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="info-grid-row">
+                                <span class="info-grid-label">휴대폰번호</span>
+                                <div class="info-grid-value">
+                                    <input type="tel" name="prfPhone" class="form-input" placeholder="010-0000-0000" {{#prfPhone}}value="{{prfPhone}}"{{/prfPhone}}>
+                                </div>
+                            </div>
+                            <div class="info-grid-row">
+                                <span class="info-grid-label">생년월일</span>
+                                <div class="info-grid-value">
+                                    <input type="date" id="prfBirth" name="prfBirth" class="form-input" {{#prfBirth}}value="{{prfBirth}}"{{/prfBirth}}>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="professor-detail-actions">
+                        <a href="/emp/professorInfo?prfNo={{prfNo}}" class="btn-secondary">취소</a>
+                        <button type="submit" class="btn-primary">수정 완료</button>
+                    </div>
+                    {{/professor}}
+                </form>
+            </div>
+        </div>
+    </div>
+    {{>layouts/footer}}
+
+    <script>
+        // 이미지 미리보기
+        $('#prfImgFile').on('change', function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    $('#preview').attr('src', event.target.result);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        $('input[name="prfPhone"]').on('change keyup', function() {
+			let num = $(this).val().replace(/[^0-9]/g, "");
+			let formatted = "";
+			
+			if (num.length < 4) {
+				formatted = num;
+			} else if (num.length < 7) {
+				formatted = num.substr(0, 3) + "-" + num.substr(3);
+			} else if (num.length < 11) {
+				formatted = num.substr(0, 3) + "-" + num.substr(3, 3) + "-" + num.substr(6);
+			} else {
+				formatted = num.substr(0, 3) + "-" + num.substr(3, 4) + "-" + num.substr(7);
+			}
+			
+			$(this).val(formatted);
+        });
+	</script>
+</body>
+</html>

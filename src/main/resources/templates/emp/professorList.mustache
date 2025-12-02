@@ -49,9 +49,9 @@
 	                        <tr>
 	                            <td class="col150">{{prfNo}}</td>
 	                            <td class="col150">{{deptName}}</td>
-	                            <td class="col-name">{{prfName}}</td>
-	                            <td class="col150">{{prfPhone}}</td>
-	                            <td class="col200">{{prfEmail}}</td>
+	                            <td class="col-name"><a href="{{springMacroRequestContext.request.contextPath}}/emp/professorInfo?prfNo={{prfNo}}">{{prfName}}</a></td>
+	                            <td class="col150">{{#prfPhone}}{{prfPhone}}{{/prfPhone}}</td>
+	                            <td class="col200">{{#prfBirth}}{{prfBirth}}{{/prfBirth}}</td>
 	                        </tr>
                     	{{/prfList}}
                     </tbody>

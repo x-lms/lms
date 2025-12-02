@@ -32,4 +32,10 @@ public interface EmpMapper {
 	// 교수 리스트
 	List<ProfessorInfo> selectProfessorList(SearchList sl);
 	int countProfessor(SearchList sl);
+	// 교수 정보
+	ProfessorInfo selectProfessor(int prfNo);
+	// 교수 정보 수정
+	int updateProfessor(ProfessorInfo pi);
+	// 교수 정보 삭제
+	int deleteProfessor(int prfNo);
 }

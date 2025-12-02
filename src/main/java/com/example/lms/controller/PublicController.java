@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PublicController {
 	@Autowired
 	PublicService publicService;
+	private final String uploadDir = "C:/lms/uploads";
 	// 로그인 액션
 	@GetMapping({"/", "/login"})
 	public String login() {
@@ -149,8 +150,8 @@ public class PublicController {
 		}
 		
 		// 파일이 실제 저장된 경로
-		String path = request.getServletContext().getRealPath("/upload");
-		File file = new File(path, nf.getFileName());
+		String filePath = uploadDir + "/" + nf.getFileName();
+		File file = new File(filePath);
 		
 		if(!file.exists()) {
 			throw new RuntimeException("파일이 서버에 존재하지 않습니다.");
@@ -161,7 +162,7 @@ public class PublicController {
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + URLEncoder.encode(nf.getOriginName(), "UTF-8") + "\"");
 	    response.setContentLengthLong(file.length());
 	    
-	 // 파일 스트림 전송
+	    // 파일 스트림 전송
 	    FileInputStream fis = new FileInputStream(file);
 	    ServletOutputStream sos = response.getOutputStream();
 
