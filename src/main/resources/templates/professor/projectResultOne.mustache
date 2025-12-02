@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<title>학습관리시스템</title>
+	<link rel="stylesheet" href="/css/common.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/projectResultOne.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {{>layouts/header}}
+    <div class="container">
+        {{>layouts/navProfessor}}
+        <div class="main-content">
+          
+            {{#pr}}
+            <div class="detail-container">
+                <!-- 헤더 섹션 -->
+                <div class="detail-header">
+                    <h3>{{resultTitle}}</h3>
+                    <div class="submission-info">
+                        제출번호: {{resultNo}} | 제출일: {{createdate}}
+                    </div>
+                </div>
+
+                <!-- 본문 섹션 -->
+                <div class="detail-body">
+                    <!-- 학생 정보 -->
+                    <div class="info-card">
+                        <div class="info-row">
+                            <span class="info-label">학생번호</span>
+                            <span class="info-value">{{studentNo}}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">학생이름</span>
+                            <span class="info-value">{{studentName}}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">제출일시</span>
+                            <span class="info-value">{{createdate}}</span>
+                        </div>
+                    </div>
+
+                    <!-- 결과물 내용 -->
+                    <h4 class="section-subtitle">결과물 내용</h4>
+                    <div class="content-section">
+                        {{resultContents}}
+                    </div>
+
+                    <!-- 첨부파일 -->
+                    <div class="info-card">
+                        <div class="info-row">
+                            <span class="info-label">첨부파일</span>
+                            <span class="info-value">
+                                {{#resultFile}}
+                                    <a href="#" class="file-attachment">{{resultFile}}</a>
+                                {{/resultFile}}
+                                {{^resultFile}}
+                                    <span class="text-muted">첨부파일 없음</span>
+                                {{/resultFile}}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 점수 등록 -->
+                    <div class="score-card">
+                        <h4>📝 과제 점수 등록</h4>
+                        <form action="{{springMacroRequestContext.request.contextPath}}/professor/addResultScore" method="post" class="score-form">
+                            <input type="number" id="resultScore" name="resultScore" class="score-input" placeholder="점수 입력" required min="0" max="20" value="{{resultScore}}">
+                            <input type="hidden" name="resultNo" value="{{resultNo}}">
+                            <input type="hidden" name="projectNo" value="{{projectNo}}">
+                            <button type="submit" class="btn-primary">점수 등록</button>
+                        </form>
+                    </div>
+
+                    <!-- 버튼 그룹 -->
+                    <div class="button-group">
+                        <a href="{{springMacroRequestContext.request.contextPath}}/professor/projectResultList?projectNo={{projectNo}}" class="btn-secondary">목록으로</a>
+                    </div>
+                </div>
+            </div>
+            {{/pr}}
+        </div>
+    </div>
+    {{>layouts/footer}}
+    
+<script>
+	$(document).ready(function() {
+	    $('#resultScore').on('input', function() {
+	        let maxScore = 20;
+	        let minScore = 0;
+	        let val = parseInt($(this).val());
+	
+	        if (isNaN(val)) {
+	            $(this).val('');
+	            return;
+	        }
+	
+	        if (val > maxScore) {
+	            $(this).val(maxScore);
+	        } else if (val < minScore) {
+	            $(this).val(minScore);
+	        }
+	    });
+	});
+</script>
+</body>
+</html>

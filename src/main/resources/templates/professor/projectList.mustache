@@ -2,11 +2,74 @@
 <html>
 <head>
 <meta charset="UTF-8">
-	<title>학습관리시스템</title>
-	<link rel="stylesheet" href="/css/common.css">
-	<link rel="stylesheet" href="/css/layout.css">
+<title>학습관리시스템</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/projectList.css">
 </head>
 <body>
+	{{ >layouts/header }}
+	<div class="container">
+	{{ >layouts/navProfessor }}
+	<div class="main-content">
 
+		<h2>과제 리스트</h2>
+
+		<table>
+		    <thead>
+		        <tr>
+		            <th>과제번호</th>
+		            <th>강의번호</th>
+		            <th>강의제목</th>
+		            <th>과제제목</th>
+		            <th>마감일</th>
+		            <th>삭제</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        {{#projectList}}
+		        <tr>
+		            <td>{{projectNo}}</td>
+		            <td>{{courseNo}}</td>
+		            <td>{{courseName}}</td>
+		            <td><a href="{{springMacroRequestContext.request.contextPath}}/professor/projectResultList?projectNo={{projectNo}}">{{projectName}}</a></td>
+		            <td>{{projectDeadline}}</td>
+		            <td>
+				  <form action="{{springMacroRequestContext.request.contextPath}}/professor/removeProject" method="post" class="delete-form" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+				      <input type="hidden" name="projectNo" value="{{projectNo}}">
+				      <button type="submit" class="btn-delete">삭제</button>
+				  </form>
+				</td>
+		        </tr>
+		        {{/projectList}}
+		    </tbody>
+		</table>
+		
+		<a href="{{springMacroRequestContext.request.contextPath}}/professor/addProject" class="register-btn">과제 등록</a>
+		<!-- 페이지네이션 -->
+		<div class="pagination">
+		   <!-- 이전 페이지 -->
+			{{#pageInfo.prePage}}
+			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/projectList?currentPage={{pageInfo.prePage}}">이전</a>
+			{{/pageInfo.prePage}}
+			
+			<!-- 페이지 번호 -->
+			{{#pageList}}
+			    {{#isCurrent}}
+			        <strong>{{page}}</strong>
+			    {{/isCurrent}}
+			    {{^isCurrent}}
+			        <a href="{{springMacroRequestContext.request.contextPath}}/professor/projectList?currentPage={{page}}">{{page}}</a>
+			    {{/isCurrent}}
+			{{/pageList}}
+			
+			<!-- 다음 페이지 -->
+			{{#pageInfo.nextPage}}
+			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/projectList?currentPage={{pageInfo.nextPage}}">다음</a>
+			{{/pageInfo.nextPage}}
+		</div>
+	</div>
+	</div>
+    {{ >layouts/footer }}
 </body>
 </html>
