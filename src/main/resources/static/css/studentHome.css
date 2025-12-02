@@ -1,0 +1,315 @@
+@charset "UTF-8";
+
+/* ==================== 교수 홈 CSS ==================== */
+
+/* 메인 콘텐츠 */
+.main-content {
+    padding: 24px;
+}
+
+.main-content h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 3px solid #2196F3;
+}
+
+/* 섹션 공통 스타일 */
+section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 28px;
+    margin-bottom: 28px;
+}
+
+section h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* 시간표 섹션 */
+.timetable table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #e5e7eb;
+}
+
+.timetable thead {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+}
+
+.timetable th {
+    padding: 14px 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.timetable th:last-child {
+    border-right: none;
+}
+
+.timetable th:first-child {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    width: 80px;
+}
+
+.timetable tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease;
+}
+
+.timetable tbody tr:hover {
+    background: #f9fafb;
+}
+
+.timetable td {
+    padding: 16px 12px;
+    text-align: center;
+    font-size: 13px;
+    color: #4b5563;
+    border-right: 1px solid #f1f5f9;
+    min-height: 60px;
+    vertical-align: top;
+}
+
+.timetable td:first-child {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #1f2937;
+    border-right: 1px solid #e5e7eb;
+}
+
+.timetable td:last-child {
+    border-right: none;
+}
+
+/* 강의가 있는 셀 스타일 */
+.timetable td:not(:first-child):not(:empty) {
+    background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+    color: #1e40af;
+    font-weight: 500;
+    border: 1px solid #93c5fd;
+}
+
+/* 달력 섹션 */
+.calendar {
+    min-height: 650px;
+}
+
+#calendar {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+/* FullCalendar 커스터마이징 */
+.fc {
+    font-family: inherit;
+}
+
+.fc-header-toolbar {
+    margin-bottom: 20px !important;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.fc-toolbar-title {
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: #1f2937;
+}
+
+.fc-button {
+    background: #1e40af !important;
+    border: none !important;
+    padding: 8px 16px !important;
+    font-weight: 500 !important;
+    text-transform: capitalize !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.fc-button:hover {
+    background: #1d4ed8 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3) !important;
+}
+
+.fc-button:active {
+    background: #1e3a8a !important;
+}
+
+.fc-button-primary:disabled {
+    background: #9ca3af !important;
+    opacity: 0.6;
+}
+
+.fc-daygrid-day {
+    transition: background-color 0.2s ease;
+}
+
+.fc-daygrid-day:hover {
+    background: #f9fafb;
+}
+
+.fc-daygrid-day-number {
+    padding: 8px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.fc-day-today {
+    background: #eff6ff !important;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+    color: #1e40af;
+    font-weight: 600;
+}
+
+.fc-event {
+    background: #3b82f6 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 2px 6px !important;
+    font-size: 12px !important;
+    cursor: pointer;
+}
+
+.fc-event:hover {
+    background: #2563eb !important;
+}
+
+.fc-col-header-cell {
+    background: #f1f5f9;
+    padding: 12px 8px;
+    font-weight: 600;
+    color: #374151;
+    border-color: #e5e7eb !important;
+}
+
+.fc-scrollgrid {
+    border-color: #e5e7eb !important;
+}
+
+.fc-daygrid-day {
+    border-color: #f1f5f9 !important;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .main-content {
+        padding: 20px;
+    }
+
+    .main-content h2 {
+        font-size: 24px;
+    }
+
+    section {
+        padding: 20px;
+    }
+
+    section h3 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 16px;
+    }
+
+    .main-content h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    section {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    section h3 {
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+
+    /* 시간표 반응형 */
+    .timetable {
+        overflow-x: auto;
+    }
+
+    .timetable table {
+        min-width: 600px;
+    }
+
+    .timetable th,
+    .timetable td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    .timetable th:first-child {
+        width: 60px;
+    }
+
+    /* 달력 반응형 */
+    .calendar {
+        min-height: auto;
+    }
+
+    #calendar {
+        padding: 12px;
+    }
+
+    .fc-header-toolbar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .fc-toolbar-title {
+        font-size: 16px !important;
+    }
+
+    .fc-button {
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+    }
+
+    .fc-daygrid-day-number {
+        padding: 4px;
+        font-size: 12px;
+    }
+
+    .fc-event {
+        font-size: 11px !important;
+        padding: 1px 4px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .timetable table {
+        min-width: 500px;
+        font-size: 11px;
+    }
+
+    .timetable th,
+    .timetable td {
+        padding: 8px 4px;
+    }
+}

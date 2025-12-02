@@ -216,25 +216,26 @@
 	    WHERE student_no = #{studentNo} AND course_no = #{courseNo}
 	</delete>
  
-<!-- 교수 번호 조회 -->
-    <select id="selectProfessorNoByCourseNo" resultType="Integer">
-        SELECT emp_no
-        FROM course
-        WHERE course_no = #{courseNo}
-    </select>
+	<!-- 교수 번호 조회 -->
+<select id="selectProfessorNoByCourseNo" resultType="java.lang.Integer" parameterType="int">
+    SELECT emp_no
+    FROM course
+    WHERE course_no = #{courseNo}
+</select>
 
-    <insert id="insertQuestion" parameterType="com.example.lms.dto.Question">
+   <insert id="insertQuestion" parameterType="com.example.lms.dto.Question">
     INSERT INTO question 
-      (student_no, professor_no, course_no,question_title, question_contents, createdate)
+    (student_no, emp_no, course_no, question_title, question_contents, createdate)
     VALUES 
-      (#{studentNo}, #{professorNo}, #{courseNo},#{questionTitle}, #{questionContents}, NOW())
+    (#{studentNo}, #{empNo}, #{courseNo}, #{questionTitle}, #{questionContents}, NOW())
 </insert>
+
 
 <select id="selectQuestionsByStudent" resultType="com.example.lms.dto.Question">
     SELECT 
 	    question_no AS questionNo,
 	    student_no AS studentNo,
-	    professor_no AS professorNo,
+	    emp_no AS emp_no,
 	    course_no AS courseNo,
 	    question_title AS questionTitle,
 	    question_contents AS questionContents,
@@ -258,7 +259,7 @@
     SELECT 
         question_no AS questionNo,
         student_no AS studentNo,
-        professor_no AS professorNo,
+        emp_no AS emp_no,
         course_no AS courseNo,
         question_title AS questionTitle,
         question_contents AS questionContents,
@@ -268,5 +269,23 @@
     FROM question
     WHERE question_no = #{questionNo}
 </select>
+
+<!-- QuestionMapper.xml -->
+
+<update id="updateQuestion" parameterType="com.example.lms.dto.Question">
+    UPDATE question
+    SET
+        question_title = #{questionTitle},
+        question_contents = #{questionContents}
+    WHERE
+        question_no = #{questionNo}
+        AND student_no = #{studentNo} <!-- 본인 확인 -->
+</update>
+
+	<delete id="deleteQuestion" parameterType="int">
+    DELETE FROM question
+    WHERE question_no = #{questionNo}
+</delete>
+	
 
 </mapper>

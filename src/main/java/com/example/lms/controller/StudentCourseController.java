@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -32,9 +32,8 @@ public class StudentCourseController {
         List<TimetableCell> timetable = studentService.getStudentSchedule(studentNo);
 
         model.addAttribute("timetable", timetable);
-        return "student/studentSchedule"; // studentSchedule.mustache
+        return "student/studentSchedule";
     }
-
 
     // 수강 과목 목록
     @GetMapping("/courseList")
@@ -49,7 +48,7 @@ public class StudentCourseController {
         return "student/courseList";
     }
 
-    // 수강 신청 페이지 (검색 + 페이징)
+    // 수강 신청 페이지
     @GetMapping("/addCourse")
     public String addCoursePage(
             HttpSession session, Model model,
@@ -83,7 +82,6 @@ public class StudentCourseController {
         return "student/addCourse";
     }
 
-
     // 수강 신청 처리
     @PostMapping("/addCourse/{courseNo}")
     public String addCourse(
@@ -101,7 +99,6 @@ public class StudentCourseController {
             model.addAttribute("msg", e.getMessage());
         }
 
-        // 신청 후 첫 페이지 다시 조회
         List<StudentCourse> courses = studentService.getAvailableCoursesWithTimes(studentNo, 1, 10);
         int totalCourses = studentService.countAvailableCourses(studentNo);
         int totalPages = (int) Math.ceil((double) totalCourses / 10);
@@ -112,10 +109,8 @@ public class StudentCourseController {
 
         return "student/addCourse";
     }
-     
-     
- 
- // 수강 과목 상세보기
+
+    // 수강 과목 상세보기
     @GetMapping("/courseOne/{courseNo}")
     public String courseDetail(
             @PathVariable int courseNo,
@@ -123,24 +118,17 @@ public class StudentCourseController {
             Model model) {
 
         int studentNo = loginStudent.getStudentNo();
-
-        // 과목 기본 정보 (강의 + 교수 + 시간표)
         StudentCourse course = studentService.getCourseDetail(studentNo, courseNo);
-
-        // 과제 목록
         List<Assignment> assignmentList = studentService.getAssignments(courseNo);
-
-        
-
-        // 취소 가능 여부 
         boolean cancelable = studentService.isCancelable(studentNo, courseNo);
 
         model.addAttribute("course", course);
         model.addAttribute("assignmentList", assignmentList);
         model.addAttribute("cancelable", cancelable);
 
-        return "student/courseOne"; // courseOne.mustache
+        return "student/courseOne";
     }
+
     @PostMapping("/course-cancel/{courseNo}")
     public String cancelCourse(
             @PathVariable int courseNo,
@@ -156,72 +144,127 @@ public class StudentCourseController {
             model.addAttribute("msg", e.getMessage());
         }
 
-        
         return "redirect:/student/courseList";
-
     }
+
  // ========================= 질문 관련 =========================
 
- // 질문 등록 페이지
- @GetMapping("/questionWrite/{courseNo}")
- public String questionWrite(
+ // 질문 작성/수정 페이지 (GET)
+ @GetMapping({"/questionWrite/{courseNo}", "/questionWrite/{courseNo}/{questionNo}"})
+ public String questionWritePage(
          @PathVariable int courseNo,
+         @PathVariable(required = false) Integer questionNo,
          @SessionAttribute("loginStudent") Student loginStudent,
          Model model) {
 
      int studentNo = loginStudent.getStudentNo();
 
+     // 강의 정보
      StudentCourse course = studentService.getCourseDetail(studentNo, courseNo);
      model.addAttribute("courseNo", course.getCourseNo());
      model.addAttribute("courseName", course.getCourseName());
+
+     Question question;
+
+     if (questionNo != null) {
+         // 수정용 질문 불러오기
+         question = studentService.getQuestionByNo(questionNo);
+
+         if (question == null || question.getStudentNo() != studentNo) {
+             return "redirect:/student/questionList";
+         }
+
+         if (question.getQuestionTitle() == null) question.setQuestionTitle("");
+         if (question.getQuestionContents() == null) question.setQuestionContents("");
+
+         // 수정 모드 표시
+         model.addAttribute("isEdit", true);
+
+     } else {
+         // 신규 질문 작성용 빈 객체
+         question = new Question();
+         question.setCourseNo(courseNo);
+         question.setQuestionTitle("");     // null 방지
+         question.setQuestionContents("");  // null 방지
+
+         // 작성 모드 표시
+         model.addAttribute("isEdit", false);
+     }
+
+     model.addAttribute("question", question);
      return "student/questionWrite";
  }
 
- // 질문 등록 처리
- @PostMapping("/questionWrite/{courseNo}")
- public String submitQuestion(
-         @PathVariable int courseNo,
-         @SessionAttribute("loginStudent") Student loginStudent,
-         @RequestParam String questionTitle,
-         @RequestParam String questionContents) {
+//질문 작성/수정 처리 (POST)
+@PostMapping({"/questionWrite/{courseNo}", "/questionWrite/{courseNo}/{questionNo}"})
+public String submitQuestion(
+      @PathVariable int courseNo,
+      @PathVariable(required = false) Integer questionNo,
+      @SessionAttribute("loginStudent") Student loginStudent,
+      @RequestParam String questionTitle,
+      @RequestParam String questionContents,
+      RedirectAttributes redirectAttributes) {  
 
-     int studentNo = loginStudent.getStudentNo();
-     int professorNo = studentService.getProfessorNoByCourseNo(courseNo);
+  int studentNo = loginStudent.getStudentNo();
+  int empNo = studentService.getProfessorNoByCourseNo(courseNo);
 
-     Question question = new Question();
-     question.setStudentNo(studentNo);
-     question.setProfessorNo(professorNo);
-     question.setCourseNo(courseNo);
-     question.setQuestionTitle(questionTitle);
-     question.setQuestionContents(questionContents);
+  Question question = new Question();
+  question.setStudentNo(studentNo);
+  question.setEmpNo(empNo);
+  question.setCourseNo(courseNo);
+  question.setQuestionTitle(questionTitle);
+  question.setQuestionContents(questionContents);
 
-     studentService.insertQuestion(question);
+  if (questionNo != null && questionNo > 0) {
+      question.setQuestionNo(questionNo);
+      studentService.updateQuestion(question);
+      redirectAttributes.addFlashAttribute("msg", "질문이 성공적으로 수정되었습니다."); // 수정 메시지
+  } else {
+      studentService.insertQuestion(question);
+      redirectAttributes.addFlashAttribute("msg", "질문이 성공적으로 작성되었습니다."); // 작성 메시지
+  }
 
-     return "redirect:/student/courseOne/" + courseNo; // 작성 후 강의 상세로 이동
- }
+  return "redirect:/student/courseOne/" + courseNo;
+}
 
- // 질문 목록
- @GetMapping("/questionList")
- public String questionList(@SessionAttribute("loginStudent") Student loginStudent, Model model) {
-     int studentNo = loginStudent.getStudentNo();
+    // 질문 목록
+    @GetMapping("/questionList")
+    public String questionList(@SessionAttribute("loginStudent") Student loginStudent, Model model) {
+        int studentNo = loginStudent.getStudentNo();
+        List<Question> questions = studentService.getQuestionsByStudent(studentNo);
+        model.addAttribute("questions", questions);
+        return "student/questionList";
+    }
 
-     // Service에서 courseName까지 채워줌
-     List<Question> questions = studentService.getQuestionsByStudent(studentNo);
+    // 질문 상세보기
+    @GetMapping("/questionOne/{questionNo}")
+    public String questionOne(
+            @PathVariable int questionNo,
+            @SessionAttribute("loginStudent") Student loginStudent,
+            Model model) {
 
-     model.addAttribute("questions", questions);
-     return "student/questionList";
- }
+        Question question = studentService.getQuestionByNo(questionNo);
 
- // 질문 상세보기
- @GetMapping("/questionOne/{questionNo}")
- public String questionOne(
-         @PathVariable int questionNo,
-         Model model) {
+        if (question == null || question.getStudentNo() != loginStudent.getStudentNo()) {
+            return "redirect:/student/questionList";
+        }
 
-     Question question = studentService.getQuestionByNo(questionNo); // 필요 시 서비스에 추가
-     model.addAttribute("question", question);
-     return "student/questionOne";
- }
+        model.addAttribute("question", question);
+        return "student/questionOne";
+    }
 
- 
+    // 질문 삭제 처리
+    @PostMapping("/questionDelete/{questionNo}")
+    public String deleteQuestion(
+            @PathVariable int questionNo,
+            @SessionAttribute("loginStudent") Student loginStudent) {
+
+        Question question = studentService.getQuestionByNo(questionNo);
+
+        if (question != null && question.getStudentNo() == loginStudent.getStudentNo()) {
+            studentService.deleteQuestion(questionNo);
+        }
+
+        return "redirect:/student/questionList";
+    }
 }

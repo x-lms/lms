@@ -152,11 +152,58 @@ public class StudentService {
 
     // ========================= 학생 시간표 =========================
     public List<TimetableCell> getStudentSchedule(int studentNo) {
-        // 기존 로직 그대로...
-        return new ArrayList<>(); // 생략
+        // studentRepository → studentMapper로 변경
+        List<StudentCourse> courses = studentMapper.selectCoursesByStudentNo(studentNo)
+                                                    .stream()
+                                                    .map(this::mapCourseToStudentCourse)
+                                                    .toList();
+
+        // 시간표 초기화: 교시 1~9
+        List<TimetableCell> timetable = new ArrayList<>();
+        for (int i = 1; i <= 9; i++) {
+            TimetableCell cell = new TimetableCell();
+            cell.setPeriod(i);
+            timetable.add(cell);
+        }
+
+        // 각 강의의 courseTimes를 timetable에 매핑
+        for (StudentCourse course : courses) {
+            for (CourseTime ct : course.getCourseTimes()) {
+                int period = getPeriodFromTime(ct.getCourseTimeStart());
+                if (period < 1 || period > 9) continue;
+
+                TimetableCell cell = timetable.get(period - 1);
+                String courseInfo = course.getCourseName() + " (" + course.getCourseLocation() + ")";
+                switch (ct.getCoursedate()) {
+                    case "월": cell.setMon(courseInfo); break;
+                    case "화": cell.setTue(courseInfo); break;
+                    case "수": cell.setWed(courseInfo); break;
+                    case "목": cell.setThu(courseInfo); break;
+                    case "금": cell.setFri(courseInfo); break;
+                }
+            }
+        }
+
+        return timetable;
     }
 
-    // ========================= 강의 상세보기 =========================
+    private int getPeriodFromTime(String startTime) {
+        switch (startTime) {
+            case "09:00": return 1;
+            case "10:00": return 2;
+            case "11:00": return 3;
+            case "13:00": return 4;
+            case "14:00": return 5;
+            case "15:00": return 6;
+            case "16:00": return 7;
+            case "17:00": return 8;
+            case "18:00": return 9;
+            default: return 0; // 매칭되는 교시가 없으면 0 반환
+        }
+    }
+
+
+	// ========================= 강의 상세보기 =========================
     public StudentCourse getCourseDetail(int studentNo, int courseNo) {
         List<StudentCourse> list = getStudentCourses(studentNo);
         return list.stream()
@@ -199,6 +246,8 @@ public class StudentService {
  // ========================= 질문 등록 =========================
     @Transactional
     public void insertQuestion(Question question) {
+        // 초기 상태: 답변 없음 ("N")
+        question.setAnswerStatus("N");
         studentMapper.insertQuestion(question);
     }
 
@@ -206,10 +255,13 @@ public class StudentService {
     public List<Question> getQuestionsByStudent(int studentNo) {
         List<Question> questions = studentMapper.selectQuestionsByStudent(studentNo);
 
-        // 각 질문에 강의명 채워주기
+        // 각 질문에 강의명 채워주고, 답변 여부 세팅
         for (Question q : questions) {
             String courseName = studentMapper.selectCourseNameByCourseNo(q.getCourseNo());
             q.setCourseName(courseName); 
+            
+            // 답변 완료 여부
+            q.setAnswered("Y".equalsIgnoreCase(q.getAnswerStatus()));
         }
 
         return questions;
@@ -219,9 +271,16 @@ public class StudentService {
     public String getCourseNameByCourseNo(int courseNo) {
         return studentMapper.selectCourseNameByCourseNo(courseNo);
     }
+
+    // 교수 번호 조회 (null 안전)
     public int getProfessorNoByCourseNo(int courseNo) {
-        return studentMapper.selectProfessorNoByCourseNo(courseNo);
+        Integer empNo = studentMapper.selectProfessorNoByCourseNo(courseNo);
+        if (empNo == null) {
+            throw new RuntimeException("해당 강의에 담당 교수가 등록되어 있지 않습니다. courseNo=" + courseNo);
+        }
+        return empNo;
     }
+
 
     // 질문 번호로 단일 질문 가져오기
     public Question getQuestionByNo(int questionNo) {
@@ -229,7 +288,27 @@ public class StudentService {
         if (question != null) {
             String courseName = studentMapper.selectCourseNameByCourseNo(question.getCourseNo());
             question.setCourseName(courseName);
+            
+            // 답변 완료 여부
+            question.setAnswered("Y".equalsIgnoreCase(question.getAnswerStatus()));
         }
         return question;
     }
+
+    // 질문 수정 (답변이 없는 경우만 가능)
+    public void updateQuestion(Question question) {
+        if (!"Y".equalsIgnoreCase(question.getAnswerStatus())) {
+            studentMapper.updateQuestion(question); // Mapper 호출
+        }
+    }
+
+    // 질문 삭제 (답변이 없는 경우만 가능)
+    public void deleteQuestion(int questionNo) {
+    	Question question = studentMapper.selectQuestionByQuestionNo(questionNo);
+        if (question != null && !"Y".equalsIgnoreCase(question.getAnswerStatus())) {
+        	 studentMapper.deleteQuestion(questionNo); // Mapper 호출
+        }
+    }
+
+
 }

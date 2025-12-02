@@ -4,7 +4,7 @@ import com.example.lms.dto.Assignment;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Student;
-import com.example.lms.dto.Question; // Question DTO import
+import com.example.lms.dto.Question;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -51,20 +51,17 @@ public interface StudentMapper {
 
     int deleteStudentCourse(Map<String, Integer> params);
 
-    // ========================= 질문 관련 추가 =========================
+    // ========================= 질문 관련 =========================
     void insertQuestion(Question question);
-
-    // 학생별 질문 조회
+    void updateQuestion(Question question);
+    void deleteQuestion(@Param("questionNo") int questionNo);
     List<Question> selectQuestionsByStudent(@Param("studentNo") int studentNo);
-
-    // 강의명 조회
-    String selectCourseNameByCourseNo(@Param("courseNo") int courseNo);
-    
-    // 질문 번호로 단일 질문 가져오기
     Question selectQuestionByQuestionNo(@Param("questionNo") int questionNo);
-    
-	// 교수 번호 조회
-    int selectProfessorNoByCourseNo(int courseNo);
-    
+    String selectCourseNameByCourseNo(@Param("courseNo") int courseNo);
+
+    // ========================= 교수 번호 조회 (수정) =========================
+ 
+    Integer selectProfessorNoByCourseNo(@Param("courseNo") int courseNo);
+
 
 }

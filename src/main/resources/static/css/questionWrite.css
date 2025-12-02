@@ -1,100 +1,132 @@
-.question-box {
+/* question-write.css */
+
+/* ========================= 전체 박스 ========================= */
+.container .main-content {
     background: #fff;
     padding: 32px;
     border-radius: 12px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    margin-top: 28px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    margin-top: 25px;
 }
 
-.course-name {
-    font-size: 22px;
+/* ========================= 페이지 제목 ========================= */
+.page-title {
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: 22px;
+    margin-bottom: 25px;
     color: #2c3e50;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #eee;
 }
 
+/* ========================= 질문 작성/수정 박스 ========================= */
+.question-box {
+    background: #fff;
+    padding: 28px;
+    border-radius: 12px;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* 강의명 표시 */
+.course-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #4a68d8;
+}
+
+/* 폼 그룹 */
 .form-group {
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #2d2d2d;
-    font-size: 15px;
-}
-
-.form-group input[type="text"],
-.form-group textarea,
-.form-group input[type="file"] {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid #c7c7c7;
     font-size: 16px;
-    font-family: inherit;
-    background-color: #fafafa;
-    transition: border 0.2s ease;
-    box-sizing: border-box;
+    color: #333;
 }
 
-.form-group input[type="text"]:focus,
-.form-group textarea:focus,
-.form-group input[type="file"]:focus {
-    border-color: #4a68d8;
-    outline: none;
-    background-color: #fff;
-}
-
+.form-group input,
 .form-group textarea {
-    resize: vertical;
-    min-height: 160px;
-}
-
-.form-actions {
-    margin-top: 28px;
-    display: flex;
-    gap: 16px;
-}
-
-.submit-btn {
-    padding: 12px 26px;
-    background-color: #4a68d8;
-    color: white;
-    font-weight: 600;
-    font-size: 15px;
-    border: none;
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
     border-radius: 8px;
+    border: 1px solid #d1d5db;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+textarea {
+    min-height: 150px;
+}
+
+/* ========================= 교수 답변 ========================= */
+.answer-contents {
+    background-color: #f0f4ff;
+    border-left: 4px solid #4a68d8;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #2c3e50;
+    margin-top: 15px;
+    white-space: pre-wrap;
+}
+
+/* ========================= 버튼 영역 ========================= */
+.form-actions {
+    margin-top: 30px;
+}
+
+.submit-btn, .cancel-btn {
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
     cursor: pointer;
-    transition: background 0.25s ease, transform 0.1s ease-in-out;
+    transition: all 0.2s;
+}
+
+/* 작성/수정 버튼 스타일 통합 */
+.submit-btn {
+    background-color: #4a68d8;
+    color: #fff;
+    border: none;
+    margin-right: 12px;
 }
 
 .submit-btn:hover {
-    background-color: #3c56b5;
+    background-color: #3b55b0;
 }
 
-.submit-btn:active {
-    transform: scale(0.97);
-}
-
+/* 취소 버튼 */
 .cancel-btn {
-    padding: 12px 26px;
-    background-color: #888;
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    text-align: center;
-    transition: background 0.25s ease, transform 0.1s ease-in-out;
+    background-color: #e63946;
+    color: #fff;
+    border: none;
 }
 
 .cancel-btn:hover {
-    background-color: #6d6d6d;
+    background-color: #b8323a;
 }
 
-.cancel-btn:active {
-    transform: scale(0.97);
+/* ========================= back 버튼 ========================= */
+.back-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-weight: 600;
+    background-color: #6c757d;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
 }
+
+.back-btn:hover {
+    background-color: #5a6268;
+}
+
+

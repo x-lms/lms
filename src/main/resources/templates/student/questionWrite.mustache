@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>질문 작성</title>
+    <title>질문 작성/수정</title>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/layout.css">
     <link rel="stylesheet" href="/css/questionWrite.css">
@@ -14,31 +14,54 @@
     {{> layouts/navStudent }}
 
     <div class="main-content">
+        <!-- 페이지 제목 -->
         <div class="page-header">
-            <h2 class="page-title">질문 작성</h2>
+            <h2 class="page-title">
+                {{#isEdit}}질문 수정{{/isEdit}}
+                {{^isEdit}}질문 작성{{/isEdit}}
+            </h2>
         </div>
 
+        <!-- 질문 작성/수정 박스 -->
         <div class="question-box">
-
-            <!-- 강의명 표시 -->
+            <!-- 강의명 -->
             <div class="course-name">
                 강의: {{courseName}}
             </div>
 
-            <!-- 질문 작성 폼 -->
-            <form method="post" action="/student/questionWrite/{{courseNo}}" enctype="multipart/form-data">
+            <form method="post" action="/student/questionWrite/{{courseNo}}{{#isEdit}}/{{question.questionNo}}{{/isEdit}}" enctype="multipart/form-data">
+                <!-- questionNo hidden -->
+                <input type="hidden" name="questionNo" value="{{question.questionNo}}" />
+
+                <!-- 제목 -->
                 <div class="form-group">
                     <label for="questionTitle">제목</label>
-                    <input type="text" id="questionTitle" name="questionTitle" placeholder="제목을 입력하세요" required>
+                    <input type="text" id="questionTitle" name="questionTitle"
+                           value="{{question.questionTitle}}" required>
                 </div>
 
+                <!-- 내용 -->
                 <div class="form-group">
                     <label for="questionContents">내용</label>
-                    <textarea id="questionContents" name="questionContents" rows="8" placeholder="내용을 입력하세요" required></textarea>
+                    <textarea id="questionContents" name="questionContents" rows="8" required>{{question.questionContents}}</textarea>
                 </div>
 
+                <!-- 교수 답변 (수정할 수 없게 표시만) -->
+                {{#question.answerContents}}
+                <div class="form-group">
+                    <label>교수 답변:</label>
+                    <div class="answer-contents">{{answerContents}}</div>
+                </div>
+                {{/question.answerContents}}
+
+                <!-- 버튼 -->
                 <div class="form-actions">
-                    <button type="submit" class="submit-btn">작성 완료</button>
+                    {{#isEdit}}
+                        <button type="submit" class="submit-btn">수정 완료</button>
+                    {{/isEdit}}
+                    {{^isEdit}}
+                        <button type="submit" class="submit-btn">작성 완료</button>
+                    {{/isEdit}}
                     <a href="/student/courseOne/{{courseNo}}" class="cancel-btn">취소</a>
                 </div>
             </form>

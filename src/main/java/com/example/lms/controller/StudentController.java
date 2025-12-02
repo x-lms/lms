@@ -1,6 +1,7 @@
 package com.example.lms.controller;
 
 import com.example.lms.dto.Student;
+import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.StudentService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
@@ -38,13 +39,19 @@ public void init() {
 
 // 학생 홈
 @GetMapping("/studentHome")
-public String studentHome(HttpSession session, Model model) {
-    Student loginStudent = (Student) session.getAttribute("loginStudent");
-    if (loginStudent == null) return "redirect:/login";
+public String studentHome(
+        @SessionAttribute("loginStudent") Student loginStudent,
+        Model model) {
 
-    model.addAttribute("studentName", loginStudent.getStudentName());
-    return "student/studentHome";
+    int studentNo = loginStudent.getStudentNo();
+
+    // 학생 시간표 가져오기
+    List<TimetableCell> timetable = studentService.getStudentSchedule(studentNo);
+    model.addAttribute("timetable", timetable);
+
+    return "student/studentHome"; // 머스테치 파일
 }
+
 
 // 학생 본인 정보 조회
 @GetMapping("/studentInfo")

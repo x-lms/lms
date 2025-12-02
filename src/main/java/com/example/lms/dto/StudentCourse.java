@@ -8,7 +8,7 @@ public class StudentCourse {
 		private int courseNo;
 		private String courseName;
 		private String empName;            // 교수명
-		private String coursePeriod;
+		private String coursePeriod;	
 		private int currentCnt;           // 현재 수강인원
 		private int maxCnt;               // 최대 인원
 		private boolean isFull;           // 수강 가능 여부
