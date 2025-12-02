@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.lms.mapper.StudentScoreMapper">
+
+   <select id="selectScoreList" parameterType="int" resultType="com.example.lms.dto.Score">
+    SELECT 
+        s.score_no AS scoreNo,
+        s.student_no AS studentNo,
+        s.emp_no AS empNo,
+        s.course_no AS courseNo,
+        c.course_name AS courseName,
+        s.score_att AS scoreAtt,
+        s.score_project AS scoreProject,
+        s.score_mid AS scoreMid,
+        s.score_fin AS scoreFin,
+        s.score_total AS scoreTotal
+    FROM score s
+    inner JOIN course c ON s.course_no = c.course_no
+    WHERE s.student_no = #{studentNo}
+    ORDER BY s.score_no DESC
+</select>
+
+</mapper>

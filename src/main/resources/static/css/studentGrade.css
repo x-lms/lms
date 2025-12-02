@@ -1,0 +1,53 @@
+/* ==================== 성적 테이블 ==================== */
+.list-box {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    overflow-x: auto;
+}
+
+.list-box table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px; /* 작은 화면도 스크롤 가능 */
+}
+
+.list-box th, .list-box td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.list-box th {
+    background-color: #f1f5f9;
+    font-weight: 600;
+    color: #1e40af;
+}
+
+.list-box tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.list-box tr:hover {
+    background-color: #e0e7ff;
+}
+
+.grade {
+    font-weight: bold;
+    color: #3b82f6;
+}
+
+/* 상세보기 버튼 */
+.detail-btn {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #1e40af;
+    color: white;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.detail-btn:hover {
+    background-color: #3b82f6;
+}

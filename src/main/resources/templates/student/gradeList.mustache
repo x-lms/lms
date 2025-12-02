@@ -1,10 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>성적 조회</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/studentGrade.css">
 </head>
 <body>
+{{> layouts/header }}
 
+<div class="container">
+    {{> layouts/navStudent }}
+
+    <div class="main-content">
+        <h2 class="page-title">성적 조회</h2>
+
+        <div class="list-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>과목명</th>
+                        <th>출석</th>
+                        <th>과제</th>
+                        <th>중간</th>
+                        <th>기말</th>
+                        <th>총점</th>
+                        <th>등급</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {{#gradeList}}
+                    <tr>
+                        <td>{{courseName}}</td>
+                        <td>{{scoreAtt}}</td>
+                        <td>{{scoreProject}}</td>
+                        <td>{{scoreMid}}</td>
+                        <td>{{scoreFin}}</td>
+                        <td>{{scoreTotal}}</td>
+                        <td class="grade">{{scoreGrade}}</td>
+                       
+                    </tr>
+                    {{/gradeList}}
+
+                    {{^gradeList}}
+                    <tr>
+                        <td colspan="8">등록된 성적이 없습니다.</td>
+                    </tr>
+                    {{/gradeList}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{> layouts/footer }}
 </body>
 </html>
