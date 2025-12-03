@@ -18,14 +18,11 @@
             <thead>
                 <tr>
                     <th>학번</th>
-                    <th>사진</th>
                     <th>이름</th>
-                    <th>이메일</th>
-                    <th>전화번호</th>
-                    <th>총 출석</th>
-					<th>결석</th>
-					<th>지각</th>
-					<th>조퇴</th>
+                    <th>출석</th>
+					<th>과제</th>
+					<th>중간</th>
+					<th>기말</th>
                     <th>점수등록</th>
                 </tr>
             </thead>
@@ -33,24 +30,23 @@
                 {{#studentList}}
                 <tr>
                     <td>{{studentNo}}</td>
-                    <td>
-                        <img src="{{#studentImg}}/upload/{{studentImg}}{{/studentImg}}" alt="" width="50">
-                    </td>
                     <td>{{studentName}}</td>
-                    <td>{{studentEmail}}</td>
-                    <td>{{studentPhone}}</td>
-                    <td>{{attendanceSummary.total}}</td>
-					<td>{{attendanceSummary.absent}}</td>
-					<td>{{attendanceSummary.late}}</td>
-					<td>{{attendanceSummary.early}}</td>
                     <td>
+                    	<input type="number" name="scoreAtt" placeholder="출석" value="{{scoreAtt}}" readonly min="0" max="20" style="width:50px;">
+				    </td>
+                    <td>
+                   		<input type="number" name="scoreProject" placeholder="과제" value="{{scoreProject}}" readonly min="0" max="20" style="width:50px;">
+                    </td>
+                    <td>
+                    	<input type="number" name="scoreMid" placeholder="중간" min="0" max="30" style="width:50px;">
+                    </td>
+					<td>
+						<input type="number" name="scoreFin" placeholder="기말" min="0" max="30" style="width:50px;">
+					</td>
+			        <td>
                         <form action="{{springMacroRequestContext.request.contextPath}}/professor/addScore" method="post">
                             <input type="hidden" name="studentNo" value="{{studentNo}}">
                             <input type="hidden" name="courseNo" value="{{courseNo}}">
-                            <input type="number" name="scoreAtt" placeholder="출석" min="0" max="10" style="width:50px;">
-                            <input type="number" name="scoreProject" placeholder="과제" value="" min="0" max="20" style="width:50px;">
-                            <input type="number" name="scoreMid" placeholder="중간" min="0" max="35" style="width:50px;">
-                            <input type="number" name="scoreFin" placeholder="기말" min="0" max="35" style="width:50px;">
                             <button type="submit">등록</button>
                         </form>
                     </td>
@@ -60,7 +56,7 @@
         </table>
 
         <p>
-            <a href="{{springMacroRequestContext.request.contextPath}}/professor/score">뒤로가기</a>
+            <a href="{{springMacroRequestContext.request.contextPath}}/professor/scoreCourseList">뒤로가기</a>
         </p>
     </div>
 </div>

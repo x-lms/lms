@@ -20,11 +20,12 @@
                     <tr>
                         <th>질문번호</th>
                         <th>학번</th>
-                        <th>강의제목</th>
-                        <th>질문제목</th>
-                        <th>질문내용</th>
-                        <th>등록일</th>
-                        <th>답글달기</th>
+                        <th>강의명</th>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>작성일</th>
+                        <th>답변상태</th>
+                        <th>답변하기</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,6 +42,7 @@
                             <button class="toggle-content">더보기</button>
                         </td>
                         <td>{{createdate}}</td>
+                        <td>{{answerStatus}}</td>
                         <td>
                             <button class="open-reply" data-qno="{{questionNo}}">답글쓰기</button>
                         </td>
@@ -147,7 +149,7 @@ $(document).ready(function() {
         let toggleBtn = replyRow.find(".toggle-answers");
 
         if(replyText === ""){
-            alert("답글을 입력하세요.");
+            alert("답변을 입력하세요.");
             return;
         }
 
@@ -161,7 +163,7 @@ $(document).ready(function() {
             }),
             success: function(res){
                 if(res.success){
-                    alert("답글 등록 완료!");
+                    alert("답변 등록 완료!");
                     input.val("");          // 입력 초기화
 
                     // 기존 answer-list에 append
@@ -188,7 +190,7 @@ $(document).ready(function() {
 
         $list.slideToggle(200, function(){
             // 토글 완료 후 버튼 텍스트 변경
-            $btn.text($list.is(":visible") ? "답글접기" : "답글보기");
+            $btn.text($list.is(":visible") ? "답변접기" : "답변보기");
         });
     });
 });

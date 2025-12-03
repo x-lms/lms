@@ -1,5 +1,6 @@
 package com.example.lms.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +18,12 @@ import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Project;
+import com.example.lms.dto.ProjectAverage;
 import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Question;
 import com.example.lms.dto.Score;
 import com.example.lms.dto.Student;
+import com.example.lms.dto.StudentScorePF;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.mapper.ProfessorMapper;
 
@@ -33,31 +36,58 @@ public class ProfessorService {
 	@Autowired
 	ProfessorMapper professorMapper;
 	
+	// 성적리스트
+	public List<Score> getScoreByCourse(int courseNo) {
+		List<Score> scoreList = professorMapper.getScoreByCourse(courseNo);
+		return scoreList;
+	}
+	
 	// 성적등록 액션
 	public int addScore(Score score) {
 		return professorMapper.addScore(score);	
 	}
 	
 	// 성적등록 폼
-	public List<CourseStudent> getStudentListAndScore(int courseNo) {
-		List<CourseStudent> studentList = professorMapper.getStudentListByCourse(courseNo);
+	public List<StudentScorePF> getStudentListAndScore(int courseNo) {
+		List<StudentScorePF> studentList = professorMapper.getStudentListAndScore(courseNo);
 		List<AttendanceSummary> summaryList = professorMapper.getAttendanceSummaryByCourse(courseNo);
-
+		
         // Map으로 변환
 		Map<Integer, AttendanceSummary> summaryMap = new HashMap<>();
-	       for (AttendanceSummary s : summaryList) {
-	           summaryMap.put(s.getStudentNo(), s);
-	       }
-	       
-        for (AttendanceSummary s : summaryList) {
-            // 지각 3회 -> 결석 1회
-            s.setAbsent(s.getAbsent() + s.getLate() / 3);
-            s.setAbsent(s.getAbsent() + s.getEarly() / 3);
-            s.setTotal(s.getTotal() - s.getAbsent());
-            summaryMap.put(s.getStudentNo(), s);
-        }
+	    for (AttendanceSummary s : summaryList) {
+	        // 지각 3회 -> 결석 1회 변환
+	        int convertedAbsent = s.getLate() / 3;
+	        int remainingLate = s.getLate() % 3;
 
-       
+	        s.setAbsent(s.getAbsent() + convertedAbsent);
+	        s.setLate(remainingLate);
+	        s.setTotal(s.getTotal() - s.getAbsent());  // 총 출석일 계산
+
+	        summaryMap.put(s.getStudentNo(), s);
+	    }
+
+	    // 출석 점수 보정
+    	for (StudentScorePF student : studentList) {
+        AttendanceSummary summary = summaryMap.get(student.getStudentNo());
+	        if (summary != null) {
+	            Double scoreAtt = 20.0; // 출석 만점
+	            scoreAtt -= summary.getAbsent() * 4; // 결석 1회당 -4
+	            scoreAtt -= summary.getLate() * 1;   // 지각 1회당 -1
+	            student.setScoreAtt(scoreAtt);
+	            log.debug("scoreAtt: " + scoreAtt);
+	        } else {
+	            student.setScoreAtt(20.0); // 출석 정보 없는 경우 기본 만점
+	          
+	        }
+	        //과제점수
+	        ProjectAverage pa = professorMapper.getAvgProjectScoreByStudent(courseNo, student.getStudentNo());
+	        if(pa != null) {
+	        	student.setScoreProject(pa.getAvgProjectScore());
+	        } else {
+	        	student.setScoreProject(0.0);
+	        }
+    	}
+    	
         return studentList;
 	}
 	
@@ -96,7 +126,8 @@ public class ProfessorService {
 
 	// 과제 결과물 목록
 	public List<ProjectResult> projectResultList(int projectNo) {
-		return professorMapper.projectResultList(projectNo);
+		List<ProjectResult> resultList = professorMapper.projectResultList(projectNo);
+	    return resultList;
 	}
 	
 	// 과제 삭제
@@ -169,6 +200,12 @@ public class ProfessorService {
 		return professorMapper.insertHistoryFromAddAttendance(a);
 	}
 	
+	// 출석체크(하루제한)
+	public boolean isAttendanceCheckedToday(int studentNo, int courseNo, LocalDate today) {
+	    int count = professorMapper.countAttendanceToday(studentNo, courseNo, today);
+	    return count > 0;
+	}
+	
 	// 출석체크(학생목록) 출결상태
 	public List<CourseStudent> getStudentListByCourse(int courseNo) {
 		List<CourseStudent> studentList = professorMapper.getStudentListByCourse(courseNo);
@@ -177,9 +214,11 @@ public class ProfessorService {
         // Map으로 변환
         Map<Integer, AttendanceSummary> summaryMap = new HashMap<>();
         for (AttendanceSummary s : summaryList) {
-            // 지각 3회 -> 결석 1회
-            s.setAbsent(s.getAbsent() + s.getLate() / 3);
-            s.setAbsent(s.getAbsent() + s.getEarly() / 3);
+        	 // 지각 3회 -> 결석 1회 변환
+            int convertedAbsent = s.getLate() / 3;  // 결석으로 변환할 수 있는 횟수
+            int remainingLate = s.getLate() % 3;    // 남은 지각
+            s.setAbsent(s.getAbsent() + convertedAbsent);
+            s.setLate(remainingLate);               // 남은 지각 반영
             s.setTotal(s.getTotal() - s.getAbsent());
             summaryMap.put(s.getStudentNo(), s);
         }
@@ -345,6 +384,8 @@ public class ProfessorService {
 	public List<Map<String, String>> getProfessorSchedule() {		
 		return professorMapper.getProfessorSchedule();
 	}
+
+	
 
 	
 	

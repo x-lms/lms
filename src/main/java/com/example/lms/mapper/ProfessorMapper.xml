@@ -2,12 +2,50 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.ProfessorMapper">
 	
+	<!-- 과제점수 평균 -->
+	<select id="getAvgProjectScoreByStudent" parameterType="int" resultType="com.example.lms.dto.ProjectAverage">
+    SELECT 
+        s.student_no AS studentNo,
+        s.student_name AS studentName,
+        IFNULL(AVG(pr.result_score), 0) AS avgProjectScore
+    FROM student s
+    JOIN course_student cs 
+        ON s.student_no = cs.student_no
+    LEFT JOIN project p 
+        ON cs.course_no = p.course_no
+    LEFT JOIN project_result pr 
+        ON p.project_no = pr.project_no
+        AND s.student_no = pr.student_no
+    WHERE cs.course_no = #{courseNo}
+      AND s.student_no = #{studentNo}
+    GROUP BY s.student_no
+</select>
+	
 	<!-- 성적 등록 -->
 	<insert id="addScore" parameterType="com.example.lms.dto.Score">
 		insert into score
 			(student_no, emp_no, course_no, score_att, score_project, score_mid, score_fin, score_total, score_grade)
 		values(#{studentNo}, #{empNo}, #{courseNo}, #{scoreAtt}, #{scoreProject}, #{scoreMid}, #{scoreFin}, #{scoreTotal}, #{scoreGrade})
 	</insert>
+	
+	<!-- 성적 등록 폼 -->
+	<select id="getStudentListAndScore" parameterType="int" resultType="com.example.lms.dto.StudentScorePF">
+		SELECT
+			cs.course_no courseNo,
+			s.student_no studentNo,
+		    s.student_name studentName,	       
+	        IFNULL(sc.score_att,0) scoreAtt,
+	        IFNULL(sc.score_project,0) scoreProject,
+	        IFNULL(sc.score_mid,0) scoreMid,
+	        IFNULL(sc.score_fin,0) scoreFin
+		FROM student s
+		JOIN course_student cs
+	        ON s.student_no = cs.student_no
+	    LEFT JOIN score sc
+	        ON s.student_no = sc.student_no
+	        AND sc.course_no = cs.course_no
+	    WHERE cs.course_no = #{courseNo}
+	</select>
 	
 	<!-- 성적 목록 -->
 	<select id="getScoreByCourse" parameterType="int" resultType="com.example.lms.dto.Score">
@@ -21,7 +59,8 @@
 	        score_mid scoreMid,
 	        score_fin scoreFin,
 	        score_total scoreTotal,
-	        score_grade scoreGrade
+	        score_grade scoreGrade,
+	        score_status scoreStatus
 	    FROM score
 	    WHERE course_no = #{courseNo}
 	</select>
@@ -45,6 +84,7 @@
 			c.course_name courseName,
 			q.question_title questionTitle,
 			q.question_contents questionContents,
+			IFNULL(q.answer_status, 'N') answerStatus,
 			q.answer_contents answerContents,
 			q.createdate
 		from question q
@@ -213,6 +253,15 @@
 	    VALUES (#{attNo}, #{courseNo}, #{attState})  
 	</insert>
 	
+	<!-- 출석체크(하루제한) -->
+	<select id="countAttendanceToday" resultType="int">
+	    SELECT COUNT(*)
+	    FROM attendance
+	    WHERE student_no = #{studentNo}
+	      AND course_no = #{courseNo}
+	      AND att_date = #{today}
+	</select>
+	
 	<!-- 출석체크(학생리스트) -->
 	<select id="getStudentListByCourse" parameterType="int" resultType="com.example.lms.dto.CourseStudent">
 	    SELECT 
@@ -224,7 +273,8 @@
 	        s.student_state studentState,
 	        s.student_img studentImg
 	    FROM student s
-	    JOIN course_student cs ON s.student_no = cs.student_no
+	    JOIN course_student cs 
+	    	ON s.student_no = cs.student_no
 	    WHERE cs.course_no = #{courseNo}
 	    ORDER BY s.student_name ASC
 	</select>
@@ -366,15 +416,24 @@
 	<!-- 강의리스트 -->	
 	<select id="courseListByPage" parameterType="map" resultType="com.example.lms.dto.Course">
 		select
-			course_no courseNo, course_name courseName, dept_no deptNo,
-			emp_no empNo, max_cnt maxCnt, current_cnt currentCnt,
-			course_period coursePeriod, course_plan coursePlan 
-		from course
-		where emp_no = #{empNo}
+			c.course_no courseNo, 
+			c.course_name courseName, 
+			d.dept_Name deptName,
+			e.emp_name empName,
+			c.max_cnt maxCnt,
+			c.current_cnt currentCnt,
+			c.course_period coursePeriod,
+			c.course_plan coursePlan 
+		from course c
+		left join dept d
+			on c.dept_no = d.dept_no
+		left join emp e
+			on c.emp_no = e.emp_no
+		where c.emp_no = #{empNo}
 			<if test="searchWord != null and searchWord != ''">
-			 and course_name like concat('%', #{searchWord},'%')
+			 and c.course_name like concat('%', #{searchWord},'%')
 			</if>
-		order by course_no desc
+		order by c.course_no desc
 		limit #{beginRow}, #{rowPerPage}
 	</select>
 	

@@ -1,0 +1,197 @@
+@charset "UTF-8";
+
+/* courseList.css */
+
+/* 페이지 제목 */
+h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #007bff;
+}
+
+/* 폼 컨테이너 */
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 폼 그룹 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group .required {
+    color: #dc3545;
+    margin-left: 4px;
+}
+
+/* 입력 필드 공통 스타일 */
+.form-group input[type="number"],
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea,
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.form-group input[type="number"]:focus,
+.form-group input[type="text"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* 읽기 전용 필드 */
+.form-group input[readonly] {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* 셀렉트 박스 */
+.form-group select {
+    cursor: pointer;
+    background-color: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 35px;
+}
+
+/* 텍스트 영역 */
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* 파일 입력 */
+.form-group input[type="file"] {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.form-group input[type="file"]::file-selector-button {
+    padding: 8px 16px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+    background-color: #5a6268;
+}
+
+/* 버튼 컨테이너 */
+form > div:last-child {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+/* 저장 버튼 */
+button[type="submit"] {
+    padding: 12px 32px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+button[type="submit"]:active {
+    transform: translateY(1px);
+}
+
+/* 취소 버튼 */
+.cancel-btn {
+    padding: 12px 32px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    form {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .form-group input[type="number"],
+    .form-group input[type="text"],
+    .form-group select,
+    .form-group textarea,
+    .form-group input[type="file"] {
+        font-size: 16px; /* 모바일에서 자동 확대 방지 */
+    }
+
+    form > div:last-child {
+        flex-direction: column;
+    }
+
+    button[type="submit"],
+    .cancel-btn {
+        width: 100%;
+    }
+}
+
+/* 필수 필드 에러 스타일 (선택사항) */
+.form-group select:invalid {
+    border-color: #dc3545;
+}
+
+.form-group select:valid {
+    border-color: #28a745;
+}

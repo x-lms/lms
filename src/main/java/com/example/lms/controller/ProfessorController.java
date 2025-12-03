@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Question;
 import com.example.lms.dto.Score;
 import com.example.lms.dto.Student;
+import com.example.lms.dto.StudentScorePF;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.DeptService;
 import com.example.lms.service.ProfessorService;
@@ -65,8 +67,8 @@ public class ProfessorController {
 	@GetMapping("/professor/addScore")
 	public String addScore(HttpSession session, Model model,int courseNo) {
 		Emp loginProfessor = getLoginProfessor(session);
-		List<CourseStudent> studentList = professorService.getStudentListByCourse(courseNo);
-
+		List<StudentScorePF> studentList = professorService.getStudentListAndScore(courseNo);
+				
 	    model.addAttribute("studentList", studentList);
 	    model.addAttribute("courseNo", courseNo);
 		
@@ -80,7 +82,7 @@ public class ProfessorController {
 		
 		score.setEmpNo(loginProfessor.getEmpNo());
 		Double scoreAtt = score.getScoreAtt();
-		int scoreProject = score.getScoreProject();
+		Double scoreProject = score.getScoreProject();
 		int scoreMid = score.getScoreMid();
 		int scoreFin = score.getScoreFin();
 		Double scoreTotal = scoreAtt + scoreProject + scoreMid + scoreFin;
@@ -381,6 +383,8 @@ public class ProfessorController {
 		return "professor/attendanceHistoryList";
 	}
 	
+	
+	
 	// 출석체크 폼
 	@GetMapping("/professor/addAttendance")
 	public String addAttendance(HttpSession session, Model model, int courseNo) {
@@ -388,7 +392,14 @@ public class ProfessorController {
 
 	    // 학생 + 출석 요약
 	    List<CourseStudent> studentList = professorService.getStudentListByCourse(courseNo);
+	    
+	    LocalDate today = LocalDate.now();
 
+	    for (CourseStudent student : studentList) {
+	        boolean alreadyChecked = professorService.isAttendanceCheckedToday(student.getStudentNo(), courseNo, today);
+	        student.setAlreadyChecked(alreadyChecked);
+	    }
+	    
 	    model.addAttribute("studentList", studentList);
 	    model.addAttribute("courseNo", courseNo);
 

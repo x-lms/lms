@@ -14,5 +14,7 @@ public class CourseStudent {
     private String studentImg;
     
     private AttendanceSummary attendanceSummary; // 출결 요약
+    
+    private boolean alreadyChecked; // 출석체크 하루 한번 제한
      
 }

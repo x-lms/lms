@@ -43,7 +43,7 @@
                     </div>
 
                     <!-- 결과물 내용 -->
-                    <h4 class="section-subtitle">결과물 내용</h4>
+                    <h4 class="section-subtitle">제출자료</h4>
                     <div class="content-section">
                         {{resultContents}}
                     </div>
@@ -67,7 +67,8 @@
                     <div class="score-card">
                         <h4>📝 과제 점수 등록</h4>
                         <form action="{{springMacroRequestContext.request.contextPath}}/professor/addResultScore" method="post" class="score-form">
-                            <input type="number" id="resultScore" name="resultScore" class="score-input" placeholder="점수 입력" required min="0" max="20" value="{{resultScore}}">
+                            <input type="number" id="resultScore" name="resultScore" class="score-input" placeholder="점수 입력" 
+                            	required min="0" max="20" value="{{#resultScore}}{{resultScore}}{{/resultScore}}{{^resultScore}}0{{/resultScore}}">
                             <input type="hidden" name="resultNo" value="{{resultNo}}">
                             <input type="hidden" name="projectNo" value="{{projectNo}}">
                             <button type="submit" class="btn-primary">점수 등록</button>

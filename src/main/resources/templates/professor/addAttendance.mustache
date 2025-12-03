@@ -32,8 +32,7 @@
             <tbody>
                 {{#studentList}}
                 <tr>
-                    <td>{{studentNo}}</td>
-                    <input type="hidden" name="studentNo" value="{{studentNo}}">
+                    <td><input type="hidden" name="studentNo" value="{{studentNo}}">{{studentNo}}</td>
                     <td>
                         <img src="{{#studentImg}}/upload/{{studentImg}}{{/studentImg}}" alt="">
                     </td>
@@ -43,16 +42,19 @@
                     <td>출석일: {{attendanceSummary.total}} <br>
 					    결석일: {{attendanceSummary.absent}} <br>
 					    지각일: {{attendanceSummary.late}} <br>
-					    조퇴일: {{attendanceSummary.early}}
 					</td>
 					<td>
-                        <select name="attState">
-                        	<option value="">선택</option>
-                            <option value="출석">출석</option>
-                            <option value="결석">결석</option>
-                            <option value="지각">지각</option>
-                            <option value="조퇴">조퇴</option>
-                        </select>
+                        {{#alreadyChecked}}
+						    <span>오늘 체크 완료</span>
+						{{/alreadyChecked}}
+						{{^alreadyChecked}}
+	                        <select name="attState" class="attStateSelect">
+	                        	<option value="">선택</option>
+	                            <option value="출석">출석</option>
+	                            <option value="결석">결석</option>
+	                            <option value="지각">지각</option>
+                      	 	</select>
+                        {{/alreadyChecked}}    
                     </td>
                 </tr>
                 {{/studentList}}
@@ -67,5 +69,23 @@
         </div>
     </div>
     {{ >layouts/footer }}
+<script>
+	const form = document.querySelector('form');
+	
+	form.addEventListener('submit', function(e){
+	    let valid = true;
+	
+	    document.querySelectorAll('.attStateSelect').forEach(select => {
+	        if(select && select.value === ""){
+	            valid = false;
+	        }
+	    });
+	
+	    if(!valid){
+	        alert("출석 상태를 선택하지 않은 학생이 있습니다.");
+	        e.preventDefault();
+	    }
+	});
+</script>
 </body>
 </html>

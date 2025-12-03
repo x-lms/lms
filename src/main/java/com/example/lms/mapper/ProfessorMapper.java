@@ -1,5 +1,6 @@
 package com.example.lms.mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -13,19 +14,23 @@ import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Project;
+import com.example.lms.dto.ProjectAverage;
 import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Question;
 import com.example.lms.dto.Score;
 import com.example.lms.dto.Student;
+import com.example.lms.dto.StudentScorePF;
 import com.example.lms.dto.TimetableCell;
 
 
 @Mapper
 public interface ProfessorMapper {
 	
-	// 성정 등록
+		
+	// 성적 등록
 	int addScore(Score score);
-	
+	List<StudentScorePF> getStudentListAndScore(int courseNo);
+	ProjectAverage getAvgProjectScoreByStudent(int courseNo, int studentNo);//(과제점수)
 	// 성적 목록
 	List<Score> getScoreByCourse(int courseNo);
 	
@@ -69,6 +74,9 @@ public interface ProfessorMapper {
 	int insertAttendance(Attendance a);
 	int insertHistoryFromAddAttendance(Attendance a);
 	
+	// 출석 체크(하루제한)
+	int countAttendanceToday(int studentNo, int courseNo,LocalDate today);
+	
 	// 출석체크 (학생리스트)
 	List<CourseStudent> getStudentListByCourse(int courseNo);
 	// 총 출결상태
@@ -107,6 +115,8 @@ public interface ProfessorMapper {
 	// 홈 화면
 	List<CourseTime> selectAllCourseTimes(int empNo);
 	List<Map<String, String>> getProfessorSchedule();
+
+	
 
 
 	
