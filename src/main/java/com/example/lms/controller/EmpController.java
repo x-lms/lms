@@ -18,22 +18,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.lms.config.ExcelTempStore;
 import com.example.lms.dto.Dept;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Notice;
 import com.example.lms.dto.NoticeFile;
 import com.example.lms.dto.ProfessorInfo;
+import com.example.lms.dto.Student;
+import com.example.lms.dto.StudentExcelResult;
 import com.example.lms.service.EmpService;
-import com.example.lms.service.ProfessorService;
 import com.example.lms.service.PublicService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 public class EmpController {
 	@Autowired EmpService empService;
 	@Autowired PublicService publicService;
+	@Autowired ExcelTempStore excelTempStore;
 	private final String uploadDir = "C:/lms/uploads";
 	@InitBinder("modifyProfessor")
 	public void initBinder(WebDataBinder binder) {
@@ -226,4 +232,121 @@ public class EmpController {
 		empService.deleteProfessor(prfNo);
 		return "redirect:/emp/professorList";
 	}
+	
+	// 학생 리스트
+	@GetMapping("/emp/studentList")
+	public String studentList(Model model, @RequestParam(defaultValue = "1") int currentPage
+								, @RequestParam(defaultValue = "") String searchName, @RequestParam(defaultValue = "") String searchDept) {
+		List<Dept> deptList = empService.getDeptList();
+		for(Dept d : deptList) {
+			if(searchDept != null && searchDept.equals(String.valueOf(d.getDeptNo()))) {
+				d.setSelected(true);
+			}
+		}
+		
+		List<Student> stdList = empService.getStdList(currentPage, searchName, searchDept);
+		
+		// 페이징 계산
+		int rowPerPage = empService.getRowPerPage();
+		int totalCount = empService.countStd(searchName, searchDept);
+		int totalPage = (int) Math.ceil((double) totalCount / rowPerPage);
+		
+		// 페이지 블록 단위 설정
+		int blockSize = 5;
+		int currentBolock = (currentPage - 1) / blockSize;
+		int startPage = currentBolock * blockSize + 1;
+		int endPage = Math.min(startPage + blockSize - 1, totalPage);
+		
+		// 페이지 버튼용 리스트
+		List<Map<String, Object>> pageList = new ArrayList<>();
+		for( int i = startPage; i <= endPage; i++) {
+			Map<String, Object> pageMap = new HashMap<>();
+			pageMap.put("pageNo", i);
+			pageMap.put("active", i == currentPage);
+			pageList.add(pageMap);
+		}
+		
+		// 이전/다음 블록 버튼
+		Integer prePage = startPage > 1 ? startPage - 1 : null;
+		Integer nextPage = endPage < totalPage ? endPage + 1 : null;
+		
+		model.addAttribute("deptList", deptList);
+		model.addAttribute("stdList", stdList);
+		model.addAttribute("pageList", pageList);
+		model.addAttribute("prePage", prePage);
+		model.addAttribute("nextPage", nextPage);
+		model.addAttribute("searchName", searchName);
+		model.addAttribute("searchDept", searchDept);
+		return "/emp/studentList";
+	}
+	
+	// 학생 상세
+	
+	// 학생 추가(파일)
+	@GetMapping("/emp/addStdByExcel")
+	public String addStdByExcel() {
+		return "/emp/addStdByExcel";
+	}
+	// 엑셀파일 업로드 -> 결과 생성 (DB 저장 X)
+	@PostMapping("/emp/uploadExcel")
+	public String uploadExcel(@RequestParam("excelFile") MultipartFile file, Model model) {
+		log.debug("file: " + file);
+		try {
+			// 업로드 한 엑셀 분석 -> 결과 생성
+			StudentExcelResult result = empService.readExcel(file);
+			
+			String token = UUID.randomUUID().toString();
+			excelTempStore.save(token, result);		// 임시저장
+			
+			model.addAttribute("result", result);
+			model.addAttribute("token", token);	// view로 토근 저장
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMessage", "엑셀 업로드 중 오류가 발생했습니다: " + e.getMessage());
+		}
+		return "/emp/uploadResult";
+	}
+	// "전송"버튼 -> 실제 DB 반영
+	@PostMapping("/emp/commitExcel")
+	public String commitExcel(@RequestParam("token") String token, Model model, RedirectAttributes redirectAttrs) {
+		StudentExcelResult result = excelTempStore.get(token);
+		
+		if(result == null) {
+			model.addAttribute("errorMessage", "전송 가능한 업로드 데이터가 없습니다.");
+			return "/emp/uploadResult";
+		}
+		
+		// 성공 목록만 DB 저장
+		int insertedcount = empService.commitExcel(result.getSuccessList());
+		
+		// 임시 저장 제거(중복방지)
+		excelTempStore.remove(token);
+		
+		model.addAttribute("insertedCnt", insertedcount);
+		redirectAttrs.addFlashAttribute("successCnt", insertedcount);
+		return "redirect:/emp/commitSuccess";  // 성공 페이지
+	}
+	
+	@GetMapping("/emp/commitSuccess")
+	public String commitSuccess() {
+		return "/emp/commitSuccess";
+	}
+	
+	// 학생 추가(개별)
+	@GetMapping("/emp/addStdOne")
+	public String addStdOne(Model model) {
+		List<Dept> deptList = empService.getDeptList();
+		model.addAttribute("deptList", deptList);
+		return "/emp/addProfessor";
+	}
+	@PostMapping("/emp/addStdOne")
+	public String addStdOne(Emp e) {
+		if(e.getDeptNo().equals(0)) e.setDeptNo(null);
+		
+		empService.addProfessor(e);
+		return "redirect:/emp/professorList";
+	}
+	
+	// 학생 수정
 }

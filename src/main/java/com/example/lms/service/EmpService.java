@@ -1,26 +1,40 @@
 package com.example.lms.service;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.lms.dto.*;
+import com.example.lms.dto.Dept;
+import com.example.lms.dto.Emp;
+import com.example.lms.dto.Notice;
+import com.example.lms.dto.NoticeFile;
+import com.example.lms.dto.ProfessorInfo;
+import com.example.lms.dto.SearchList;
+import com.example.lms.dto.Student;
+import com.example.lms.dto.StudentExcelResult;
 import com.example.lms.mapper.EmpMapper;
 import com.example.lms.mapper.PublicMapper;
 
 import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Service
 @Transactional
 public class EmpService {
 	@Autowired EmpMapper empMapper;
 	@Autowired PublicMapper publicMapper;
-	
 	
 	public void insertNotice(Notice n, MultipartFile[] files, String path) {
 		// 1) 공지 저장
@@ -170,5 +184,111 @@ public class EmpService {
 	public void deleteProfessor(int prfNo) {
 		empMapper.deleteProfessor(prfNo);
 	}
+	
+	// 학생 리스트
+	public List<Student> getStdList(int currentPage, String searchName, String searchDept) {
+		int beginRow = (currentPage - 1) * ROW_PER_PAGE;
+		SearchList sl = new SearchList();
+		sl.setBeginRow(beginRow);
+		sl.setRowPerPage(ROW_PER_PAGE);
+		sl.setSearchWord(searchName);
+		sl.setSearchCategory(searchDept);
+		
+		return empMapper.selectStudentList(sl);
+	}
+	public int countStd(String searchName, String searchDept) {
+		SearchList sl = new SearchList();
+		sl.setSearchWord(searchName);
+		sl.setSearchCategory(searchDept);
+		return empMapper.countStudent(sl);
+	}
+	// 학생 상세
+	
+	// 학생 추가(파일)
+	public StudentExcelResult readExcel(MultipartFile file) throws Exception {
+		StudentExcelResult result = new StudentExcelResult();
+		
+		try(InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
+			Sheet sheet = workbook.getSheetAt(0);
+			int lastRow = sheet.getLastRowNum();
+			
+			result.setTotalCount(lastRow);	// 첫 행 제외
+			
+			for(int r = 1; r <= lastRow; r++) {	// 0번 행은 헤더
+				Row row = sheet.getRow(r);
+				if (row == null) continue;
+				
+				String studentNo = getCellValue(row.getCell(0)); // 학번
+				String deptNo = getCellValue(row.getCell(1)); // 학과번호
+				String studentName = getCellValue(row.getCell(2)); // 학생이름
+				String studentPw = getCellValue(row.getCell(3)); // 비밀번호
+				String studentState = getCellValue(row.getCell(4)); // 상태
+				
+				// 실패 항목 생성 메서드 호출
+				StudentExcelResult.FailItem fail = validateRow(r, studentNo, deptNo, studentName, studentPw, studentState);
+				if(fail != null) {
+					result.getFailList().add(fail);
+					continue;
+				}
+				
+				// 성공항목 DTO
+				Student std = new Student();
+				std.setStudentNo(Integer.parseInt(studentNo));
+				std.setDeptNo(Integer.parseInt(deptNo));
+				std.setStudentName(studentName);
+				std.setStudentPw(studentPw);
+				std.setStudentState(studentState);
+				
+				result.getSuccessList().add(std);
+			}
+		}
+		// 성공/실패 개수 계산
+		result.setSuccessCount(result.getSuccessList().size());
+		result.setFailCount(result.getFailList().size());
+		return result;
+	}
+	
+	// DB 저장
+	public int commitExcel(List<Student> list) {
+		int count = 0;
+		for(Student std : list) {
+			empMapper.insertStudent(std);
+			count++;
+		}
+		return count;
+	}
+	
+	// 엑셀 행 데이터 검증
+	private StudentExcelResult.FailItem validateRow(int row, String no, String dno, String name, String pw, String state) {
+		if(no == null || dno == null || name == null | pw == null || state == null) {
+			return createFail(row, no, name, "필수 항목 누락");
+		}
+		if(empMapper.checkStudentNo(Integer.parseInt(no)) > 0) {
+			return createFail(row, no, name, "중복된 학번");
+		}
+		if(empMapper.checkDeptNo(Integer.parseInt(dno)) == 0) {
+			return createFail(row, no, name, "존재하지 않는 학과 번호");
+		}
+		
+		return null;
+	}
+	private StudentExcelResult.FailItem createFail(int rowNum, String studentNo, String studentName, String reason) {
+		StudentExcelResult.FailItem f = new StudentExcelResult.FailItem();
+		f.setRowNum(rowNum + 1);
+		f.setStudentNo(studentNo);
+		f.setStudentName(studentName);
+		f.setReason(reason);
+		return f;
+	}
+	private String getCellValue(Cell c) {
+		if(c == null) return null;
+		if(c.getCellType() == CellType.STRING) return c.getStringCellValue().trim();
+		if(c.getCellType() == CellType.NUMERIC) return String.valueOf((int) c.getNumericCellValue());
+		return null;
+	}
+	// 학생 추가(개별)
+	
+	// 학생 수정
+	
 }
 

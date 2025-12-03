@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습관리시스템 - 학생 일괄 등록</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+    <!-- include -->
+    {{>layouts/header}}
+    <div class="container">
+        {{>layouts/navEmp}}
+        <div class="main-content">
+            <div class="page-header">
+                <h2 class="page-title">학생 일괄 등록</h2>
+            </div>
+            
+            <div class="notice-form-container">
+                <div class="excel-upload-guide">
+                    <h3 class="guide-title">📋 엑셀 업로드 안내</h3>
+                    <div class="guide-content">
+                        <p class="guide-text">학생 정보를 엑셀 파일로 한 번에 등록할 수 있습니다.</p>
+                        <ul class="guide-list">
+                            <li>엑셀 파일 형식: .xlsx, .xls</li>
+                            <li>최대 파일 크기: 5MB</li>
+                            <li>한 번에 최대 500명까지 등록 가능</li>
+                        </ul>
+                        <div class="template-download">
+                            <a href="/files/student_template.xlsx" class="template-btn" download>
+                                📥 양식 다운로드
+                            </a>
+                            <span class="template-info">샘플 양식을 다운로드하여 작성해주세요</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="notice-form" action="/emp/uploadExcel" method="post" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <label class="form-label required">엑셀 파일</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" name="excelFile" id="excelFile" class="file-input" accept=".xlsx, .xls" required>
+                            <label for="excelFile" class="file-label">
+                                <span class="file-icon">📊</span>
+                                <span class="file-text">엑셀 파일을 선택하거나 드래그하세요</span>
+                                <span class="file-subtext">(.xlsx, .xls 파일만 가능)</span>
+                            </label>
+                            <div class="file-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">참고사항</label>
+                        <div class="notice-info-box">
+                            <p>⚠️ 업로드 전 확인사항</p>
+                            <ul>
+                                <li>학번, 이름, 학과는 필수 입력 항목입니다.</li>
+                                <li>이메일 형식이 올바른지 확인해주세요.</li>
+                                <li>중복된 학번이 있으면 등록이 실패합니다.</li>
+                                <li>엑셀 파일의 첫 번째 행은 헤더로 간주됩니다.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="/emp/studentsList" class="btn-secondary">취소</a>
+                        <button type="submit" class="btn-primary">등록</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{>layouts/footer}}
+
+    <script>
+        // 파일 선택 처리
+        $('#excelFile').on('change', function(e) {
+            const file = e.target.files[0];
+            displayFile(file);
+        });
+
+        // 파일 표시 함수
+        function displayFile(file) {
+            const fileList = $('.file-list');
+            fileList.empty();
+            
+            if(file) {
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                const fileIcon = (fileExt === 'xlsx' || fileExt === 'xls') ? '📊' : '📄';
+                
+                fileList.append(`
+                    <div class="file-item excel-file-item">
+                        <span class="file-icon">${fileIcon}</span>
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-size">(${(file.size / 1024).toFixed(2)} KB)</span>
+                    </div>
+                `);
+            }
+        }
+
+        // 드래그 앤 드롭 기능
+        const fileLabel = $('.file-label');
+        
+        fileLabel.on('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).addClass('drag-over');
+        });
+
+        fileLabel.on('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).removeClass('drag-over');
+        });
+
+        fileLabel.on('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).removeClass('drag-over');
+            
+            const files = e.originalEvent.dataTransfer.files;
+            if(files.length > 0) {
+                $('#excelFile')[0].files = files;
+                displayFile(files[0]);
+            }
+        });
+    </script>
+</body>
+</html>

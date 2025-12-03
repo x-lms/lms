@@ -5,12 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.lms.dto.Dept;
-import com.example.lms.dto.Emp;
-import com.example.lms.dto.Notice;
-import com.example.lms.dto.NoticeFile;
-import com.example.lms.dto.ProfessorInfo;
-import com.example.lms.dto.SearchList;
+import com.example.lms.dto.*;
 
 @Mapper
 public interface EmpMapper {
@@ -38,4 +33,13 @@ public interface EmpMapper {
 	int updateProfessor(ProfessorInfo pi);
 	// 교수 정보 삭제
 	int deleteProfessor(int prfNo);
+	// 학생 리스트
+	List<Student> selectStudentList(SearchList sl);
+	int countStudent(SearchList sl);
+	// 학생 추가
+	void insertStudent(Student student);
+	int checkStudentNo(int studentNo);
+	int checkDeptNo(int deptNo);
+	// 학생 수정
+	// 학생 정보
 }

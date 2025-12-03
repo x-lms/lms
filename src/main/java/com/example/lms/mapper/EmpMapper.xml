@@ -87,4 +87,44 @@
 	<delete id="deleteProfessor" parameterType="int">
 		DELETE FROM emp WHERE emp_no = #{prfNo}
 	</delete>
+	
+	<!-- 학생 추가 -->
+	<insert id="insertStudent" parameterType="com.example.lms.dto.Student">
+		INSERT INTO student (student_no, dept_no, student_pw, student_name, student_state) 
+		VALUES (#{studentNo}, #{deptNo}, #{studentPw}, #{studentName}, #{studentState})
+	</insert>
+	<select id="checkStudentNo" parameterType="int" resultType="int">
+		SELECT COUNT(student_no) FROM student WHERE student_no = #{studentNo}
+	</select>
+	<select id="checkDeptNo" parameterType="int" resultType="int">
+		SELECT COUNT(dept_no) FROM dept WHERE dept_no = #{deptNo}
+	</select>
+	
+	<!-- 학생 리스트 -->
+	<select id="selectStudentList" parameterType="com.example.lms.dto.SearchList" resultType="com.example.lms.dto.Student">
+		SELECT s.student_no studentNo, s.student_name studentName, s.dept_no deptNo, IFNULL(d.dept_name, '') deptName, s.student_email studentEmail
+		, IFNULL(s.student_phone, '') studentPhone, s.student_state studentState
+		FROM student s LEFT OUTER JOIN (SELECT dept_no, dept_name FROM dept) d ON s.dept_no = d.dept_no
+		<where>
+			<if test="searchWord != null and searchWord.trim() != ''">
+				AND s.student_name LIKE CONCAT('%', #{searchWord}, '%')
+			</if>
+			<if test="searchCategory != null and searchCategory.trim() != ''">
+				AND s.dept_no = #{searchCategory}
+			</if>
+		</where>
+		ORDER BY s.student_no ASC LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	<select id="countStudent" parameterType="com.example.lms.dto.SearchList" resultType="int">
+		SELECT COUNT(s.student_no)
+		FROM student s LEFT OUTER JOIN (SELECT dept_no, dept_name FROM dept) d ON s.dept_no = d.dept_no
+		<if test="searchWord != null and searchWord.trim() != ''">
+			AND s.student_name LIKE CONCAT('%', #{searchWord}, '%')
+		</if>
+		<if test="searchCategory != null and searchCategory.trim() != ''">
+			AND s.dept_no = #{searchCategory}
+		</if>
+	</select>
+	<!-- 학생 정보 -->
+	<!-- 학생 정보 수정 -->
 </mapper>

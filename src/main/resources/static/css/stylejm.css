@@ -104,7 +104,7 @@
 	text-align: center;
 }
 
-.col-num {
+.col70 {
 	width: 70px;
 	text-align: center;
 }
@@ -512,6 +512,439 @@
 .photo-upload-btn:hover {
     background: #1d4ed8;
 }
+
+/* 엑셀 업로드 안내 */
+.excel-upload-guide {
+	background: #eff6ff;
+	border: 1px solid #bfdbfe;
+	border-radius: 8px;
+	padding: 24px;
+	margin-bottom: 30px;
+}
+
+.guide-title {
+	font-size: 18px;
+	font-weight: 700;
+	color: #1e40af;
+	margin-bottom: 16px;
+}
+
+.guide-content {
+	color: #374151;
+}
+
+.guide-text {
+	font-size: 14px;
+	margin-bottom: 12px;
+	color: #4b5563;
+}
+
+.guide-list {
+	list-style: none;
+	padding: 0;
+	margin: 0 0 20px 0;
+}
+
+.guide-list li {
+	font-size: 14px;
+	color: #6b7280;
+	padding: 6px 0;
+	padding-left: 20px;
+	position: relative;
+}
+
+.guide-list li:before {
+	content: '•';
+	position: absolute;
+	left: 8px;
+	color: #3b82f6;
+}
+
+.template-download {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding-top: 16px;
+	border-top: 1px solid #bfdbfe;
+}
+
+.template-btn {
+	display: inline-block;
+	padding: 10px 20px;
+	background: #1e40af;
+	color: white;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background 0.2s;
+}
+
+.template-btn:hover {
+	background: #1d4ed8;
+}
+
+.template-info {
+	font-size: 13px;
+	color: #6b7280;
+}
+
+.file-subtext {
+	font-size: 12px;
+	color: #9ca3af;
+	margin-top: 4px;
+}
+
+.notice-info-box {
+	background: #fef3c7;
+	border: 1px solid #fcd34d;
+	border-radius: 6px;
+	padding: 16px;
+}
+
+.notice-info-box p {
+	font-size: 14px;
+	font-weight: 600;
+	color: #92400e;
+	margin-bottom: 12px;
+}
+
+.notice-info-box ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.notice-info-box li {
+	font-size: 13px;
+	color: #78350f;
+	padding: 4px 0;
+	padding-left: 18px;
+	position: relative;
+}
+
+.notice-info-box li:before {
+	content: '✓';
+	position: absolute;
+	left: 0;
+	color: #d97706;
+}
+
+.excel-file-item {
+	background: #f0fdf4;
+	border: 1px solid #bbf7d0;
+}
+
+.excel-file-item .file-icon {
+	font-size: 24px;
+}
+
+/* 엑셀 업로드 결과 */
+.result-summary {
+	text-align: center;
+	padding: 40px 30px;
+	border-radius: 12px;
+	margin-bottom: 30px;
+}
+
+.result-summary.success {
+	background: #f0fdf4;
+	border: 2px solid #86efac;
+}
+
+.result-summary.error {
+	background: #fef2f2;
+	border: 2px solid #fca5a5;
+}
+
+.result-icon {
+	width: 80px;
+	height: 80px;
+	margin: 0 auto 20px;
+	background: #22c55e;
+	color: white;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 48px;
+	font-weight: bold;
+}
+
+.result-summary.error .result-icon {
+	background: #ef4444;
+}
+
+.result-title {
+	font-size: 24px;
+	font-weight: 700;
+	color: #166534;
+	margin-bottom: 12px;
+}
+
+.result-summary.error .result-title {
+	color: #991b1b;
+}
+
+.result-desc {
+	font-size: 16px;
+	color: #166534;
+}
+
+.result-summary.error .result-desc {
+	color: #991b1b;
+}
+
+.result-desc strong {
+	font-weight: 700;
+	font-size: 18px;
+}
+
+.result-stats {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 16px;
+	margin-bottom: 30px;
+}
+
+.stat-item {
+	padding: 20px;
+	border-radius: 8px;
+	text-align: center;
+}
+
+.stat-item.success {
+	background: #f0fdf4;
+	border: 1px solid #bbf7d0;
+}
+
+.stat-item.fail {
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+}
+
+.stat-item.total {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+}
+
+.stat-label {
+	display: block;
+	font-size: 14px;
+	color: #6b7280;
+	margin-bottom: 8px;
+}
+
+.stat-value {
+	display: block;
+	font-size: 28px;
+	font-weight: 700;
+}
+
+.stat-item.success .stat-value {
+	color: #16a34a;
+}
+
+.stat-item.fail .stat-value {
+	color: #dc2626;
+}
+
+.stat-item.total .stat-value {
+	color: #1e40af;
+}
+
+.result-detail {
+	margin-bottom: 30px;
+}
+
+.detail-title {
+	font-size: 16px;
+	font-weight: 700;
+	color: #374151;
+	margin-bottom: 16px;
+	padding-bottom: 12px;
+	border-bottom: 2px solid #e5e7eb;
+}
+
+.fail-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.fail-item {
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	border-left: 4px solid #ef4444;
+	border-radius: 6px;
+	padding: 16px;
+}
+
+.fail-row {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.fail-row:last-child {
+	margin-bottom: 0;
+}
+
+.fail-label {
+	font-size: 13px;
+	font-weight: 600;
+	color: #7f1d1d;
+	min-width: 80px;
+}
+
+.fail-value {
+	font-size: 13px;
+	color: #991b1b;
+}
+
+.fail-reason {
+	font-size: 13px;
+	color: #dc2626;
+	font-weight: 600;
+}
+
+/* 성공 페이지 추가 스타일 */
+.result-stats-simple {
+	margin-bottom: 30px;
+}
+
+.stat-item-large {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	padding: 30px;
+	border-radius: 12px;
+}
+
+.stat-item-large.success {
+	background: #f0fdf4;
+	border: 2px solid #86efac;
+}
+
+.stat-icon {
+	font-size: 48px;
+	width: 80px;
+	height: 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: white;
+	border-radius: 50%;
+}
+
+.stat-info {
+	flex: 1;
+}
+
+.stat-item-large .stat-label {
+	display: block;
+	font-size: 16px;
+	color: #166534;
+	margin-bottom: 8px;
+	font-weight: 600;
+}
+
+.stat-item-large .stat-value {
+	display: block;
+	font-size: 36px;
+	font-weight: 700;
+	color: #16a34a;
+}
+
+.dept-summary-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.dept-summary-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 16px 20px;
+	background: #f8fafc;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	transition: all 0.2s;
+}
+
+.dept-summary-item:hover {
+	background: #f1f5f9;
+	border-color: #3b82f6;
+}
+
+.dept-name {
+	font-size: 15px;
+	color: #374151;
+	font-weight: 600;
+}
+
+.dept-count {
+	font-size: 18px;
+	color: #1e40af;
+	font-weight: 700;
+}
+
+.success-info-box {
+	background: #eff6ff;
+	border: 1px solid #bfdbfe;
+	border-radius: 8px;
+	padding: 20px;
+	margin-bottom: 30px;
+}
+
+.success-info-box .info-title {
+	font-size: 15px;
+	font-weight: 700;
+	color: #1e40af;
+	margin-bottom: 12px;
+}
+
+.success-info-box ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.success-info-box li {
+	font-size: 14px;
+	color: #1e40af;
+	padding: 6px 0;
+	padding-left: 20px;
+	position: relative;
+}
+
+.success-info-box li:before {
+	content: '•';
+	position: absolute;
+	left: 8px;
+	color: #3b82f6;
+}
+
+.btn-retry {
+    padding: 12px 32px;
+    background: white;
+    color: #f59e0b;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-retry:hover {
+    background: #f59e0b;
+    color: white;
+}
+
 .info-grid {
     display: flex;
     flex-direction: column;
@@ -634,6 +1067,7 @@
 .btn-box {
 	display: flex;
 	justify-content: flex-end;
+	gap: 8px;
 	padding: 16px 20px;
 	border-top: 1px solid #e5e7eb;
 }
@@ -653,6 +1087,44 @@
 
 .add-btn:hover {
 	background: #059669;
+}
+
+.add-btn-excel {
+	display: inline-block;
+	padding: 8px 16px;
+	background: white;
+	color: #3b82f6;
+	border: 1px solid #3b82f6;
+	text-decoration: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.add-btn-excel:hover {
+	background: #3b82f6;
+	color: white;
+}
+
+.add-btn-single {
+	display: inline-block;
+	padding: 8px 16px;
+	background: white;
+	color: #10b981;
+	border: 1px solid #10b981;
+	text-decoration: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.add-btn-single:hover {
+	background: #10b981;
+	color: white;
 }
 
 .notice-title {

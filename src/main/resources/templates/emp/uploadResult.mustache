@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학습관리시스템 - 학생 등록 결과</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+	<!-- include -->
+	{{>layouts/header}}
+	<div class="container">
+		{{>layouts/navEmp}}
+		<div class="main-content">
+			<div class="page-header">
+				<h2 class="page-title">학생 등록 결과</h2>
+			</div>
+			<div class="notice-form-container">
+			{{#result}}
+				<!-- 성공 결과 -->
+				<div class="result-summary success">
+					<div class="result-icon">✓</div>
+					<h3 class="result-title">등록 완료</h3>
+					<p class="result-desc">총 <strong>{{totalCount}}명</strong> 중 <strong>{{successCount}}명</strong>이 성공적으로 등록되었습니다.</p>
+				</div>
+
+				<!-- 통계 정보 -->
+				<div class="result-stats">
+					<div class="stat-item success">
+						<span class="stat-label">성공</span> <span class="stat-value">{{successCount}}명</span>
+					</div>
+					<div class="stat-item fail">
+						<span class="stat-label">실패</span> <span class="stat-value">{{failCount}}명</span>
+					</div>
+					<div class="stat-item total">
+						<span class="stat-label">전체</span> <span class="stat-value">{{totalCount}}명</span>
+					</div>
+				</div>
+
+				<!-- 실패 목록 -->
+				<div class="result-detail">
+					<h4 class="detail-title">❌ 등록 실패 목록</h4>
+					<div class="fail-list">
+						{{#failList}}
+							<div class="fail-item">
+								<div class="fail-row">
+									<span class="fail-label">행 번호:</span> <span class="fail-value">{{rowNum}}행</span>
+								</div>
+								<div class="fail-row">
+									<span class="fail-label">학생 정보:</span> <span class="fail-value">{{studentName}} ({{studentNo}})</span>
+								</div>
+								<div class="fail-row">
+									<span class="fail-label">실패 사유:</span> <span class="fail-reason">{{reason}}</span>
+								</div>
+							</div>
+						{{/failList}}
+						{{^failList}}
+							<div class="fail-item">
+								<div class="fail-row">
+									<span class="fail-label">행 번호:</span> <span class="fail-value">전부 등록 성공</span>
+								</div>
+							</div>
+						{{/failList}}
+					</div>
+				</div>
+			{{/result}}
+			{{^result}}
+				<div class="result-detail">
+					<h4 class="detail-title">❌ 업로드 결과가 존재하지 않습니다.</h4>
+				</div>
+			{{/result}}
+				<div class="form-actions">
+					<a href="/emp/studentList" class="btn-secondary">취소</a>
+					<a href="/emp/addStdByExcel" class="btn-retry">다시 업로드</a>
+					<form action="/emp/commitExcel" method="post">
+						<input type="hidden" name="token" value="{{token}}">
+						<button type="submit" class="btn-primary">전송</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{>layouts/footer}}
+</body>
+</html>

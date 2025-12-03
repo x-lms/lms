@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>학습관리시스템 - 교수 리스트</title>
+    <title>학습관리시스템 - 학생 리스트</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/layout.css">
@@ -16,20 +16,19 @@
         {{>layouts/navEmp}}
         <div class="main-content">
             <div class="page-header">
-                <h2 class="page-title">교수 관리</h2>
+                <h2 class="page-title">학생 관리</h2>
             </div>
             
             <div class="notice-container">
-                <form class="notice-header" action="/emp/professorList" method="get">
+                <form class="notice-header" action="/emp/studentList" method="get">
                     <div class="search-box">
                         <select name="searchDept" class="search-select">
                             <option value="">전체 학과</option>
-                       		<option value="">대기</option>
                         	{{#deptList}}
                         		<option value="{{deptNo}}" {{#selected}}selected{{/selected}}>{{deptName}}</option>
                         	{{/deptList}}
                         </select>
-                        <input type="text" name="searchName" class="search-input" placeholder="교수 이름 검색" value="{{searchName}}">
+                        <input type="text" name="searchName" class="search-input" placeholder="학생 이름 검색" value="{{searchName}}">
                         <button type="submit" class="search-btn">검색</button>
                     </div>
                 </form>
@@ -37,43 +36,46 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="col150">번호</th>
+                            <th class="col150">학번</th>
                             <th class="col150">학과</th>
                             <th class="col-name">이름</th>
                             <th class="col150">전화번호</th>
                             <th class="col200">이메일</th>
+                            <th class="col70">상태</th>
                         </tr>
                     </thead>
                     <tbody>
-                    	{{#prfList}}
+                    	{{#stdList}}
 	                        <tr>
-	                            <td class="col150">{{prfNo}}</td>
+	                            <td class="col150"><a href="{{springMacroRequestContext.request.contextPath}}/emp/studentInfo?studentNo={{studentNo}}">{{studentNo}}</a></td>
 	                            <td class="col150">{{deptName}}</td>
-	                            <td class="col-name"><a href="{{springMacroRequestContext.request.contextPath}}/emp/professorInfo?prfNo={{prfNo}}">{{prfName}}</a></td>
-	                            <td class="col150">{{#prfPhone}}{{prfPhone}}{{/prfPhone}}</td>
-	                            <td class="col200">{{#prfEmail}}{{prfEmail}}{{/prfEmail}}</td>
+	                            <td class="col100"><a href="{{springMacroRequestContext.request.contextPath}}/emp/studentInfo?studentNo={{studentNo}}">{{studentName}}</a></td>
+	                            <td class="col150">{{#studentPhone}}{{studentPhone}}{{/studentPhone}}</td>
+	                            <td class="col200">{{#studentEmail}}{{studentEmail}}{{/studentEmail}}</td>
+	                            <td class="col100">{{studentState}}</td>
 	                        </tr>
-                    	{{/prfList}}
+                    	{{/stdList}}
                     </tbody>
                 </table>
 
                 <div class="btn-box">
-                    <a href="/emp/addProfessor" class="add-btn">교수 추가</a>
+                    <a href="{{springMacroRequestContext.request.contextPath}}/emp/addStdByExcel" class="add-btn-excel">학생추가(일괄)</a>
+                    <a href="{{springMacroRequestContext.request.contextPath}}/emp/addStdOne" class="add-btn-single">학생추가(개별)</a>
                 </div>
             
                 <div class="pagination">
 					{{#prePage}}
-						 <a href="{{springMacroRequestContext.request.contextPath}}/emp/professorList?currentPage={{prePage}}&searchName={{searchName}}&searchDept={{searchDept}}" class="page-btn">이전</a>
+						 <a href="{{springMacroRequestContext.request.contextPath}}/emp/studentList?currentPage={{prePage}}&searchName={{searchName}}&searchDept={{searchDept}}" class="page-btn">이전</a>
 					{{/prePage}}
 					
 					{{#pageList}}
-						<a href="{{springMacroRequestContext.request.contextPath}}/emp/professorList?currentPage={{pageNo}}&searchName={{searchName}}&searchDept={{searchDept}}" class="page-btn {{#active}}active{{/active}}">
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/studentList?currentPage={{pageNo}}&searchName={{searchName}}&searchDept={{searchDept}}" class="page-btn {{#active}}active{{/active}}">
 					  	  {{pageNo}}
 						</a>
 					{{/pageList}}
 					
 					{{#nextPage}}
-						<a href="{{springMacroRequestContext.request.contextPath}}/emp/professorList?currentPage={{nextPage}}&searchName={{searchName}}&searchDept={{searchDept}}" class="page-btn">다음</a>
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/studentList?currentPage={{nextPage}}&searchName={{searchName}}&searchDept={{searchDept}}" class="page-btn">다음</a>
 					{{/nextPage}}
 				</div>
             </div>
