@@ -39,16 +39,23 @@
                     </div>
 						
 					<div class="form-group">
-					    <label>강의시간(요일, 시작시간, 종료시간) / 위치 <span class="required">*</span></label>
-					    <div class="form-row">
-					        <select class="form-input" name="coursedate" required>
-							    {{{dayOptions}}}  <!-- Mustache triple braces 사용: HTML 그대로 출력 -->
-							</select>
+				    <label>강의시간(요일, 시작시간, 종료시간) / 위치 <span class="required">*</span></label>
+				    <div id="courseTimeContainer">
+				        {{#courseTimeList}}
+				        <div class="form-row courseTimeRow">
+				            <select class="form-input" name="courseTimes[{{index}}].coursedate" required>
+				                {{{dayOptions}}}
+				            </select>
+				            <input type="time" class="form-input" name="courseTimes[{{index}}].courseTimeStart" value="{{courseTimeStart}}" required>
+				            <input type="time" class="form-input" name="courseTimes[{{index}}].courseTimeEnd" value="{{courseTimeEnd}}" required>
+				            <input type="text" class="form-input" name="courseTimes[{{index}}].courseLocation" value="{{courseLocation}}" placeholder="강의실 위치" required>
+				        </div>
+				        {{/courseTimeList}}
+				    </div>
 					
-					        <input type="time" class="form-input" name="courseTimeStart" value="{{ct.courseTimeStart}}" required>
-					        <input type="time" class="form-input" name="courseTimeEnd" value="{{ct.courseTimeEnd}}" required>
-					        <input type="text" class="form-input" name="courseLocation" value="{{ct.courseLocation}}" placeholder="강의실 위치" required>
-					    </div>
+					<div class="timeButtons">
+					    <button type="button" id="addTimeBtn">+</button>
+					    <button type="button" id="removeTimeBtn">-</button>
 					</div>
 						
                     <div class="form-group">
@@ -110,6 +117,28 @@ $(document).ready(function() {
             return false;
         }
     });
+    
+    // 여러개의 강의시간 수정
+    $('#addTimeBtn').on('click', function() {
+        const index = $('#courseTimeContainer .courseTimeRow').length;
+        const $clone = $('#courseTimeContainer .courseTimeRow:last').clone();
+
+        $clone.find('select').attr('name', `courseTimes[${index}].coursedate`);
+        $clone.find('input[name$="courseTimeStart"]').attr('name', `courseTimes[${index}].courseTimeStart`);
+        $clone.find('input[name$="courseTimeEnd"]').attr('name', `courseTimes[${index}].courseTimeEnd`);
+        $clone.find('input[name$="courseLocation"]').attr('name', `courseTimes[${index}].courseLocation`);
+        $clone.find('input').val('');
+        $('#courseTimeContainer').append($clone);
+    });
+
+    $('#removeTimeBtn').on('click', function() {
+        if ($('#courseTimeContainer .courseTimeRow').length > 1) {
+            $('#courseTimeContainer .courseTimeRow:last').remove();
+        } else {
+            alert("최소 한 개의 강의시간은 필요합니다.");
+        }
+    });
+    
 });
 </script>
 </body>

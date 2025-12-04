@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.lms.dto.AjaxResult;
 import com.example.lms.dto.Attendance;
@@ -32,6 +34,7 @@ import com.example.lms.dto.AttendanceSummary;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
+import com.example.lms.dto.CourseWithTime;
 import com.example.lms.dto.Dept;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.PageInfo;
@@ -63,12 +66,50 @@ public class ProfessorController {
 	// 파일 위치, 확장자
 	private final String uploadDir = "C:/lms/uploads";
 	
+	// 최종 성적 수정
+	@PostMapping("/professor/modifyFinalScore")
+	public String modifyFinalScore(HttpSession session, Score score, String courseName) {
+		Emp loginProfessor = getLoginProfessor(session);
+		log.debug("studentNo={}, scoreGrade={}", score.getStudentNo(), score.getScoreGrade());
+		professorService.modifyFinalScore(score);
+		String encodedCourseName = URLEncoder.encode(courseName, StandardCharsets.UTF_8);
+		return "redirect:/professor/scoreList?courseName=" + encodedCourseName + "&courseNo=" + score.getCourseNo();
+	}
+		
+	// 성적 목록
+	@GetMapping("/professor/scoreList")
+	public String scoreList(HttpSession session, Model model, int courseNo, String courseName) {
+		Emp loginProfessor = getLoginProfessor(session);
+		List<Score> scoreList = professorService.getScoreByCourse(courseNo);
+		scoreList.forEach(score -> score.setCourseName(courseName));
+		model.addAttribute("courseName", courseName);
+		model.addAttribute("scoreList", scoreList);
+		log.debug("courseName :" + courseName);
+		log.debug("scoreList :" + scoreList);
+		return "professor/scoreList";
+	}
+	
+	// 성적 목록(강의선택)
+	@GetMapping("/professor/courseScoreList")
+	public String courseScoreList(HttpSession session, Model model) {
+		Emp loginProfessor = getLoginProfessor(session);
+		List<Course> courseList = professorService.getCourseAttandanceAndScore(loginProfessor.getEmpNo());
+		model.addAttribute("courseList", courseList);
+		return "professor/courseScoreList";
+	}
+	
 	// 성적 등록 폼
 	@GetMapping("/professor/addScore")
 	public String addScore(HttpSession session, Model model,int courseNo) {
 		Emp loginProfessor = getLoginProfessor(session);
 		List<StudentScorePF> studentList = professorService.getStudentListAndScore(courseNo);
-				
+		
+		// 각 학생별 이미 등록 여부 체크
+	    for (StudentScorePF s : studentList) {
+	        boolean exists = professorService.existsTempScore(s.getStudentNo(), courseNo);
+	        s.setAlreadySubmitted(exists);
+	    }
+		
 	    model.addAttribute("studentList", studentList);
 	    model.addAttribute("courseNo", courseNo);
 		
@@ -77,41 +118,39 @@ public class ProfessorController {
 
 	// 성적 등록 액션
 	@PostMapping("/professor/addScore")
-	public String addScore(HttpSession session,Score score) {
+	public String addScore(HttpSession session, Score score, RedirectAttributes redirectAttributes) {
 		Emp loginProfessor = getLoginProfessor(session);
-		
 		score.setEmpNo(loginProfessor.getEmpNo());
-		Double scoreAtt = score.getScoreAtt();
-		Double scoreProject = score.getScoreProject();
-		int scoreMid = score.getScoreMid();
-		int scoreFin = score.getScoreFin();
-		Double scoreTotal = scoreAtt + scoreProject + scoreMid + scoreFin;
-		score.setScoreTotal(scoreTotal);
-		String scoreGrade;
 		
-		if (scoreTotal >= 95) scoreGrade = "A+";
-        else if (scoreTotal >= 90) scoreGrade = "A";
-        else if (scoreTotal >= 85) scoreGrade = "B+";
-        else if (scoreTotal >= 80) scoreGrade = "B";
-        else if (scoreTotal >= 75) scoreGrade = "C+";
-        else if (scoreTotal >= 70) scoreGrade = "C";
-        else if (scoreTotal >= 65) scoreGrade = "D+";
-        else if (scoreTotal >= 60) scoreGrade = "D";
-        else scoreGrade = "F";
-		score.setScoreGrade(scoreGrade);
+		// 총점 계산
+	    Double scoreTotal = score.getScoreAtt() + score.getScoreProject() + score.getScoreMid() + score.getScoreFin();
+	    score.setScoreTotal(scoreTotal);
+
+	    // 임시 등급 계산
+	    score.setScoreGrade(score.getScoreAtt() == 0 ? "F" : "X");
+
+	    // 등록
+	    boolean success = professorService.addScore(score);
+	    if (!success) {
+	        redirectAttributes.addFlashAttribute("msg", score.getStudentNo() + " 학생은 이미 등록되었습니다.");
+	    } else {
+	        redirectAttributes.addFlashAttribute("msg", "성적이 등록되었습니다.");
+	    }
+
+	    // 등록 후 전체 점수 기준으로 상위 30% 등급 계산
+	    List<Score> allScores = professorService.getScoreByCourse(score.getCourseNo());
+	    professorService.assignGrades(allScores);
 		
-		professorService.addScore(score);
-		
-		return "redirect:/professor/scoreCourseList";
+		return "redirect:/professor/addScore?courseNo=" + score.getCourseNo();
 	}
 		
 	// 성적 등록(강의목록)
-	@GetMapping("/professor/scoreCourseList")
+	@GetMapping("/professor/courseScoreRegister")
 	public String score(HttpSession session, Model model) {
 		Emp loginProfessor = getLoginProfessor(session);
 		List<Course> courseList = professorService.getCourseAttandanceAndScore(loginProfessor.getEmpNo());
 		model.addAttribute("courseList", courseList);
-		return "professor/scoreCourseList";
+		return "professor/courseScoreRegister";
 	}
 	
 	// 답변 등록
@@ -492,34 +531,57 @@ public class ProfessorController {
 		Emp loginProfessor = getLoginProfessor(session);
 		
 		Course c = professorService.getCourseOne(courseNo);
-		CourseTime ct = professorService.getCourseTime(courseNo);
+		List<CourseTime> courseTimeList = professorService.getCourseTime(courseNo);
 		
-		// 서버에서 HTML option 태그 완전히 만들어서 보냄
-	    StringBuilder dayOptions = new StringBuilder();
+		// 요일 목록
 	    String[] days = {"월","화","수","목","금"};
-	    for(String day : days) {
-	        if(day.equals(ct.getCoursedate())) {
-	            dayOptions.append("<option value='").append(day).append("' selected>").append(day).append("</option>");
-	        } else {
-	            dayOptions.append("<option value='").append(day).append("'>").append(day).append("</option>");
+	    
+	    int index = 0;
+	    // 각 CourseTime에 맞춘 dayOptions 생성
+	    for (CourseTime ct : courseTimeList) {
+	        StringBuilder dayOptions = new StringBuilder();
+	        ct.setIndex(index);  // Mustache에서 {{index}} 사용
+	        index++;
+	        for (String day : days) {
+	            if (day.equals(ct.getCoursedate())) {
+	                dayOptions.append("<option value='")
+	                          .append(day)
+	                          .append("' selected>")
+	                          .append(day)
+	                          .append("</option>");
+	            } else {
+	                dayOptions.append("<option value='")
+	                          .append(day)
+	                          .append("'>")
+	                          .append(day)
+	                          .append("</option>");
+	            }
 	        }
+
+	        ct.setDayOptions(dayOptions.toString());  // ★ CourseTime에 저장
 	    }
 	    
 		model.addAttribute("c", c);
-		model.addAttribute("ct", ct);
-		model.addAttribute("dayOptions", dayOptions.toString());
+		model.addAttribute("courseTimeList", courseTimeList);
 		
 		return "professor/modifyCourse";
 	}
 	
 	// 강의 수정 액션
 	@PostMapping("/professor/modifyCourse")
-	public String courseUpdate(HttpSession session, Course course, CourseTime ct) {
+	public String courseUpdate(HttpSession session, Course course, CourseWithTime cwt) {
 		Emp loginProfessor = getLoginProfessor(session);
 
+		// 1. 강의 기본 정보 수정
 	    professorService.updateCourse(course);
-	    professorService.updateCourseTime(ct);
 
+	 // 기존 강의시간 삭제 후 새로 등록
+	    professorService.deleteCourseTime(course.getCourseNo());
+	    for (CourseTime ct : cwt.getCourseTimes()) {
+	        ct.setCourseNo(course.getCourseNo());
+	        professorService.addCourseTime(ct);
+	    }
+	    
 	    return "redirect:/professor/courseOne?courseNo=" + course.getCourseNo();
 	}
 	
@@ -543,17 +605,20 @@ public class ProfessorController {
 	
 	// 강의 등록 액션
 	@PostMapping("/professor/addCourse")
-	public String addCourse(HttpSession session, Course c, CourseTime ct) {	
+	public String addCourse(HttpSession session, CourseWithTime cwt) {	
 		Emp loginProfessor = getLoginProfessor(session);
 		
-		professorService.insertCourse(c);
+		// Course에 교수 번호 세팅
+	    cwt.getCourse().setEmpNo(loginProfessor.getEmpNo());
 		
-		ct.setCourseNo(c.getCourseNo());
-		professorService.insertCourseTime(ct);
+		// 1. Course 등록 → courseNo 자동 생성됨
+	    professorService.insertCourse(cwt.getCourse());
+
+	    // 2. CourseTime 여러 개 등록 (FK 세팅 포함)
+	    professorService.insertCourseWithTimes(cwt);
+
 		
-		log.debug("ct :" + ct);
-		
-		return "redirect:/professor/courseList";
+		return "redirect:/professor/courseList?currentPage=1";
 	}
 	
 	// 강의리스트

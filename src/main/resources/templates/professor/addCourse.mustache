@@ -17,48 +17,50 @@
         <input type="hidden" name="empNo" value="{{loginProfessor.empNo}}">
         <div class="form-group">
                 <label>강의명 <span class="required">*</span></label>
-                <input type="text" class="form-input" name="courseName" placeholder="강의명을 입력하세요">
+                <input type="text" class="form-input" name="course.courseName" placeholder="강의명을 입력하세요">
             </div>
             
             <div class="form-row">
                 <div class="form-group">
                     <label>학과</label>
-                     <input type="number" class="form-input" name="deptNo" value="{{loginProfessor.deptNo}}" readonly>
+                     <input type="number" class="form-input" name="course.deptNo" value="{{loginProfessor.deptNo}}" readonly>
                 </div>
                 <div class="form-group">
                     <label>정원</label>
-                    <input type="number" class="form-input" name="maxCnt">
+                    <input type="number" class="form-input" name="course.maxCnt" id="courseMaxCnt" min="1" max="100" step="1" >
                 </div>
             </div>
             
             <div class="form-group">
 			    <label>강의기간 <span class="required">*</span></label>
-			    <input type="text" class="form-input" name="coursePeriod" maxlength="17" placeholder="예: 2024-03 ~ 2024-06">
+			    <input type="text" class="form-input" name="course.coursePeriod" maxlength="17" placeholder="예: 2024-03 ~ 2024-06">
 			    <span class="help-text format">형식: YYYY-MM ~ YYYY-MM</span>
 			</div>
             
             <div class="form-group">
                 <label>강의 계획</label>
-                <textarea class="form-textarea" name="coursePlan" placeholder="강의 계획을 입력하세요"></textarea>
+                <textarea class="form-textarea" name="course.coursePlan" placeholder="강의 계획을 입력하세요"></textarea>
             </div>
             
-           <div class="form-group">
-			    <label>강의시간(요일,시작시간, 종료시간) / 위치 <span class="required">*</span></label>
-			    <div class="form-row">
-			        <select class="form-input" name="coursedate">
-			            <option value="월">월</option>
-			            <option value="화">화</option>
-			            <option value="수">수</option>
-			            <option value="목">목</option>
-			            <option value="금">금</option>
-			        </select>
-			       
-			        <input type="time" class="form-input" name="courseTimeStart">
-			        <input type="time" class="form-input" name="courseTimeEnd">
-			        
-			        <input type="text" class="form-input" name="courseLocation" placeholder="강의실 위치">
-			    </div>		    
-			</div>
+            <!-- 여러 강의시간 등록 영역 -->
+            <div class="form-group">
+                <label>강의시간(요일, 시작시간, 종료시간) / 위치 <span class="required">*</span></label>
+                <div id="courseTimeContainer">
+                    <div class="form-row courseTimeRow">
+                        <select class="form-input" name="courseTimes[0].coursedate">
+                            <option value="월">월</option>
+                            <option value="화">화</option>
+                            <option value="수">수</option>
+                            <option value="목">목</option>
+                            <option value="금">금</option>
+                        </select>
+                        <input type="time" class="form-input" name="courseTimes[0].courseTimeStart">
+                        <input type="time" class="form-input" name="courseTimes[0].courseTimeEnd">
+                        <input type="text" class="form-input" name="courseTimes[0].courseLocation" placeholder="강의실 위치">
+                        <button type="button" class="addTimeBtn">+</button>
+                    </div>
+                </div>
+            </div>
             
             <div class="button-group">
                 <button type="submit" class="submit-btn">등록</button>
@@ -68,7 +70,7 @@
     	</div>
 <script>
 $(document).ready(function() {
-    const $coursePeriod = $("input[name='coursePeriod']");
+    const $coursePeriod = $("input[name='course.coursePeriod']");
 
     // 입력 마스크 적용
     $coursePeriod.on("input", function() {
@@ -113,6 +115,19 @@ $(document).ready(function() {
             e.preventDefault();
             return false;
         }
+    });
+    
+    // 강의시간 행 추가
+    $(document).on('click', '.addTimeBtn', function() {
+        const index = $('#courseTimeContainer .courseTimeRow').length;
+        const $clone = $(this).closest('.courseTimeRow').clone();
+
+        $clone.find('select').attr('name', `courseTimes[${index}].coursedate`);
+        $clone.find('input[name$="courseTimeStart"]').attr('name', `courseTimes[${index}].courseTimeStart`);
+        $clone.find('input[name$="courseTimeEnd"]').attr('name', `courseTimes[${index}].courseTimeEnd`);
+        $clone.find('input[name$="courseLocation"]').attr('name', `courseTimes[${index}].courseLocation`);
+        $clone.find('input').val('');
+        $('#courseTimeContainer').append($clone);
     });
 });
 </script>

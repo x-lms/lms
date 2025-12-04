@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>학습관리시스템</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/scoreList.css">
+</head>
+<body>
+{{>layouts/header}}
+<div class="container">
+{{>layouts/navProfessor}}
+
+<div class="main-content">
+    <h2>성적목록: {{courseName}}</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>출석</th>
+                    <th>과제</th>
+                    <th>중간</th>
+                    <th>기말</th>
+                    <th>총점</th>
+                    <th>학점</th>
+                    <th>상태</th>
+                    <th>수정</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#scoreList}}
+				<form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyFinalScore" method="post">
+                <tr>
+                    <td>{{studentNo}}
+	                </td>        
+                    <td>{{studentName}}</td>
+                    <td>{{scoreAtt}}</td>
+                    <td>{{scoreProject}}</td>
+                    <td>{{scoreMid}}</td>
+                    <td>{{scoreFin}}</td>
+                    <td>{{scoreTotal}}</td>
+                    <td>
+                        <input type="hidden" name="studentNo" value="{{studentNo}}">
+                        <input type="hidden" name="courseNo" value="{{courseNo}}">
+                        <input type="hidden" name="courseName" value="{{courseName}}">
+                        <input type="text" name="scoreGrade" value="{{scoreGrade}}">
+                    </td>
+                    <td>
+                        <select name="scoreStatus">
+                            <option value="{{scoreStatus}}">{{scoreStatus}}</option>
+                            <option value="T">임시</option>
+                            <option value="F">최종</option>
+                        </select>
+                    </td>
+                    <td>
+                    		<button type="submit">수정</button>
+                    </td>
+                </tr>
+         	    </form>
+                {{/scoreList}}
+            </tbody>
+        </table>
+</div>
+
+</div>
+{{>layouts/footer}}
+</body>
+</html>

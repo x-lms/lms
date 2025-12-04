@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="/css/common.css">
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/addAttendance.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 {{ >layouts/header }}
@@ -28,6 +29,7 @@
             </thead>
             <tbody>
                 {{#studentList}}
+                <form action="{{springMacroRequestContext.request.contextPath}}/professor/addScore" method="post">
                 <tr>
                     <td>{{studentNo}}</td>
                     <td>{{studentName}}</td>
@@ -44,22 +46,39 @@
 						<input type="number" name="scoreFin" placeholder="기말" min="0" max="30" style="width:50px;">
 					</td>
 			        <td>
-                        <form action="{{springMacroRequestContext.request.contextPath}}/professor/addScore" method="post">
                             <input type="hidden" name="studentNo" value="{{studentNo}}">
                             <input type="hidden" name="courseNo" value="{{courseNo}}">
-                            <button type="submit">등록</button>
-                        </form>
+                            {{#alreadySubmitted}}
+			                    <span>등록 완료</span>
+			                {{/alreadySubmitted}}
+			                {{^alreadySubmitted}}
+			                    <button type="submit">등록</button>
+			                {{/alreadySubmitted}}
                     </td>
                 </tr>
+                </form>
                 {{/studentList}}
             </tbody>
         </table>
 
         <p>
-            <a href="{{springMacroRequestContext.request.contextPath}}/professor/scoreCourseList">뒤로가기</a>
+            <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseScoreRegister">뒤로가기</a>
         </p>
     </div>
 </div>
 {{ >layouts/footer }}
+<script>
+	$(document).ready(function() {
+	    // 숫자 입력 제한
+	    $('input[type="number"]').on('input', function() {
+	        let min = parseInt($(this).attr('min')) || 0;
+	        let max = parseInt($(this).attr('max')) || 100;
+	        let val = parseFloat($(this).val());
+	        if (isNaN(val)) $(this).val('');
+	        else if (val < min) $(this).val(min);
+	        else if (val > max) $(this).val(max);
+	    });
+	});
+</script>
 </body>
 </html>

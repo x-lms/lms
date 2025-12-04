@@ -1,148 +1,205 @@
-/* 전체 레이아웃 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+@charset "UTF-8";
 
+/* ==================== 정보 수정 페이지 ==================== */
+
+/* 전체 레이아웃 */
 body {
     font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8fafc;
     min-height: 100vh;
     padding: 40px 20px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
-/* 제목 */
-h1 {
-    color: black;
-    font-size: 2rem;
-    margin-bottom: 30px;
+/* 폼 컨테이너 */
+.form-container {
+    width: 100%;
+    max-width: 600px;
 }
 
-/* 폼 컨테이너 */
+/* 제목 */
+.form-container h1 {
+    color: #1f2937;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+/* 폼 스타일 */
 form {
     background: white;
     padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 600px;
+}
+
+/* 폼 그룹 */
+.form-group {
     margin-bottom: 20px;
 }
 
-/* 폼 항목 */
-form p {
-    margin-bottom: 24px;
-}
-
-form p:last-of-type {
+.form-group:last-of-type {
     margin-bottom: 0;
-    margin-top: 32px;
 }
 
 /* 레이블 */
 label {
     display: block;
     font-weight: 600;
-    color: #333;
+    color: #374151;
     margin-bottom: 8px;
-    font-size: 0.95rem;
+    font-size: 14px;
 }
 
 /* 입력 필드 공통 스타일 */
 input[type="text"],
 input[type="password"],
 input[type="date"],
-input[type="file"] {
+input[type="file"],
+select {
     width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #4b5563;
+    transition: all 0.2s ease;
     font-family: inherit;
+    outline: none;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus,
-input[type="date"]:focus {
-    outline: none;
-    border-color: #2196F3;
-    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+input[type="date"]:focus,
+select:focus {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
 }
 
 input[type="file"] {
-    padding: 10px;
+    padding: 8px;
     cursor: pointer;
-    background: #f8f9fa;
+    background: #f8fafc;
 }
 
-/* 이미지 미리보기 */
-img {
+select {
+    cursor: pointer;
+    background-color: white;
+}
+
+/* Placeholder 스타일 */
+input::placeholder {
+    color: #9ca3af;
+}
+
+/* 프로필 이미지 미리보기 */
+.profile-image {
+    display: block;
     max-width: 200px;
     max-height: 200px;
     margin-top: 12px;
     border-radius: 8px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #e5e7eb;
     object-fit: cover;
 }
 
-/* 비밀번호 메시지 */
-#pwMessage {
+/* 에러 메시지 */
+.error-message {
     display: block;
-    margin-top: 8px;
-    font-size: 0.875rem;
-    color: #e74c3c;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #dc2626;
     font-weight: 500;
 }
 
-/* 버튼 */
+/* 버튼 그룹 */
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+/* 수정 버튼 */
 button[type="submit"] {
-    width: 100%;
-    padding: 14px 24px;
-    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    flex: 1;
+    padding: 12px 24px;
+    background: #1e40af;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
+    border-radius: 6px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.5);
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.3);
 }
 
 button[type="submit"]:active {
+    background: #1d4ed8;
     transform: translateY(0);
 }
 
-/* 뒤로가기 링크 */
-body > p {
-    margin-top: 20px;
-}
-
-body > p > a {
-    display: inline-block;
+/* 뒤로가기 버튼 */
+.btn-back {
+    flex: 1;
     padding: 12px 24px;
-    background: white;
-    color: #6b7280;
+    background-color: #6b7280;
+    color: white;
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: 6px;
+    font-size: 14px;
     font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-body > p > a:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    background: #f8f9fa;
+.btn-back:hover {
+    background-color: #4b5563;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+}
+
+.btn-back:active {
+    background-color: #4b5563;
+    transform: translateY(0);
+}
+
+/* 입력 필드 비활성화 상태 */
+input:disabled,
+select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    color: #9ca3af;
+}
+
+/* 입력 필드 에러 상태 */
+input.error {
+    border-color: #dc2626;
+}
+
+input.error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* 성공 메시지 */
+.success-message {
+    color: #059669;
+    font-size: 13px;
+    margin-top: 6px;
+    font-weight: 500;
 }
 
 /* 반응형 디자인 */
@@ -151,8 +208,8 @@ body > p > a:hover {
         padding: 20px 15px;
     }
 
-    h1 {
-        font-size: 1.5rem;
+    .form-container h1 {
+        font-size: 20px;
         margin-bottom: 20px;
     }
 
@@ -160,34 +217,26 @@ body > p > a:hover {
         padding: 30px 20px;
     }
 
-    button[type="submit"] {
-        font-size: 1rem;
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    button[type="submit"],
+    .btn-back {
+        width: 100%;
+    }
+
+    .profile-image {
+        max-width: 150px;
+        max-height: 150px;
     }
 }
 
 /* 접근성 향상 */
-input:disabled {
-    background-color: #f5f5f5;
-    cursor: not-allowed;
-}
-
-input::placeholder {
-    color: #999;
-}
-
-/* 입력 필드 에러 상태 */
-input.error {
-    border-color: #e74c3c;
-}
-
-input.error:focus {
-    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
-}
-
-/* 성공 메시지 스타일 (필요시 사용) */
-.success-message {
-    color: #27ae60;
-    font-size: 0.875rem;
-    margin-top: 8px;
-    font-weight: 500;
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
 }

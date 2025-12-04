@@ -2,21 +2,12 @@
 
 /* ==================== 강의 수정 페이지 ==================== */
 
-/* 메인 컨텐츠 영역 중앙 정렬 */
-.main-content {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 30px 20px;
-}
-
 /* 페이지 제목 */
 .main-content h2 {
     font-size: 24px;
     font-weight: 600;
     color: #1f2937;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 3px solid #2196F3;
+    margin-bottom: 20px;
 }
 
 /* 폼 컨테이너 */
@@ -24,8 +15,8 @@
     background: white;
     padding: 40px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
 }
 
 /* 폼 그룹 */
@@ -49,7 +40,8 @@
 /* 입력 필드 공통 스타일 */
 .form-input,
 .form-select,
-.form-textarea {
+.form-textarea,
+select.form-input {
     width: 100%;
     padding: 12px 14px;
     border: 1px solid #d1d5db;
@@ -101,7 +93,8 @@
 }
 
 /* Select 박스 */
-.form-select {
+.form-select,
+select.form-input {
     cursor: pointer;
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
@@ -121,6 +114,60 @@
 .form-row .form-group {
     margin-bottom: 0;
     min-width: 0;
+}
+
+/* 강의시간 행 (courseTimeRow) */
+.courseTimeRow {
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr 2fr;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.courseTimeRow:last-child {
+    margin-bottom: 0;
+}
+
+/* 강의시간 추가/제거 버튼 영역 */
+.timeButtons {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+#addTimeBtn,
+#removeTimeBtn {
+    width: 36px;
+    height: 36px;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#addTimeBtn {
+    background: #3b82f6;
+}
+
+#addTimeBtn:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+}
+
+#removeTimeBtn {
+    background: #ef4444;
+}
+
+#removeTimeBtn:hover {
+    background: #dc2626;
+    transform: scale(1.05);
 }
 
 /* 도움말 텍스트 */
@@ -251,11 +298,6 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* 큰 태블릿 */
 @media (max-width: 1024px) {
-    .main-content {
-        max-width: 800px;
-        padding: 25px 20px;
-    }
-
     .form-container {
         padding: 35px 30px;
     }
@@ -270,8 +312,6 @@ input[type="number"]::-webkit-inner-spin-button {
     .main-content h2 {
         font-size: 20px;
         margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom-width: 2px;
     }
 
     .form-container {
@@ -304,6 +344,23 @@ input[type="number"]::-webkit-inner-spin-button {
         padding: 11px 14px;
     }
 
+    /* 강의시간 행 1열로 */
+    .courseTimeRow {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .timeButtons {
+        justify-content: flex-start;
+    }
+
+    #addTimeBtn,
+    #removeTimeBtn {
+        width: 100%;
+        max-width: 120px;
+        height: 40px;
+    }
+
     /* 버튼 세로 배치 */
     .button-group {
         flex-direction: column-reverse;
@@ -321,10 +378,6 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* 작은 모바일 */
 @media (max-width: 600px) {
-    .main-content {
-        padding: 16px 12px;
-    }
-
     .form-container {
         padding: 20px 16px;
     }
@@ -336,14 +389,9 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* 매우 작은 모바일 */
 @media (max-width: 480px) {
-    .main-content {
-        padding: 14px 10px;
-    }
-
     .main-content h2 {
         font-size: 18px;
         margin-bottom: 16px;
-        padding-bottom: 10px;
     }
 
     .form-container {
@@ -378,14 +426,16 @@ input[type="number"]::-webkit-inner-spin-button {
         padding: 11px 20px;
         font-size: 14px;
     }
+
+    #addTimeBtn,
+    #removeTimeBtn {
+        max-width: 100px;
+        height: 36px;
+    }
 }
 
 /* 초소형 디바이스 */
 @media (max-width: 360px) {
-    .main-content {
-        padding: 12px 8px;
-    }
-
     .form-container {
         padding: 16px 12px;
     }

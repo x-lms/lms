@@ -15,4 +15,9 @@ public class StudentScorePF {
 	private String scoreGrade;
 	private String scoreStatus;
 	
+	// 이미 임시 등록된 학생 표시용
+    private boolean alreadySubmitted;
+		
+
+	
 }

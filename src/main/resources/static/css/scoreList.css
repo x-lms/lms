@@ -1,0 +1,202 @@
+@charset "UTF-8";
+
+/* ==================== 성적관리 페이지 ==================== */
+.main-content h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 20px;
+}
+
+/* 폼 스타일 */
+form {
+    width: 100%;
+}
+
+/* 성적 테이블 */
+table {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+thead {
+    background: #f8fafc;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+thead th {
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+}
+
+tbody td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #4b5563;
+    text-align: center;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+tbody tr {
+    transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* 학번 강조 */
+tbody td:first-child {
+    font-weight: 600;
+    color: #1e40af;
+}
+
+/* 이름 강조 */
+tbody td:nth-child(2) {
+    font-weight: 500;
+}
+
+/* 총점 강조 */
+tbody td:nth-child(7) {
+    font-weight: 600;
+    color: #059669;
+}
+
+/* 입력 필드 스타일 */
+input[type="text"],
+input[type="hidden"] {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    width: 50px;
+}
+
+input[type="text"]:focus {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+/* 셀렉트 박스 스타일 */
+select {
+    padding: 8px 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #374151;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+    outline: none;
+}
+
+select:hover {
+    border-color: #1e40af;
+}
+
+select:focus {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+/* 상태별 옵션 색상 */
+select[name="scoreStatus"] option[value="T"] {
+    background-color: #fff3cd;
+}
+
+select[name="scoreStatus"] option[value="F"] {
+    background-color: #d4edda;
+}
+
+/* 수정 버튼 */
+button[type="submit"] {
+    padding: 8px 16px;
+    background: #1e40af;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+button[type="submit"]:hover {
+    background: #1d4ed8;
+}
+
+button[type="submit"]:active {
+    background: #1e3a8a;
+}
+
+/* 데이터 없음 메시지 */
+tbody tr.no-data td {
+    padding: 40px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 16px;
+}
+
+/* 성공/에러 메시지 */
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c6cb;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .main-content h2 {
+        font-size: 20px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    thead th,
+    tbody td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    input[type="text"],
+    select {
+        font-size: 12px;
+        padding: 6px 10px;
+        min-width: 70px;
+    }
+
+    button[type="submit"] {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}

@@ -44,25 +44,23 @@
                         <td>{{createdate}}</td>
                         <td>{{answerStatus}}</td>
                         <td>
-                            <button class="open-reply" data-qno="{{questionNo}}">답글쓰기</button>
+                            <button class="open-reply" data-qno="{{questionNo}}">답변쓰기</button>
                         </td>
                     </tr>
                     
                     <tr class="reply-row" data-qno="{{questionNo}}" style="display:none;">
                         <td colspan="7">
                             <div class="reply-box">
-                                <input type="text" class="reply-input" placeholder="답글을 입력하세요...">
+                                <input type="text" class="reply-input" placeholder="답변을 입력하세요...">
                                 <button class="send-reply">등록</button>
                             </div>
-                            
-                            {{#answerContents}}
+                                                       
                             <div class="answer-list">
                                 {{#answerContents}}
                                 <div class="answer-item"><strong>답변:</strong> {{answerContents}}</div>
                                 {{/answerContents}}
                             </div>
-                            <button class="toggle-answers"></button>
-                            {{/answerContents}}
+                            <button class="toggle-answers"></button>                       
                         </td>
                     </tr>
                     {{/questionList}}
@@ -112,7 +110,7 @@ $(document).ready(function() {
         
         if ($list.find(".answer-item").length > 0) {
             $list.show();
-            $btn.show().text("답글접기");
+            $btn.show().text("답변접기");
         } else {
             $btn.hide();
         }
@@ -166,12 +164,21 @@ $(document).ready(function() {
                     alert("답변 등록 완료!");
                     input.val("");          // 입력 초기화
 
-                    // 기존 answer-list에 append
-                    answerList.html(`<div class="answer-item">${replyText}</div>`);
-                    
-                    answerList.show();       		 // 리스트 보이기
-                    toggleBtn.show(); // 버튼 보이기 & 텍스트 초기화
-                    
+                 	// 1. 답변 상태 Y로 변경
+                    let statusCell = $(`.question-row[data-qno="${replyRow.data("qno")}"]`).find("td:nth-child(7)");
+                    statusCell.text("Y");
+
+                    // 2. answer-list 없으면 생성
+                    if(answerList.length === 0){
+                    	 answerList = $('<div class="answer-list"><div class="answer-item"><strong>답변:</strong> </div></div>').appendTo(replyRow.find('td'));
+                    }
+
+                    // 3. 기존 답변 무시, 새 답변만 표시
+                    answerList.html(`<div class="answer-item"><strong>답변:</strong>${replyText}</div>`);
+
+                    // 4. 리스트 보이기, 버튼 보이기
+                    answerList.show();
+                    toggleBtn.show().text("답변접기");
                 } else {
                     alert("답글 등록 실패");
                 }

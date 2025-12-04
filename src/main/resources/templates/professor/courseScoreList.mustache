@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>학습관리시스템</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/courseScoreList.css">
+</head>
+<body>
+{{ >layouts/header }}
+<div class="container">
+{{ >layouts/navProfessor }}
+<div class="main-content">
+
+    <h2>성적목록(강의선택)</h2>
+            
+    <table>
+        <thead>
+            <tr>
+                <th>강의명</th>
+                <th>학과번호</th>
+                <th>정원</th>
+                <th>현재인원</th>
+                <th>강의기간</th>
+                <th>성적목록</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#courseList}}
+            <tr>
+                <td>{{courseName}}</td>
+                <td>{{deptNo}}</td>
+                <td>{{maxCnt}}</td>
+                <td>{{currentCnt}}</td>
+                <td>{{coursePeriod}}</td>
+                <td>
+                    <form action="{{springMacroRequestContext.request.contextPath}}/professor/scoreList" method="get">
+                        <input type="hidden" name="courseName" value="{{courseName}}">
+                        <input type="hidden" name="courseNo" value="{{courseNo}}">
+                        <button type="submit">성적목록</button>
+                    </form>
+                </td>
+            </tr>
+            {{/courseList}}
+        </tbody>
+    </table>
+</div>
+</div>
+{{ >layouts/footer }}
+</body>
+</html>

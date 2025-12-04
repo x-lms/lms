@@ -2,9 +2,11 @@ package com.example.lms.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import com.example.lms.dto.AttendanceSummary;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
+import com.example.lms.dto.CourseWithTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Project;
 import com.example.lms.dto.ProjectAverage;
@@ -36,16 +39,57 @@ public class ProfessorService {
 	@Autowired
 	ProfessorMapper professorMapper;
 	
+	// 최종성적
+	public int modifyFinalScore(Score score) {
+		return professorMapper.modifyFinalScore(score);
+	}
+	
 	// 성적리스트
 	public List<Score> getScoreByCourse(int courseNo) {
 		List<Score> scoreList = professorMapper.getScoreByCourse(courseNo);
 		return scoreList;
 	}
 	
-	// 성적등록 액션
-	public int addScore(Score score) {
-		return professorMapper.addScore(score);	
+	// 성적등록(grade 계산)
+	public void assignGrades(List<Score> allScores) {
+		// F 제외하고 정렬
+	    List<Score> nonFScores = allScores.stream()
+	            .filter(s -> !"F".equals(s.getScoreGrade()))
+	            .sorted(Comparator.comparingDouble(Score::getScoreTotal).reversed())
+	            .collect(Collectors.toList());
+
+	    int total = nonFScores.size();
+	    if(total == 0) return; // F만 있는 경우
+
+	    int gradeSize = (int)Math.ceil(total * 0.3); // 30%씩
+
+	    for(int i=0; i<total; i++) {
+	        Score s = nonFScores.get(i);
+	        if(i < gradeSize) s.setScoreGrade("A");
+	        else if(i < gradeSize*2) s.setScoreGrade("B");
+	        else if(i < gradeSize*3) s.setScoreGrade("C");
+	        else s.setScoreGrade("D");
+
+	        // DB 업데이트
+	        professorMapper.updateScoreGrade(s);
+	    }	
 	}
+
+	// 학생별 임시 성적 존재 여부
+    public boolean existsTempScore(int studentNo, int courseNo) {
+        return professorMapper.existsScore(studentNo, courseNo) > 0;
+    }
+
+    // 한 번만 등록 보장
+    @Transactional
+    public boolean addScore(Score score) {
+        if (existsTempScore(score.getStudentNo(), score.getCourseNo())) {
+            return false; // 이미 등록됨
+        }
+        professorMapper.addScore(score);
+        return true;
+    }
+		
 	
 	// 성적등록 폼
 	public List<StudentScorePF> getStudentListAndScore(int courseNo) {
@@ -274,8 +318,12 @@ public class ProfessorService {
 	public int insertCourse(Course c) {
 		return professorMapper.insertCourse(c);		
 	}
-	public int insertCourseTime(CourseTime ct) {
-		return professorMapper.insertCourseTime(ct);		
+	public void insertCourseWithTimes(CourseWithTime cwt) {
+	    int courseNo = cwt.getCourse().getCourseNo(); // Course PK
+	    for (CourseTime ct : cwt.getCourseTimes()) {
+	        ct.setCourseNo(courseNo); // CourseTime FK 세팅
+	    }
+	    professorMapper.insertCourseTime(cwt); // foreach로 batch insert
 	}
 	
 	// 강의 수정
@@ -283,14 +331,15 @@ public class ProfessorService {
 		return professorMapper.updateCourse(c);		
 	}
 	
-	public CourseTime getCourseTime(int courseNo) {
+	public List<CourseTime> getCourseTime(int courseNo) {
 		return professorMapper.getCourseTime(courseNo);
 	}
 
-	public int updateCourseTime(CourseTime ct) {
-		return professorMapper.updateCourseTime(ct);			
+	// 삭제 후 등록
+	public int addCourseTime(CourseTime ct) {
+		return professorMapper.addCourseTime(ct);
 	}
-	
+			
 	// 강의 삭제
 	public int deleteCourse(int courseNo) {
 		return professorMapper.deleteCourse(courseNo);		
@@ -388,7 +437,5 @@ public class ProfessorService {
 	
 
 	
-	
-
 
 }

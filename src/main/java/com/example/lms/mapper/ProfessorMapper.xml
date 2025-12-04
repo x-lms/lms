@@ -2,25 +2,48 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.lms.mapper.ProfessorMapper">
 	
+	<!-- 최종 성적 -->
+	<update id="modifyFinalScore" parameterType="com.example.lms.dto.Score">
+		update score	
+		set score_grade = #{scoreGrade},
+			score_status = #{scoreStatus}
+		where student_no = #{studentNo} and course_no = #{courseNo}	
+	</update>
+	
 	<!-- 과제점수 평균 -->
 	<select id="getAvgProjectScoreByStudent" parameterType="int" resultType="com.example.lms.dto.ProjectAverage">
-    SELECT 
-        s.student_no AS studentNo,
-        s.student_name AS studentName,
-        IFNULL(AVG(pr.result_score), 0) AS avgProjectScore
-    FROM student s
-    JOIN course_student cs 
-        ON s.student_no = cs.student_no
-    LEFT JOIN project p 
-        ON cs.course_no = p.course_no
-    LEFT JOIN project_result pr 
-        ON p.project_no = pr.project_no
-        AND s.student_no = pr.student_no
-    WHERE cs.course_no = #{courseNo}
-      AND s.student_no = #{studentNo}
-    GROUP BY s.student_no
-</select>
+	    SELECT 
+	        s.student_no AS studentNo,
+	        s.student_name AS studentName,
+	        IFNULL(AVG(pr.result_score), 0) AS avgProjectScore
+	    FROM student s
+	    JOIN course_student cs 
+	        ON s.student_no = cs.student_no
+	    LEFT JOIN project p 
+	        ON cs.course_no = p.course_no
+	    LEFT JOIN project_result pr 
+	        ON p.project_no = pr.project_no
+	        AND s.student_no = pr.student_no
+	    WHERE cs.course_no = #{courseNo}
+	      AND s.student_no = #{studentNo}
+	    GROUP BY s.student_no
+	</select>
 	
+	<!-- 성적 등록(grade) -->
+	<update id="updateScoreGrade" parameterType="com.example.lms.dto.Score">
+	    UPDATE score
+	    SET score_grade = #{scoreGrade}
+	    WHERE student_no = #{studentNo} AND course_no = #{courseNo}
+	</update>
+	
+	<!-- 성적등록 확인 -->
+	<select id="existsScore" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM score
+        WHERE student_no = #{studentNo} 
+          AND course_no = #{courseNo}    
+    </select>
+		
 	<!-- 성적 등록 -->
 	<insert id="addScore" parameterType="com.example.lms.dto.Score">
 		insert into score
@@ -50,19 +73,23 @@
 	<!-- 성적 목록 -->
 	<select id="getScoreByCourse" parameterType="int" resultType="com.example.lms.dto.Score">
 		 SELECT
-	        score_no scoreNo,
-	        student_no studentNo,
-	        emp_no empNo,
-	        course_no courseNo,
-	        score_att scoreAtt,
-	        score_project scoreProject,
-	        score_mid scoreMid,
-	        score_fin scoreFin,
-	        score_total scoreTotal,
-	        score_grade scoreGrade,
-	        score_status scoreStatus
-	    FROM score
-	    WHERE course_no = #{courseNo}
+	        sc.score_no scoreNo,
+	        sc.student_no studentNo,
+	        s.student_name studentName,
+	        sc.emp_no empNo,
+	        sc.course_no courseNo,
+	        sc.score_att scoreAtt,
+	        sc.score_project scoreProject,
+	        sc.score_mid scoreMid,
+	        sc.score_fin scoreFin,
+	        sc.score_total scoreTotal,
+	        sc.score_grade scoreGrade,
+	        sc.score_status scoreStatus
+	    FROM score sc
+	    LEFT JOIN student s
+	    	ON sc.student_no = s.student_no
+	    WHERE sc.course_no = #{courseNo}
+	    ORDER BY sc.score_total DESC
 	</select>
 		
 	<!-- 답글 등록 -->
@@ -362,22 +389,20 @@
 	
 	<select id="getCourseTime" parameterType="int" resultType="com.example.lms.dto.CourseTime">
 		SELECT
-	        course_time_no courseTimeNo, course_no courseNo,
-	        course_location courseLocation, course_date coursedate, 
-	        course_time_start courseTimeStart, course_time_end courseTimeEnd
+	        course_time_no courseTimeNo,
+	        course_no courseNo,
+	        course_location courseLocation, 
+	        course_date coursedate, 
+	        course_time_start courseTimeStart, 
+	        course_time_end courseTimeEnd
 	    FROM course_time
 	    WHERE course_no = #{courseNo};
 	</select> 
 	
-	<update id="updateCourseTime" parameterType="com.example.lms.dto.CourseTime">
-	    UPDATE course_time
-	    SET
-	        course_location = #{courseLocation},
-	        course_date = #{coursedate},
-	        course_time_start = #{courseTimeStart},
-	        course_time_end = #{courseTimeEnd}
-	    WHERE course_no = #{courseNo};
-	</update>	
+	<insert id="addCourseTime" parameterType="com.example.lms.dto.CourseTime">
+	   insert into course_time(course_no, course_location, course_date, course_time_start, course_time_end)
+	   value(#{courseNo}, #{courseLocation}, #{coursedate}, #{courseTimeStart}, #{courseTimeEnd})
+	</insert>
 	
 	<!-- 강의 상세보기 -->
 	<select id="courseOne" parameterType="int" resultType="com.example.lms.dto.Course">
@@ -406,11 +431,13 @@
 			(#{courseName}, #{deptNo}, #{empNo}, #{maxCnt}, 0, #{coursePeriod}, #{coursePlan})
 	</insert>
 
-	<insert id="insertCourseTime" parameterType="com.example.lms.dto.CourseTime">
+	<insert id="insertCourseTime" parameterType="com.example.lms.dto.CourseWithTime">
 		insert into course_time
 			(course_no, course_location, course_date, course_time_start, course_time_end)
 		values
-			(#{courseNo}, #{courseLocation}, #{coursedate}, #{courseTimeStart}, #{courseTimeEnd})
+			 <foreach collection="courseTimes" item="time" separator=",">
+		        (#{time.courseNo}, #{time.courseLocation}, #{time.coursedate}, #{time.courseTimeStart}, #{time.courseTimeEnd})
+		    </foreach>
 	</insert>
 	
 	<!-- 강의리스트 -->	

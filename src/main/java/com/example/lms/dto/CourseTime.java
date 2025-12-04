@@ -11,4 +11,11 @@ public class CourseTime {
 	private String coursedate; // 요일
 	private String courseTimeStart;
 	private String courseTimeEnd;
+	
+	// Mustache 출력용(요일)
+	private String dayOptions;
+	private int index;
+
+		
+	
 }

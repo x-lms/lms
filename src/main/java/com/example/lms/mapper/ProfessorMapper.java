@@ -12,6 +12,7 @@ import com.example.lms.dto.AttendanceSummary;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseStudent;
 import com.example.lms.dto.CourseTime;
+import com.example.lms.dto.CourseWithTime;
 import com.example.lms.dto.Emp;
 import com.example.lms.dto.Project;
 import com.example.lms.dto.ProjectAverage;
@@ -26,11 +27,16 @@ import com.example.lms.dto.TimetableCell;
 @Mapper
 public interface ProfessorMapper {
 	
+	// 최종성적
+	int modifyFinalScore(Score score);
 		
 	// 성적 등록
+    int existsScore(int studentNo, int courseNo);  // 학생별 임시 성적 존재 여부
 	int addScore(Score score);
-	List<StudentScorePF> getStudentListAndScore(int courseNo);
+	List<StudentScorePF> getStudentListAndScore(int courseNo); // 성적등록 학생목록
 	ProjectAverage getAvgProjectScoreByStudent(int courseNo, int studentNo);//(과제점수)
+	void updateScoreGrade(Score s); // 성적 grade 계산
+	
 	// 성적 목록
 	List<Score> getScoreByCourse(int courseNo);
 	
@@ -94,11 +100,11 @@ public interface ProfessorMapper {
 	List<CourseTime> getCourseTimeList(int courseNo);
 	// 강의등록
 	int insertCourse(Course c);
-	int insertCourseTime(CourseTime ct);
+	int insertCourseTime(CourseWithTime cwt);
 	// 강의수정
 	int updateCourse(Course c);
-	CourseTime getCourseTime(int courseNo);
-	int updateCourseTime(CourseTime ct);
+	List<CourseTime> getCourseTime(int courseNo);
+	int addCourseTime(CourseTime ct);
 	// 강의삭제
 	int deleteCourse(int courseNo);
 	int deleteCourseTime(int courseNo);
@@ -115,11 +121,5 @@ public interface ProfessorMapper {
 	// 홈 화면
 	List<CourseTime> selectAllCourseTimes(int empNo);
 	List<Map<String, String>> getProfessorSchedule();
-
-	
-
-
-	
-
 	
 }

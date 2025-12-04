@@ -1,68 +1,70 @@
-<!-- modifyProfessorInfo.mustache -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>학습관리시스템</title>
+    <title>정보 수정 - 학습관리시스템</title>
     <link rel="stylesheet" href="/css/common.css">
-	<link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/layout.css">
     <link rel="stylesheet" href="/css/modifyProfessorInfo.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-    <h1>정보 수정</h1>
+    <div class="form-container">
+        <h1>정보 수정</h1>
 
-    <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyProfessorInfo?empNo={{e.empNo}}" method="post" enctype="multipart/form-data">
-       
-        <p>
-		    <label>사진</label>
-		    <input type="file" name="empImgFile" accept="image/*">
-		    <img src="{{#e.empImg}}/uploads/{{e.empImg}}{{/e.empImg}}" class="profile-image">
-		    <input type="hidden" name="empImg" value="{{e.empImg}}"> <!-- 기존 이미지 유지용 -->
-		</p>
-        
-        <p>
-		    <label>학과 선택: </label>
-		    <select name="deptNo">
-			    <option value="" {{#noDeptSelected}}selected{{/noDeptSelected}}>학과 없음</option>
-			    {{#deptList}}
-			        <option value="{{deptNo}}" {{#selected}}selected{{/selected}}>{{deptName}}</option>
-			    {{/deptList}}
-			</select>>
-		</p>
+        <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyProfessorInfo?empNo={{e.empNo}}" method="post" enctype="multipart/form-data">
+           
+            <div class="form-group">
+                <label>사진</label>
+                <input type="file" name="empImgFile" accept="image/*">
+                {{#e.empImg}}
+                <img src="/uploads/{{e.empImg}}" class="profile-image" alt="프로필 이미지">
+                {{/e.empImg}}
+                <input type="hidden" name="empImg" value="{{e.empImg}}">
+            </div>
+            
+            <div class="form-group">
+                <label>학과 선택</label>
+                <select name="deptNo">
+                    <option value="" {{#noDeptSelected}}selected{{/noDeptSelected}}>학과 없음</option>
+                    {{#deptList}}
+                        <option value="{{deptNo}}" {{#selected}}selected{{/selected}}>{{deptName}}</option>
+                    {{/deptList}}
+                </select>
+            </div>
 
-        <p>
-            <label>비밀번호: </label>
-            <input type="password" name="empPw" id="password" value="">
-            <span id="pwMessage" style="color:red;"></span>
-        </p>
-       
-        <p>
-            <label>비밀번호 확인: </label>
-            <input type="password" name="empPw2" id="password2" value="">
-        </p>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" name="empPw" id="password" placeholder="변경하지 않으려면 비워두세요">
+                <span id="pwMessage" class="error-message"></span>
+            </div>
+           
+            <div class="form-group">
+                <label>비밀번호 확인</label>
+                <input type="password" name="empPw2" id="password2" placeholder="비밀번호 확인">
+            </div>
 
-        <p>
-            <label>이름: </label>
-            <input type="text" name="empName" value="{{e.empName}}">
-        </p>
+            <div class="form-group">
+                <label>이름</label>
+                <input type="text" name="empName" value="{{e.empName}}" required>
+            </div>
 
-        <p>
-            <label>생년월일: </label>
-            <input type="date" name="empBirth" value="{{e.empBirth}}">
-        </p>
+            <div class="form-group">
+                <label>생년월일</label>
+                <input type="date" name="empBirth" value="{{e.empBirth}}" required>
+            </div>
 
-        <p>
-            <label>전화번호: </label>
-            <input type="text" name="empPhone" value="{{e.empPhone}}" maxlength="13" placeholder="예: 010-1234-5678">
-        </p>
+            <div class="form-group">
+                <label>전화번호</label>
+                <input type="text" name="empPhone" value="{{e.empPhone}}" maxlength="13" placeholder="예: 010-1234-5678" required>
+            </div>
 
-        <p>
-            <button type="submit">수정</button>
-        </p>
-    </form>
-
-    <p><a href="{{springMacroRequestContext.request.contextPath}}/professor/professorInfo">뒤로가기</a></p>
+            <div class="button-group">
+                <button type="submit">수정</button>
+                <a href="{{springMacroRequestContext.request.contextPath}}/professor/professorInfo" class="btn-back">뒤로가기</a>
+            </div>
+        </form>
+    </div>
 
     <script>
     $(document).ready(function() {
@@ -70,13 +72,12 @@
         // 비밀번호 숫자+영어만 허용
         $("#password").on("input", function() {
             const password = $(this).val();
-            const regex = /^[A-Za-z0-9]*$/; // 숫자와 영어만 허용
+            const regex = /^[A-Za-z0-9]*$/;
 
             if(regex.test(password)) {
-                $("#pwMessage").text(""); // 통과 시 메시지 제거
+                $("#pwMessage").text("");
             } else {
                 $("#pwMessage").text("비밀번호는 숫자와 영어만 가능합니다.");
-                // 마지막 입력 문자 제거
                 $(this).val(password.slice(0, -1));
             }
         });
@@ -86,23 +87,20 @@
             const pw = $("#password").val();
             const pw2 = $("#password2").val();
 
-            // 비밀번호가 입력되어 있을 때만 체크
             if(pw || pw2) {
                 if(pw !== pw2) {
                     alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-                    e.preventDefault(); // 제출 막기
+                    e.preventDefault();
                 }
             }
         });
        
-        // ----------------- 전화번호 마스크 -----------------
+        // 전화번호 마스크
         const $empPhone = $("input[name='empPhone']");
         $empPhone.on("input", function() {
             let val = $(this).val();
-            // 기존 하이픈 제거 후 숫자만 남기기
             val = val.replace(/[^0-9]/g, "");
 
-            // 000-0000-0000 또는 000-000-0000 형식
             if(val.length < 4) {
                 val = val;
             } else if(val.length < 7) {
@@ -115,8 +113,6 @@
 
             $(this).val(val);
         });
- 
-
     });
     </script>
 </body>
