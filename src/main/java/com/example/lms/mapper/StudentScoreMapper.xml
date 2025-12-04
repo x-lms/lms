@@ -16,9 +16,11 @@
         s.score_project AS scoreProject,
         s.score_mid AS scoreMid,
         s.score_fin AS scoreFin,
-        s.score_total AS scoreTotal
+        s.score_total AS scoreTotal,
+        s.score_grade AS scoreGrade,
+        s.score_status AS scoreStatus
     FROM score s
-    inner JOIN course c ON s.course_no = c.course_no
+    INNER JOIN course c ON s.course_no = c.course_no
     WHERE s.student_no = #{studentNo}
     ORDER BY s.score_no DESC
 </select>

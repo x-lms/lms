@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>{{project.projectName}} 과제 제출</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/studentProjectResultOne.css">
+</head>
+<body>
+{{> layouts/header }}
+
+<div class="container">
+    {{> layouts/navStudent }}
+
+    <div class="main-content">
+        {{#msg}}
+        <div class="alert-success">
+            {{msg}}
+        </div>
+        {{/msg}}
+
+     <div class="detail-box">
+    <!-- 프로젝트 제목 -->
+    <div class="detail-title">{{project.projectName}}</div>
+
+    <!-- 강의 정보 & 마감일 -->
+    <div class="course-info">
+        <div class="info-item">
+            <label>마감일:</label>
+            <span>{{project.projectDeadline}}</span>
+        </div>
+        {{#project.projectContents}}
+        <div class="info-item">
+            <label>설명:</label>
+            <span>{{project.projectContents}}</span>
+        </div>
+        {{/project.projectContents}}
+    </div>
+
+    <!-- 제출 상태 -->
+    {{#submitted}}
+        <div class="submitted-info">
+            이미 제출하였습니다.<br>
+            제출 제목: {{submitted.resultTitle}}<br>
+            제출 파일: {{submitted.resultFile}}<br>
+            제출 내용: {{submitted.resultContents}}
+        </div>
+    {{/submitted}}
+
+    <!-- 제출 폼 -->
+    {{^submitted}}
+        <form method="post" action="/student/assignment/{{project.projectNo}}" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="resultTitle">제목</label>
+                    <input type="text" id="resultTitle" name="resultTitle" placeholder="제목" required>
+                </div>
+                <div class="form-group">
+                    <label for="submissionFile">파일 첨부</label>
+                    <input type="file" id="submissionFile" name="submissionFile" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="resultContents">내용</label>
+                <textarea id="resultContents" name="resultContents" placeholder="내용" required></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">제출</button>
+            </div>
+        </form>
+    {{/submitted}}
+
+    <a href="/student/courseOne/{{project.courseNo}}" class="question-btn">강의 상세로 돌아가기</a>
+</div>
+
+    </div>
+</div>
+
+{{> layouts/footer }}
+</body>
+</html>

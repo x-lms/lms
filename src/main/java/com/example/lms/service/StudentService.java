@@ -2,6 +2,8 @@ package com.example.lms.service;
 
 import com.example.lms.dto.Assignment;
 import com.example.lms.dto.CourseTime;
+import com.example.lms.dto.Project;
+import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Question;
 import com.example.lms.dto.StudentCourse;
 import com.example.lms.dto.TimetableCell;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -215,6 +218,7 @@ public class StudentService {
     // ========================= 과제 목록 =========================
     public List<Assignment> getAssignments(int courseNo) {
         return studentMapper.selectAssignmentsByCourseNo(courseNo);
+        
     }
 
     // ========================= 수강 취소 =========================
@@ -309,6 +313,55 @@ public class StudentService {
         	 studentMapper.deleteQuestion(questionNo); // Mapper 호출
         }
     }
+   // 과제쪽
+ // ========================= 과제 상세 조회 =========================
+    public Project getProjectByProjectNo(int projectNo) {
+        return studentMapper.selectProjectByProjectNo(projectNo);
+    }
 
+    // ========================= 학생 제출 여부 조회 =========================
+    public ProjectResult getProjectResult(int projectNo, int studentNo) {
+        return studentMapper.selectProjectResultByProjectNoAndStudentNo(projectNo, studentNo);
+    }
 
+    // ========================= 과제 제출 =========================
+    @Transactional
+    public void submitAssignment(int projectNo, int studentNo, MultipartFile file, String title, String contents) {
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("업로드할 파일이 없습니다.");
+        }
+
+        try {
+            // 1) 파일 저장 경로
+            String uploadDir = "C:/lms/upload/";
+            File dir = new File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
+
+            // 2) 파일명: 학생번호_과제번호_원본파일명
+            String filename = studentNo + "_" + projectNo + "_" + file.getOriginalFilename();
+            File destination = new File(uploadDir + filename);
+
+            // 3) 실제 파일 저장
+            file.transferTo(destination);
+
+            // 4) ProjectResult DTO 생성 후 DB insert
+            ProjectResult result = new ProjectResult();
+            result.setProjectNo(projectNo);
+            result.setStudentNo(studentNo);
+            result.setResultTitle(title);
+            result.setResultContents(contents);
+            result.setResultFile(filename);
+            result.setCreatedate(LocalDateTime.now().toString());
+
+            studentMapper.insertProjectResult(result);
+
+        } catch (IOException e) {
+            throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    // ========================= 제출 후 강의번호 조회 =========================
+    public int getCourseNoByProjectNo(int projectNo) {
+        return studentMapper.selectCourseNoByProjectNo(projectNo);
+    }
 }

@@ -1,0 +1,130 @@
+@charset "UTF-8";
+
+/* ========================= 전체 컨테이너 ========================= */
+.container {
+    max-width: 1200px; /* 좀 더 넓게 */
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.main-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+/* ========================= 프로젝트 제목 ========================= */
+.detail-box .detail-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* ========================= 강의 및 마감일 정보 (가로) ========================= */
+.course-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.course-info div {
+    flex: 1 1 45%; /* 가로로 넓게 배치 */
+    color: #333;
+}
+
+/* ========================= 섹션 제목 ========================= */
+.section-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #4a68d8;
+}
+
+/* ========================= 제출 상태 ========================= */
+.submitted-info {
+    background-color: #e6f4ea;
+    border-left: 5px solid #34a853;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    white-space: pre-wrap;
+}
+
+/* ========================= 제출 폼 (가로 레이아웃) ========================= */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+form > div {
+    flex: 1 1 48%; /* 좌우로 나눔 */
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+form input[type="text"],
+form textarea,
+form input[type="file"] {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    box-sizing: border-box;
+}
+
+form textarea {
+    min-height: 220px;
+}
+
+/* ========================= 제출 버튼 ========================= */
+form button {
+    padding: 14px 36px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 10px;
+    background-color: #4a68d8;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    align-self: flex-end; /* 오른쪽 정렬 */
+}
+
+form button:hover {
+    background-color: #3b55b0;
+}
+
+/* ========================= 강의 상세로 돌아가기 버튼 ========================= */
+.question-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 14px 36px;
+    font-weight: 600;
+    background-color: #6c757d;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.question-btn:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(108,117,125,0.3);
+}

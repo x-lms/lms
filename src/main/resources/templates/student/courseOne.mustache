@@ -16,6 +16,12 @@
     {{> layouts/navStudent }}
 
     <div class="main-content">
+        {{#msg}}
+        <div class="alert-success">
+            {{msg}}
+        </div>
+        {{/msg}}
+
         <div class="page-header">
             <h2 class="page-title">강의 상세정보</h2>
         </div>
@@ -24,18 +30,17 @@
             <div class="detail-title">{{course.courseName}}</div>
 
             <div class="course-info">
-			    <div><b>교수명:</b> {{course.empName}}</div>
-			    <div><b>강의실:</b> {{course.courseLocation}}</div>
-			    <div><b>요일:</b> {{course.courseDate}}</div>
-			    <div><b>시간:</b> {{course.courseTimeStart}} ~ {{course.courseTimeEnd}}</div>
-			    <div><b>수업 기간:</b> {{course.coursePeriod}}</div>
-			    <div><b>정원:</b> {{course.currentCnt}} / {{course.maxCnt}}</div>
-			</div>
+                <div><b>교수명:</b> {{course.empName}}</div>
+                <div><b>강의실:</b> {{course.courseLocation}}</div>
+                <div><b>요일:</b> {{course.courseDate}}</div>
+                <div><b>시간:</b> {{course.courseTimeStart}} ~ {{course.courseTimeEnd}}</div>
+                <div><b>수업 기간:</b> {{course.coursePeriod}}</div>
+                <div><b>정원:</b> {{course.currentCnt}} / {{course.maxCnt}}</div>
+            </div>
 
-				<div class="question-box">
-				    <a href="/student/questionWrite/{{course.courseNo}}" class="question-btn">질문하기</a>
-				</div>
-
+            <div class="question-box">
+                <a href="/student/questionWrite/{{course.courseNo}}" class="question-btn">질문하기</a>
+            </div>
 
             {{#course.coursePlan}}
             <div class="section-title">강의 계획</div>
@@ -51,20 +56,22 @@
                     <tr>
                         <th>과제명</th>
                         <th>마감일</th>
-                        <th>제출</th>
+                        
                     </tr>
+
                     {{#assignmentList}}
                     <tr>
-                        <td>{{projectName}}</td>
+                        <td>
+                            <a href="/student/assignment/{{projectNo}}" class="assignment-link">
+                                {{projectName}}
+                            </a>
+                        </td>
                         <td>{{projectDeadline}}</td>
                         <td>
-                            <form method="post" action="/student/submit-assignment/{{projectNo}}" enctype="multipart/form-data">
-                                <input type="file" name="submissionFile" required>
-                                <button type="submit" class="submit-btn">제출</button>
-                            </form>
-                        </td>
+                        
                     </tr>
                     {{/assignmentList}}
+
                     {{^assignmentList}}
                     <tr><td colspan="3">등록된 과제가 없습니다.</td></tr>
                     {{/assignmentList}}

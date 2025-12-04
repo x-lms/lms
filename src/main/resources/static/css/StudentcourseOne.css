@@ -72,6 +72,30 @@ table td {
     border-bottom: 1px solid #e2e2e2;
 }
 
+/* ==================== 제출 여부 스타일 ==================== */
+
+.submitted-yes {
+    color: #2a9d8f;
+    font-weight: 600;
+}
+
+.submitted-no {
+    color: #e63946;
+    font-weight: 600;
+}
+
+/* 과제명 링크 스타일 */
+.assignment-link {
+    color: #4a68d8;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.assignment-link:hover {
+    text-decoration: underline;
+    color: #3b55b0;
+}
+
 /* 버튼 공통 스타일 */
 button, .question-btn {
     padding: 10px 18px;

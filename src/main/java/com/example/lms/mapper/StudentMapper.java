@@ -3,6 +3,8 @@ package com.example.lms.mapper;
 import com.example.lms.dto.Assignment;
 import com.example.lms.dto.Course;
 import com.example.lms.dto.CourseTime;
+import com.example.lms.dto.Project;
+import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.Question;
 import org.apache.ibatis.annotations.Mapper;
@@ -62,6 +64,19 @@ public interface StudentMapper {
     // ========================= 교수 번호 조회 (수정) =========================
  
     Integer selectProfessorNoByCourseNo(@Param("courseNo") int courseNo);
+    
+    //============================== 과제 전송 =================================
+ // 프로젝트 단일 조회
+    Project selectProjectByProjectNo(@Param("projectNo") int projectNo);
+    // 학생 제출 여부 조회
+    ProjectResult selectProjectResultByProjectNoAndStudentNo(
+        @Param("projectNo") int projectNo,
+        @Param("studentNo") int studentNo
+    );
+    // 과제 제출 insert
+    void insertProjectResult(ProjectResult result);
+    // projectNo로 강의번호 조회
+    int selectCourseNoByProjectNo(@Param("projectNo") int projectNo);
 
 
 }

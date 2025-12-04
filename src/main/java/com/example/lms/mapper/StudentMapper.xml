@@ -201,15 +201,62 @@
       AND course_no = #{courseNo}
 </select>
 
-    <select id="selectAssignmentsByCourseNo" resultType="com.example.lms.dto.Assignment" parameterType="int">
-		    SELECT project_no AS projectNo,
-		           course_no AS courseNo,
-		           project_name AS projectName,
-		           emp_no AS empNo,
-		           project_deadline AS projectDeadline
-		    FROM project
-		    WHERE course_no = #{courseNo}
-</select>
+ <!-- 강의별 과제 목록 조회 -->
+    <select id="selectAssignmentsByCourseNo" parameterType="int" resultType="com.example.lms.dto.Assignment">
+        SELECT 
+            project_no AS projectNo,
+            course_no AS courseNo,
+            project_name AS projectName,
+            emp_no AS empNo,
+            project_deadline AS projectDeadline
+        FROM project
+        WHERE course_no = #{courseNo}
+        ORDER BY project_deadline ASC
+    </select>
+
+    <!-- 단일 과제 조회 -->
+    <select id="selectProjectByProjectNo" parameterType="int" resultType="com.example.lms.dto.Project">
+        SELECT 
+            project_no AS projectNo,
+            course_no AS courseNo,
+            project_name AS projectName,
+            emp_no AS empNo,
+            project_deadline AS projectDeadline
+        FROM project
+        WHERE project_no = #{projectNo}
+    </select>
+
+    <!-- 학생 과제 제출 여부 조회 -->
+    <select id="selectProjectResultByProjectNoAndStudentNo" resultType="com.example.lms.dto.ProjectResult" parameterType="map">
+        SELECT 
+            result_no AS resultNo,
+            project_no AS projectNo,
+            student_no AS studentNo,
+            result_title AS resultTitle,
+            result_contents AS resultContents,
+            result_file AS resultFile,
+            createdate
+        FROM project_result
+        WHERE project_no = #{projectNo} AND student_no = #{studentNo}
+    </select>
+
+    <!-- 과제 제출 insert -->
+    <insert id="insertProjectResult" parameterType="com.example.lms.dto.ProjectResult" useGeneratedKeys="true" keyProperty="resultNo">
+        INSERT INTO project_result
+            (project_no, student_no, result_title, result_contents, result_file, createdate)
+        VALUES
+            (#{projectNo}, #{studentNo}, #{resultTitle}, #{resultContents}, #{resultFile}, #{createdate})
+    </insert>
+
+    <!-- projectNo로 강의번호 조회 -->
+    <select id="selectCourseNoByProjectNo" parameterType="int" resultType="int">
+        SELECT course_no
+        FROM project
+        WHERE project_no = #{projectNo}
+    </select>
+ 
+ 
+ 
  
 	 <delete id="deleteStudentCourse" parameterType="map">
 	    DELETE FROM registration
@@ -287,5 +334,6 @@
     WHERE question_no = #{questionNo}
 </delete>
 	
+
 
 </mapper>

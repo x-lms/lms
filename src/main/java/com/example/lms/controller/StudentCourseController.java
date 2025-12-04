@@ -2,6 +2,8 @@ package com.example.lms.controller;
 
 import com.example.lms.dto.StudentCourse;
 import com.example.lms.dto.Assignment;
+import com.example.lms.dto.Project;
+import com.example.lms.dto.ProjectResult;
 import com.example.lms.dto.Question;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -108,6 +111,48 @@ public class StudentCourseController {
         model.addAttribute("totalPages", totalPages);
 
         return "student/addCourse";
+    }
+ // 과제 상세 페이지
+    @GetMapping("/assignment/{projectNo}")
+    public String assignmentDetail(
+            @PathVariable int projectNo,
+            @SessionAttribute("loginStudent") Student loginStudent,
+            Model model) {
+
+        if (loginStudent == null) return "redirect:/login";
+
+        int studentNo = loginStudent.getStudentNo();
+
+        Project project = studentService.getProjectByProjectNo(projectNo);
+        ProjectResult submitted = studentService.getProjectResult(projectNo, studentNo);
+
+        model.addAttribute("project", project);
+        model.addAttribute("submitted", submitted);
+
+        return "student/projectResultOne"; 
+    }
+
+    // 과제 제출 처리
+    @PostMapping("/assignment/{projectNo}")
+    public String submitAssignment(
+            @PathVariable int projectNo,
+            @RequestParam("submissionFile") MultipartFile file,
+            @RequestParam("resultTitle") String title,
+            @RequestParam("resultContents") String contents,
+            @SessionAttribute("loginStudent") Student loginStudent,
+            RedirectAttributes redirectAttributes
+    ) {
+
+        if (loginStudent == null) return "redirect:/login";
+
+        int studentNo = loginStudent.getStudentNo();
+
+        studentService.submitAssignment(projectNo, studentNo, file, title, contents);
+
+        redirectAttributes.addFlashAttribute("msg", "과제가 성공적으로 제출되었습니다.");
+
+        int courseNo = studentService.getCourseNoByProjectNo(projectNo);
+        return "redirect:/student/courseOne/" + courseNo;
     }
 
     // 수강 과목 상세보기
