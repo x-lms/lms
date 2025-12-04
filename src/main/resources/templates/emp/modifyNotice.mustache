@@ -21,7 +21,7 @@
 
 			<div class="notice-form-container">
 				<form class="notice-form"
-					action="/emp/modifyNotice?noticeNo={{noticeNo}}" method="post"
+					action="{{springMacroRequestContext.request.contextPath}}/emp/modifyNotice?noticeNo={{noticeNo}}" method="post"
 					enctype="multipart/form-data">
 					{{#noticeOne}}
 					<div class="form-row">
@@ -69,7 +69,7 @@
 					</div>
 
 					<div class="form-actions">
-						<a href="/public/noticeOne?noticeNo={{noticeNo}}" class="btn-secondary">취소</a>
+						<a href="{{springMacroRequestContext.request.contextPath}}/public/noticeOne?noticeNo={{noticeNo}}" class="btn-secondary">취소</a>
 						<button type="submit" class="btn-primary">수정 완료</button>
 					</div>
 				</form>

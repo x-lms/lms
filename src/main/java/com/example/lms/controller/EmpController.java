@@ -42,7 +42,16 @@ public class EmpController {
 	@Autowired ExcelTempStore excelTempStore;
 	private final String uploadDir = "C:/lms/uploads";
 	@InitBinder("modifyProfessor")
-	public void initBinder(WebDataBinder binder) {
+	public void initBinderProfessor(WebDataBinder binder) {
+		binder.registerCustomEditor(String.class, new PropertyEditorSupport() {
+			@Override
+			public void setAsText(String text) {
+				setValue((text == null || text.trim().isEmpty()) ? null : text.trim());
+			}
+		});
+	}
+	@InitBinder("modifyStudent")
+	public void initBinderStudent(WebDataBinder binder) {
 		binder.registerCustomEditor(String.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) {
@@ -250,7 +259,7 @@ public class EmpController {
 		int rowPerPage = empService.getRowPerPage();
 		int totalCount = empService.countStd(searchName, searchDept);
 		int totalPage = (int) Math.ceil((double) totalCount / rowPerPage);
-		
+		log.debug("totalCount: " + totalCount);
 		// 페이지 블록 단위 설정
 		int blockSize = 5;
 		int currentBolock = (currentPage - 1) / blockSize;
@@ -281,6 +290,13 @@ public class EmpController {
 	}
 	
 	// 학생 상세
+	@GetMapping("/emp/studentInfo")
+	public String studentInfo(Model model, int studentNo) {
+		Student std = empService.getStudentInfo(studentNo);
+		log.debug("조회된 학생 학번: " + std.getStudentNo());
+		model.addAttribute("student", std);
+		return "/emp/studentInfo";
+	}
 	
 	// 학생 추가(파일)
 	@GetMapping("/emp/addStdByExcel")
@@ -337,16 +353,76 @@ public class EmpController {
 	@GetMapping("/emp/addStdOne")
 	public String addStdOne(Model model) {
 		List<Dept> deptList = empService.getDeptList();
+		List<String> states = new ArrayList<>();
+		String[] names = {"재학", "휴학", "자퇴", "제적", "졸업"};
+		for(String s : names) states.add(s);
+		
 		model.addAttribute("deptList", deptList);
-		return "/emp/addProfessor";
+		model.addAttribute("stateList", states);
+		return "/emp/addStdOne";
 	}
 	@PostMapping("/emp/addStdOne")
-	public String addStdOne(Emp e) {
-		if(e.getDeptNo().equals(0)) e.setDeptNo(null);
-		
-		empService.addProfessor(e);
-		return "redirect:/emp/professorList";
+	public String addStdOne(Student s, int year) {
+		empService.addStudent(s, year);
+		return "redirect:/emp/studentList";
 	}
 	
 	// 학생 수정
+	@GetMapping("/emp/modifyStudent")
+	public String modifyStudent(Model model, int studentNo) {
+		Student s = empService.getStudentInfo(studentNo);
+		List<Dept> deptList = empService.getDeptList();
+		for(Dept d : deptList) {
+			if(s.getDeptName() != null && (s.getDeptName()).equals(d.getDeptName())) {
+				d.setSelected(true);
+			}
+		}
+		List<Map<String, Object>> states = new ArrayList<>();
+		String[] names = {"재학", "휴학", "자퇴", "제적", "졸업"};
+		for(String str : names) {
+			Map<String, Object> m = new HashMap<>();
+			m.put("value", str);
+			m.put("selected", str.equals(s.getStudentState()));
+			states.add(m);
+		}
+		
+		model.addAttribute("student", s);
+		model.addAttribute("deptList", deptList);
+		model.addAttribute("stateList", states);
+		return "/emp/modifyStudent";
+	}
+	@PostMapping("/emp/modifyStudent")
+	public String modifyStudent(Student s, @RequestParam(value = "stdImgFile", required = false)  MultipartFile file) throws Exception {
+		File dir = new File(uploadDir);
+		if(!dir.exists()) dir.mkdir();
+		
+		String newFileName = null;
+		
+		if(file != null && !file.isEmpty()) {
+			// 새 파일명 생성
+			String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+			newFileName = UUID.randomUUID().toString().replace("-", "") + ext;
+			
+			// 저장
+			File saveFile = new File(uploadDir, newFileName);
+			file.transferTo(saveFile);
+			
+			// 기존 이미지 삭제
+			if(s.getStudentImg() != null && !s.getStudentImg().equals("")) {
+				File old = new File(uploadDir, s.getStudentImg());
+				if(old.exists()) old.delete();
+			}
+			
+			// DB에 저장할 새 파일명 set
+			s.setStudentImg(newFileName);
+		}
+		
+		// 사진변경 안했을 시 기존 prfImg 유지
+		if(newFileName == null) {
+			s.setStudentImg(s.getStudentImg());
+		}
+		s.setStudentEmail(s.getStudentEmail());
+		empService.updateStudent(s);
+		return "redirect:/emp/studentInfo?studentNo=" + s.getStudentNo();
+	}
 }

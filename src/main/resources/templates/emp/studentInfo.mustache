@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>학습관리시스템 - 학생정보</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="/css/common.css">
+	<link rel="stylesheet" href="/css/layout.css">
+	<link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+	<!-- include -->
+	{{>layouts/header}}
+	<div class="container">
+		{{>layouts/navEmp}}
+		<div class="main-content">
+			<div class="page-header">
+				<h2 class="page-title">학생 정보</h2>
+			</div>
+
+			<div class="professor-detail-container">
+				<div class="professor-detail-header">
+					<h3 class="section-title">기본 정보</h3>
+				</div>
+				{{#student}}
+				<div class="professor-detail-content">
+					<div class="professor-photo-section">
+						<div class="professor-photo-large">
+							{{#studentImg}} <img src="/uploads/{{studentImg}}"> {{/studentImg}}
+							{{^studentPhoto}} <img src="/uploads/default.png"> {{/studentPhoto}}
+						</div>
+					</div>
+
+					<div class="info-grid">
+						<div class="info-grid-row">
+							<span class="info-grid-label">학번</span>
+							<span class="info-grid-value">{{studentNo}}</span>
+						</div>
+						<div class="info-grid-row">
+							<span class="info-grid-label">이름</span>
+							<span class="info-grid-value">{{studentName}}</span>
+						</div>
+						<div class="info-grid-row">
+							<span class="info-grid-label">학과</span>
+							<span class="info-grid-value">{{deptName}}</span>
+						</div>
+						<div class="info-grid-row">
+							<span class="info-grid-label">이메일</span>
+							<span class="info-grid-value">{{#studentEmail}}{{studentEmail}}{{/studentEmail}}</span>
+						</div>
+						<div class="info-grid-row">
+							<span class="info-grid-label">휴대폰번호</span>
+							<span class="info-grid-value">{{#studentPhone}}{{studentPhone}}{{/studentPhone}}</span>
+						</div>
+						<div class="info-grid-row">
+							<span class="info-grid-label">생년월일</span>
+							<span class="info-grid-value">{{#studentBirth}}{{studentBirth}}{{/studentBirth}}</span>
+						</div>
+						<div class="info-grid-row">
+							<span class="info-grid-label">학적상태</span>
+							<span class="info-grid-value">{{studentState}}</span>
+						</div>
+					</div>
+				</div>
+				<div class="professor-detail-actions">
+					<div></div>
+					<div class="action-right">
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/studentList" class="btn-secondary">목록</a>
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifyStudent?studentNo={{studentNo}}" class="btn-primary">수정</a>
+					</div>
+				</div>
+				{{/student}}
+			</div>
+		</div>
+	</div>
+	{{>layouts/footer}}
+</body>
+</html>

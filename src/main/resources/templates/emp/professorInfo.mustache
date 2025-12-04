@@ -28,7 +28,7 @@
 	                    <div class="professor-photo-section">
 	                        <div class="professor-photo-large">
 	                        	{{#prfImg}}
-	                            <img src="/uploads/{{prfImg}}">
+	                            	<img src="/uploads/{{prfImg}}">
 								{{/prfImg}}
 								{{^prfPhoto}}
 									<img src="/uploads/default.png">
@@ -61,9 +61,9 @@
 	                </div>
 
 	                <div class="professor-detail-actions">
-	                    <a href="/emp/professorList" class="btn-secondary">목록</a>
+	                    <a href="{{springMacroRequestContext.request.contextPath}}/emp/professorList" class="btn-secondary">목록</a>
 	                    <div class="action-right">
-	                        <a href="/emp/modifyProfessor?prfNo={{prfNo}}" class="btn-edit">수정</a>
+	                        <a href="{{springMacroRequestContext.request.contextPath}}/emp/modifyProfessor?prfNo={{prfNo}}" class="btn-edit">수정</a>
 	                        <button type="button" class="btn-delete" onclick="deleteProfessor({{prfNo}})">삭제</button>
 	                    </div>
 	                </div>

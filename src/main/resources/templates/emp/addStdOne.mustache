@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>학습관리시스템 - 교수 추가</title>
+    <title>학습관리시스템 - 학생등록</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/layout.css">
@@ -16,44 +16,43 @@
         {{>layouts/navEmp}}
         <div class="main-content">
             <div class="page-header">
-                <h2 class="page-title">교수 추가</h2>
+                <h2 class="page-title">학생등록</h2>
             </div>
             
             <div class="notice-form-container">
-                <form id="professorForm" class="notice-form" action="/emp/addProfessor" method="post">
+                <form id="studentForm" class="notice-form" action="/emp/addStdOne" method="post">
+                    <div class="form-row">
+                        <label class="form-label required">입학/편입년도</label>
+                        <input type="number" name="year" class="form-input" placeholder="년도를 입력하세요 ex)2025" required>
+                    </div>
                     <div class="form-row">
                         <label class="form-label required">이름</label>
-                        <input type="text" name="empName" class="form-input" placeholder="교수 이름을 입력하세요" required>
+                        <input type="text" name="studentName" class="form-input" placeholder="학생 이름을 입력하세요" required>
                     </div>
 
-                    <div class="form-row">
-                        <label class="form-label required">이메일</label>
-                        <div class="email-input-group">
-                            <input type="text" name="empEmailPrefix" class="email-prefix" placeholder="이메일" required>
-                            <span class="email-separator">@</span>
-                            <span class="email-domain">kru.com</span>
-	                        <input type="hidden" name="empEmail" id="empEmail">
-                        </div>
-                    </div>
+					<div class="form-row-split">
+						<div class="form-col">
+							<label class="form-label required">학과</label>
+							<select name="deptNo" class="form-select" required>
+								<option value="">학과를 선택하세요</option>
+								{{#deptList}}
+									<option value="{{deptNo}}">{{deptName}}</option> 
+								{{/deptList}}
+							</select>
+						</div>
+	
+						<div class="form-col">
+							<label class="form-label required">학적상태</label>
+							<select name="studentState" class="form-select" required>
+								{{#stateList}}
+									<option value="{{.}}">{{.}}</option>
+								{{/stateList}}
+							</select>
+						</div>
+					</div>
 
-                    <div class="form-row">
-                        <label class="form-label required">비밀번호</label>
-                        <input type="password" name="empPw" class="form-input" placeholder="비밀번호를 입력하세요" required>
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label required">학과</label>
-                        <select name="deptNo" class="form-select" required>
-                       		<option value="">학과를 선택하세요</option>
-                       		<option value="0">대기</option>
-                        	{{#deptList}}
-                        		<option value="{{deptNo}}">{{deptName}}</option>
-                        	{{/deptList}}
-                        </select>
-                    </div>
-
-                    <div class="form-actions">
-                        <a href="/professor" class="btn-secondary">취소</a>
+					<div class="form-actions">
+                        <a href="/emp/studentList" class="btn-secondary">취소</a>
                         <button type="submit" class="btn-primary">등록</button>
                     </div>
                 </form>
@@ -61,15 +60,5 @@
         </div>
     </div>
     {{>layouts/footer}}
-    
-    <script>
-    	$('#professorForm').on("submit", function() {
-			let prefix = $('.email-prefix').val().trim();
-			let domain = $('.email-domain').text().trim();
-			
-			$('#empEmail').val(prefix + "@" + domain);
-			console.log("최종 이메일:", $('#empEmail').val());
-    	});
-    </script>
 </body>
 </html>
