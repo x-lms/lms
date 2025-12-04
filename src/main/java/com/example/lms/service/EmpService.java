@@ -203,6 +203,9 @@ public class EmpService {
 		return empMapper.countStudent(sl);
 	}
 	// 학생 상세
+	public Student getStudentInfo(int sn) {
+		return empMapper.selectStudent(sn);
+	}
 	
 	// 학생 추가(파일)
 	public StudentExcelResult readExcel(MultipartFile file) throws Exception {
@@ -286,9 +289,38 @@ public class EmpService {
 		if(c.getCellType() == CellType.NUMERIC) return String.valueOf((int) c.getNumericCellValue());
 		return null;
 	}
+	
 	// 학생 추가(개별)
+	public void addStudent(Student s, int year) {
+		String yearStr = String.valueOf(year % 100);
+		String deptStr = String.format("%02d", s.getDeptNo());
+		String prefix = yearStr + deptStr;
+		
+		// 마지막 학번 조회
+		Integer lastSudentNo = empMapper.selectMaxStdNo(prefix + "%");
+		
+		int newSeq = 1;
+		if(lastSudentNo != null) {
+			String lastStr = String.valueOf(lastSudentNo);
+			
+			// 뒤 3자리 추출
+			String seqStr = lastStr.substring(lastStr.length() - 3);
+			newSeq = Integer.parseInt(seqStr) + 1;
+		}
+		
+		// 새학번 생성
+		String newStdNo = prefix + String.format("%03d", newSeq);
+		int stdNo = Integer.parseInt(newStdNo);
+		
+		s.setStudentNo(stdNo);
+		s.setStudentPw(newStdNo);
+		
+		empMapper.insertStudent(s);
+	}
 	
 	// 학생 수정
-	
+	public void updateStudent(Student s) {
+		empMapper.updateStudent(s);
+	}
 }
 

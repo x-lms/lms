@@ -23,7 +23,7 @@
                 <div class="professor-detail-header">
                     <h3 class="section-title">기본 정보</h3>
                 </div>
-                <form action="/emp/modifyProfessor" method="post" enctype="multipart/form-data">
+                <form action="{{springMacroRequestContext.request.contextPath}}/emp/modifyProfessor" method="post" enctype="multipart/form-data">
 				{{#professor}}
 					<input type="hidden" name="prfNo" value="{{prfNo}}">
 					<input type="hidden" name="prfImg" {{#prfImg}}value="{{prfImg}}"{{/prfImg}}>
@@ -87,7 +87,7 @@
                     </div>
 
                     <div class="professor-detail-actions">
-                        <a href="/emp/professorInfo?prfNo={{prfNo}}" class="btn-secondary">취소</a>
+                        <a href="{{springMacroRequestContext.request.contextPath}}/emp/professorInfo?prfNo={{prfNo}}" class="btn-secondary">취소</a>
                         <button type="submit" class="btn-primary">수정 완료</button>
                     </div>
                     {{/professor}}

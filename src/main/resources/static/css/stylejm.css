@@ -1371,6 +1371,32 @@
 	box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
+/* 그리드 내 셀렉트 박스 너비 제한 */
+.info-grid-value .form-select {
+	max-width: 300px;
+}
+
+/* 폼 행 분할 (2열) */
+.form-row-split {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+	margin-bottom: 24px;
+}
+
+.form-col {
+	display: flex;
+	flex-direction: column;
+}
+
+.form-col .form-label {
+	margin-bottom: 8px;
+}
+
+.form-col .form-select {
+	width: 100%;
+}
+
 /* 검색 셀렉트 박스 */
 .search-select {
 	padding: 8px 14px;

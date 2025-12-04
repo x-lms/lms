@@ -36,10 +36,13 @@ public interface EmpMapper {
 	// 학생 리스트
 	List<Student> selectStudentList(SearchList sl);
 	int countStudent(SearchList sl);
+	// 학생 정보
+	Student selectStudent(int studentNo);
 	// 학생 추가
-	void insertStudent(Student student);
+	void insertStudent(Student s);
 	int checkStudentNo(int studentNo);
 	int checkDeptNo(int deptNo);
+	Integer selectMaxStdNo(String n);
 	// 학생 수정
-	// 학생 정보
+	int updateStudent(Student s);
 }

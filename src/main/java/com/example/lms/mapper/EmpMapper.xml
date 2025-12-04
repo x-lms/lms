@@ -99,6 +99,9 @@
 	<select id="checkDeptNo" parameterType="int" resultType="int">
 		SELECT COUNT(dept_no) FROM dept WHERE dept_no = #{deptNo}
 	</select>
+	<select id="selectMaxStdNo" parameterType="String" resultType="int">
+		SELECT MAX(student_no) FROM student WHERE student_no LIKE #{n}
+	</select>
 	
 	<!-- 학생 리스트 -->
 	<select id="selectStudentList" parameterType="com.example.lms.dto.SearchList" resultType="com.example.lms.dto.Student">
@@ -118,13 +121,30 @@
 	<select id="countStudent" parameterType="com.example.lms.dto.SearchList" resultType="int">
 		SELECT COUNT(s.student_no)
 		FROM student s LEFT OUTER JOIN (SELECT dept_no, dept_name FROM dept) d ON s.dept_no = d.dept_no
-		<if test="searchWord != null and searchWord.trim() != ''">
-			AND s.student_name LIKE CONCAT('%', #{searchWord}, '%')
-		</if>
-		<if test="searchCategory != null and searchCategory.trim() != ''">
-			AND s.dept_no = #{searchCategory}
-		</if>
+		<where>
+			<if test="searchWord != null and searchWord.trim() != ''">
+				AND s.student_name LIKE CONCAT('%', #{searchWord}, '%')
+			</if>
+			<if test="searchCategory != null and searchCategory.trim() != ''">
+				AND s.dept_no = #{searchCategory}
+			</if>
+		</where>
 	</select>
+
 	<!-- 학생 정보 -->
+	<select id="selectStudent" parameterType="int" resultType="com.example.lms.dto.Student">
+		SELECT s.student_no StudentNo, s.student_name StudentName, s.dept_no deptNo, d.dept_name deptName, s.student_email StudentEmail
+				, s.student_phone StudentPhone, s.student_birth StudentBirth, s.student_state studentState
+				, s.student_img StudentImg
+		FROM student s LEFT OUTER JOIN (SELECT dept_no, dept_name FROM dept) d ON s.dept_no = d.dept_no
+		WHERE s.student_no = #{StudentNo}
+	</select>
+	
 	<!-- 학생 정보 수정 -->
+	<update id="updateStudent" parameterType="com.example.lms.dto.Student">
+		UPDATE student
+	    SET  student_name = #{studentName}, student_email = #{studentEmail}, dept_no = #{deptNo}, student_phone = #{studentPhone}
+	    	, student_birth = #{studentBirth}, student_img = #{studentImg}, student_state = #{studentState}
+	    WHERE student_no = #{studentNo}
+	</update>
 </mapper>

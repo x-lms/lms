@@ -20,7 +20,7 @@
             </div>
             
             <div class="notice-container">
-                <form class="notice-header" action="/emp/professorList" method="get">
+                <form class="notice-header" action="{{springMacroRequestContext.request.contextPath}}/emp/professorList" method="get">
                     <div class="search-box">
                         <select name="searchDept" class="search-select">
                             <option value="">전체 학과</option>
@@ -58,7 +58,7 @@
                 </table>
 
                 <div class="btn-box">
-                    <a href="/emp/addProfessor" class="add-btn">교수 추가</a>
+                    <a href="/emp/addProfessor" class="add-btn-single">교수 추가</a>
                 </div>
             
                 <div class="pagination">

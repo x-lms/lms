@@ -74,9 +74,9 @@
 				</div>
 			{{/result}}
 				<div class="form-actions">
-					<a href="/emp/studentList" class="btn-secondary">취소</a>
-					<a href="/emp/addStdByExcel" class="btn-retry">다시 업로드</a>
-					<form action="/emp/commitExcel" method="post">
+					<a href="{{springMacroRequestContext.request.contextPath}}/emp/studentList" class="btn-secondary">취소</a>
+					<a href="{{springMacroRequestContext.request.contextPath}}/emp/addStdByExcel" class="btn-retry">다시 업로드</a>
+					<form action="{{springMacroRequestContext.request.contextPath}}/emp/commitExcel" method="post">
 						<input type="hidden" name="token" value="{{token}}">
 						<button type="submit" class="btn-primary">전송</button>
 					</form>
