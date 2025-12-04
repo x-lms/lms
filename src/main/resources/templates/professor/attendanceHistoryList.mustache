@@ -71,13 +71,18 @@
 			        <strong>{{page}}</strong>
 			    {{/isCurrent}}
 			    {{^isCurrent}}
-			        <a href="{{springMacroRequestContext.request.contextPath}}/professor/{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{page}}&searchWord={{searchWord}}">{{page}}</a>
+			        <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{page}}&searchWord={{searchWord}}">{{page}}</a>
 			    {{/isCurrent}}
 			{{/pageList}}
 			
+			<!-- 이전 페이지 -->
+			{{#pageInfo.prePage}}
+			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{pageInfo.prePage}}&searchWord={{searchWord}}">이전</a>
+			{{/pageInfo.prePage}}
+			
 			<!-- 다음 페이지 -->
 			{{#pageInfo.nextPage}}
-			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{pageInfo.nextPage}}&searchWord={{searchWord}}">다음</a>
+			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{pageInfo.nextPage}}&searchWord={{searchWord}}">다음</a>
 			{{/pageInfo.nextPage}}
 		</div>
         </div>

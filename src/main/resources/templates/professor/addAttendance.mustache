@@ -32,7 +32,7 @@
             <tbody>
                 {{#studentList}}
                 <tr>
-                    <td><input type="hidden" name="studentNo" value="{{studentNo}}">{{studentNo}}</td>
+                    <td>{{studentNo}}</td>
                     <td>
                         <img src="{{#studentImg}}/upload/{{studentImg}}{{/studentImg}}" alt="">
                     </td>
@@ -48,7 +48,8 @@
 						    <span>오늘 체크 완료</span>
 						{{/alreadyChecked}}
 						{{^alreadyChecked}}
-	                        <select name="attState" class="attStateSelect">
+							<input type="hidden" name="studentNo" value="{{studentNo}}">
+	                        <select name="attState" class="attStateSelect" required>
 	                        	<option value="">선택</option>
 	                            <option value="출석">출석</option>
 	                            <option value="결석">결석</option>

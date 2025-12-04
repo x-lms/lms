@@ -3,9 +3,13 @@ package com.example.lms.dto;
 import lombok.Data;
 
 @Data
+// registration
 public class CourseStudent {
+	private int registNo;
 	private int courseNo;
 	private int studentNo;
+	private int empNo;
+	private String registState;
 	private String courseName;
 	private String studentName;
     private String studentEmail;

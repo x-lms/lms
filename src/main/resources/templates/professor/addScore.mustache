@@ -48,12 +48,12 @@
 			        <td>
                             <input type="hidden" name="studentNo" value="{{studentNo}}">
                             <input type="hidden" name="courseNo" value="{{courseNo}}">
-                            {{#alreadySubmitted}}
-			                    <span>등록 완료</span>
-			                {{/alreadySubmitted}}
-			                {{^alreadySubmitted}}
-			                    <button type="submit">등록</button>
-			                {{/alreadySubmitted}}
+                            {{^existsScore}}
+					        <button type="submit" formaction="/professor/addScore">등록</button>
+					        {{/existsScore}}
+					        {{#existsScore}}
+					        등록 완료
+					        {{/existsScore}}
                     </td>
                 </tr>
                 </form>

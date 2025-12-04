@@ -104,12 +104,7 @@ public class ProfessorController {
 		Emp loginProfessor = getLoginProfessor(session);
 		List<StudentScorePF> studentList = professorService.getStudentListAndScore(courseNo);
 		
-		// 각 학생별 이미 등록 여부 체크
-	    for (StudentScorePF s : studentList) {
-	        boolean exists = professorService.existsTempScore(s.getStudentNo(), courseNo);
-	        s.setAlreadySubmitted(exists);
-	    }
-		
+			
 	    model.addAttribute("studentList", studentList);
 	    model.addAttribute("courseNo", courseNo);
 		
@@ -122,24 +117,29 @@ public class ProfessorController {
 		Emp loginProfessor = getLoginProfessor(session);
 		score.setEmpNo(loginProfessor.getEmpNo());
 		
-		// 총점 계산
-	    Double scoreTotal = score.getScoreAtt() + score.getScoreProject() + score.getScoreMid() + score.getScoreFin();
-	    score.setScoreTotal(scoreTotal);
+		// 학생별 existsScore 확인
+        StudentScorePF student = professorService.getStudentListAndScore(score.getCourseNo())
+                .stream()
+                .filter(s -> s.getStudentNo() == score.getStudentNo())
+                .findFirst()
+                .orElse(null);
+		
+        if (student != null && student.getExistsScore() == 1) {
+            redirectAttributes.addFlashAttribute("msg", "이미 등록된 성적입니다.");
+        } else {
+            // 총점 계산
+            double scoreTotal = score.getScoreAtt() + score.getScoreProject() + score.getScoreMid() + score.getScoreFin();
+            score.setScoreTotal(scoreTotal);
 
-	    // 임시 등급 계산
-	    score.setScoreGrade(score.getScoreAtt() == 0 ? "F" : "X");
+            // 임시 등급
+            score.setScoreGrade(score.getScoreAtt() == 0 ? "F" : "X");
 
-	    // 등록
-	    boolean success = professorService.addScore(score);
-	    if (!success) {
-	        redirectAttributes.addFlashAttribute("msg", score.getStudentNo() + " 학생은 이미 등록되었습니다.");
-	    } else {
-	        redirectAttributes.addFlashAttribute("msg", "성적이 등록되었습니다.");
-	    }
+            professorService.addScore(score);
 
-	    // 등록 후 전체 점수 기준으로 상위 30% 등급 계산
-	    List<Score> allScores = professorService.getScoreByCourse(score.getCourseNo());
-	    professorService.assignGrades(allScores);
+            // 상위 30% 등급 재계산
+            List<Score> allScores = professorService.getScoreByCourse(score.getCourseNo());
+            professorService.assignGrades(allScores);
+        }
 		
 		return "redirect:/professor/addScore?courseNo=" + score.getCourseNo();
 	}
@@ -813,7 +813,26 @@ public class ProfessorController {
         }
         // 파일 없으면 기존 이미지 그대로 유지
     }
+    
+    // 과제 다운로드
+    @GetMapping("/professor/downloadProjectFile")
+    public void downloadProjectFile(@RequestParam String fileName, HttpServletResponse response) throws IOException {
+        File file = new File(uploadDir, fileName);
 
+        if (file.exists()) {
+            // 브라우저에서 다운로드되도록 헤더 설정
+            response.setContentType("application/octet-stream");
+            String encodedFileName = URLEncoder.encode(file.getName(), StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"");
+
+            // 파일 스트림 복사
+            Files.copy(file.toPath(), response.getOutputStream());
+            response.getOutputStream().flush();
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "파일을 찾을 수 없습니다.");
+        }
+    }
+    
     private String getExtension(String filename) {
         if (filename == null) return "";
         int idx = filename.lastIndexOf('.');

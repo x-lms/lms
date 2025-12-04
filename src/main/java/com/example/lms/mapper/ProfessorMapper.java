@@ -31,8 +31,7 @@ public interface ProfessorMapper {
 	int modifyFinalScore(Score score);
 		
 	// 성적 등록
-    int existsScore(int studentNo, int courseNo);  // 학생별 임시 성적 존재 여부
-	int addScore(Score score);
+   	int addScore(Score score);
 	List<StudentScorePF> getStudentListAndScore(int courseNo); // 성적등록 학생목록
 	ProjectAverage getAvgProjectScoreByStudent(int courseNo, int studentNo);//(과제점수)
 	void updateScoreGrade(Score s); // 성적 grade 계산

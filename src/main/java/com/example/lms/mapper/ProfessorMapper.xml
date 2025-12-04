@@ -17,14 +17,14 @@
 	        s.student_name AS studentName,
 	        IFNULL(AVG(pr.result_score), 0) AS avgProjectScore
 	    FROM student s
-	    JOIN course_student cs 
-	        ON s.student_no = cs.student_no
+	    JOIN registration r 
+	        ON s.student_no = r.student_no
 	    LEFT JOIN project p 
-	        ON cs.course_no = p.course_no
+	        ON r.course_no = p.course_no
 	    LEFT JOIN project_result pr 
 	        ON p.project_no = pr.project_no
 	        AND s.student_no = pr.student_no
-	    WHERE cs.course_no = #{courseNo}
+	    WHERE r.course_no = #{courseNo}
 	      AND s.student_no = #{studentNo}
 	    GROUP BY s.student_no
 	</select>
@@ -37,7 +37,7 @@
 	</update>
 	
 	<!-- 성적등록 확인 -->
-	<select id="existsScore" parameterType="int" resultType="int">
+	<select id="existsScore" parameterType="map" resultType="int">
         SELECT COUNT(*)
         FROM score
         WHERE student_no = #{studentNo} 
@@ -51,23 +51,22 @@
 		values(#{studentNo}, #{empNo}, #{courseNo}, #{scoreAtt}, #{scoreProject}, #{scoreMid}, #{scoreFin}, #{scoreTotal}, #{scoreGrade})
 	</insert>
 	
-	<!-- 성적 등록 폼 -->
+	<!-- 성적 등록 폼 (점수존재여부조회) -->
 	<select id="getStudentListAndScore" parameterType="int" resultType="com.example.lms.dto.StudentScorePF">
 		SELECT
-			cs.course_no courseNo,
-			s.student_no studentNo,
-		    s.student_name studentName,	       
+	        r.regist_no registNo,
+	        r.course_no courseNo,
+	        s.student_no studentNo,
+	        s.student_name studentName,
 	        IFNULL(sc.score_att,0) scoreAtt,
 	        IFNULL(sc.score_project,0) scoreProject,
 	        IFNULL(sc.score_mid,0) scoreMid,
-	        IFNULL(sc.score_fin,0) scoreFin
-		FROM student s
-		JOIN course_student cs
-	        ON s.student_no = cs.student_no
-	    LEFT JOIN score sc
-	        ON s.student_no = sc.student_no
-	        AND sc.course_no = cs.course_no
-	    WHERE cs.course_no = #{courseNo}
+	        IFNULL(sc.score_fin,0) scoreFin,
+	        CASE WHEN sc.student_no IS NULL THEN 0 ELSE 1 END existsScore
+	    FROM registration r
+	    JOIN student s ON s.student_no = r.student_no
+	    LEFT JOIN score sc ON sc.student_no = r.student_no AND sc.course_no = r.course_no
+	    WHERE r.course_no = #{courseNo}
 	</select>
 	
 	<!-- 성적 목록 -->
@@ -292,7 +291,7 @@
 	<!-- 출석체크(학생리스트) -->
 	<select id="getStudentListByCourse" parameterType="int" resultType="com.example.lms.dto.CourseStudent">
 	    SELECT 
-	        cs.course_no courseNo,
+	        r.course_no courseNo,
 	        s.student_no studentNo,
 	        s.student_name studentName,
 	        s.student_email studentEmail,
@@ -300,25 +299,25 @@
 	        s.student_state studentState,
 	        s.student_img studentImg
 	    FROM student s
-	    JOIN course_student cs 
-	    	ON s.student_no = cs.student_no
-	    WHERE cs.course_no = #{courseNo}
+	    JOIN registration r 
+	    	ON s.student_no = r.student_no
+	    WHERE r.course_no = #{courseNo}
 	    ORDER BY s.student_name ASC
 	</select>
 	
 	<!-- 총 출결상태 -->	
 	<select id="getAttendanceSummaryByCourse" parameterType="int" resultType="com.example.lms.dto.AttendanceSummary">
 	    SELECT 
-	        cs.student_no studentNo,
+	        r.student_no studentNo,
 	        COUNT(a.att_no) total,                     
 	        SUM(CASE WHEN a.att_state = '결석' THEN 1 ELSE 0 END) absent,
 	        SUM(CASE WHEN a.att_state = '지각' THEN 1 ELSE 0 END) late,
 	        SUM(CASE WHEN a.att_state = '조퇴' THEN 1 ELSE 0 END) early
-	    FROM course_student cs
+	    FROM registration r
 	    LEFT JOIN attendance a 
-	    ON cs.student_no = a.student_no AND cs.course_no = a.course_no
-	    WHERE cs.course_no = #{courseNo}
-	    GROUP BY cs.student_no
+	    ON r.student_no = a.student_no AND r.course_no = a.course_no
+	    WHERE r.course_no = #{courseNo}
+	    GROUP BY r.student_no
 	</select>		
 			
 	<!-- 출석체크(강의목록) -->	
@@ -355,14 +354,15 @@
 		limit #{beginRow}, #{rowPerPage}
 	</select>
 	
-	<select id="getStudentCount" parameterType="Map" resultType="int">
-		select count(*)
-		from student
-		<where>
-			<if test="searchWord != null and searchWord != ''">
-				student_name like concat('%', #{searchWord},'%')
-			</if>
-		</where>
+	<select id="getStudentCount" parameterType="map" resultType="int">
+	    select count(*)
+	    from student
+	    <where>
+	        dept_no = #{deptNo}
+	        <if test="searchWord != null and searchWord != ''">
+	            and student_name like concat('%', #{searchWord},'%')
+	        </if>
+	    </where>
 	</select>
 	
 	<!-- 강의 삭제 -->

@@ -75,20 +75,9 @@ public class ProfessorService {
 	    }	
 	}
 
-	// 학생별 임시 성적 존재 여부
-    public boolean existsTempScore(int studentNo, int courseNo) {
-        return professorMapper.existsScore(studentNo, courseNo) > 0;
-    }
-
-    // 한 번만 등록 보장
-    @Transactional
-    public boolean addScore(Score score) {
-        if (existsTempScore(score.getStudentNo(), score.getCourseNo())) {
-            return false; // 이미 등록됨
-        }
-        professorMapper.addScore(score);
-        return true;
-    }
+	public int addScore(Score score) {
+	        return professorMapper.addScore(score);
+	    }
 		
 	
 	// 성적등록 폼
