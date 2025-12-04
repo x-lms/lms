@@ -364,4 +364,48 @@ public class StudentService {
     public int getCourseNoByProjectNo(int projectNo) {
         return studentMapper.selectCourseNoByProjectNo(projectNo);
     }
+    
+ // 과제 수정 (안전 버전)
+    public void updateAssignment(int resultNo, MultipartFile file, String title, String contents) {
+
+        ProjectResult origin = studentMapper.getProjectResultByResultNo(resultNo);
+
+        String uploadDir = "C:/lms/upload/";
+
+        // 1️ 제목/내용은 무조건 업데이트
+        origin.setResultTitle(title);
+        origin.setResultContents(contents);
+
+        // 2️ 파일을 새로 올렸을 때만 파일 변경 처리
+        if (file != null && !file.isEmpty()) {
+
+            File dir = new File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
+
+            String filename = origin.getStudentNo() + "_" +
+                              origin.getProjectNo() + "_" +
+                              file.getOriginalFilename();
+
+            File destination = new File(uploadDir + filename);
+
+            try {
+                file.transferTo(destination);
+            } catch (IOException e) {
+                throw new RuntimeException("파일 저장 오류", e);
+            }
+
+            origin.setResultFile(filename); // 새 파일 저장
+
+        } else {
+            // 파일을 업로드하지 않았다면 → 기존 파일 유지
+            origin.setResultFile(null);  
+        }
+
+        studentMapper.updateProjectResult(origin);
+    }
+
+
+    public ProjectResult getProjectResultByResultNo(int resultNo) {
+        return studentMapper.getProjectResultByResultNo(resultNo);
+    }
 }

@@ -255,7 +255,36 @@
         WHERE project_no = #{projectNo}
     </select>
  
+ <select id="getProjectResultByResultNo" parameterType="int" resultType="com.example.lms.dto.ProjectResult">
+    SELECT 
+        result_no AS resultNo,
+        project_no AS projectNo,
+        student_no AS studentNo,
+        result_title AS resultTitle,
+        result_contents AS resultContents,
+        result_file AS resultFile,
+        createdate,
+        result_score AS resultScore
+    FROM project_result
+    WHERE result_no = #{resultNo}
+</select>
  
+ <update id="updateProjectResult">
+    UPDATE project_result
+    <set>
+        <if test="resultTitle != null">
+            result_title = #{resultTitle},
+        </if>
+        <if test="resultContents != null">
+            result_contents = #{resultContents},
+        </if>
+        <if test="resultFile != null">
+            result_file = #{resultFile},
+        </if>
+    </set>
+    WHERE result_no = #{resultNo}
+</update>
+
  
  
 	 <delete id="deleteStudentCourse" parameterType="map">

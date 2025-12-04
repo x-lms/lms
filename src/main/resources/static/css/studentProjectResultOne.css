@@ -1,130 +1,148 @@
-@charset "UTF-8";
-
-/* ========================= 전체 컨테이너 ========================= */
-.container {
-    max-width: 1200px; /* 좀 더 넓게 */
-    margin: 0 auto;
-    padding: 30px;
-}
-
+/* ========================= 전체 레이아웃 ========================= */
 .main-content {
+    padding: 25px;
     background: #fff;
     border-radius: 12px;
-    padding: 40px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-left: 240px;
+    min-height: 85vh;
 }
 
-/* ========================= 프로젝트 제목 ========================= */
-.detail-box .detail-title {
-    font-size: 36px;
+/* 박스 공통 */
+.detail-box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+/* 제목 */
+.detail-title {
+    font-size: 24px;
     font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
-/* ========================= 강의 및 마감일 정보 (가로) ========================= */
+/* ========================= 프로젝트 기본 정보 ========================= */
 .course-info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 40px;
-    font-size: 18px;
     margin-bottom: 30px;
 }
 
-.course-info div {
-    flex: 1 1 45%; /* 가로로 넓게 배치 */
+.info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.info-item label {
+    font-weight: 700;
+    font-size: 16px;
+    margin-right: 10px;
     color: #333;
 }
 
-/* ========================= 섹션 제목 ========================= */
-.section-title {
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: #4a68d8;
+.deadline {
+    font-size: 16px;
+    color: #444;
 }
 
-/* ========================= 제출 상태 ========================= */
-.submitted-info {
-    background-color: #e6f4ea;
-    border-left: 5px solid #34a853;
-    padding: 20px;
-    border-radius: 12px;
-    font-size: 18px;
-    color: #2c3e50;
-    margin-bottom: 30px;
-    white-space: pre-wrap;
-}
-
-/* ========================= 제출 폼 (가로 레이아웃) ========================= */
-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-}
-
-form > div {
-    flex: 1 1 48%; /* 좌우로 나눔 */
+/* ========================= 입력폼 ========================= */
+.form-group {
     display: flex;
     flex-direction: column;
+    margin-bottom: 22px;
 }
 
-form label {
-    font-size: 18px;
+.form-group label {
     font-weight: 600;
     margin-bottom: 8px;
     color: #333;
+    font-size: 17px;
 }
 
-form input[type="text"],
-form textarea,
-form input[type="file"] {
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group textarea {
     width: 100%;
-    padding: 16px 20px;
-    font-size: 18px;
-    border-radius: 10px;
-    border: 1px solid #d1d5db;
-    box-sizing: border-box;
+    padding: 14px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #bbb;
+    outline: none;
 }
 
-form textarea {
-    min-height: 220px;
+.form-group textarea {
+    min-height: 240px;
+    resize: vertical;
 }
 
-/* ========================= 제출 버튼 ========================= */
-form button {
-    padding: 14px 36px;
-    font-size: 18px;
-    font-weight: 700;
-    border-radius: 10px;
-    background-color: #4a68d8;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    align-self: flex-end; /* 오른쪽 정렬 */
+/* ========================= 제출 완료 화면 (submitted 값) ========================= */
+.submitted-value {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 16px;
+    color: #333;
 }
 
-form button:hover {
-    background-color: #3b55b0;
+.submitted-contents {
+    white-space: pre-line; /* 엔터 유지 */
 }
 
-/* ========================= 강의 상세로 돌아가기 버튼 ========================= */
-.question-btn {
-    display: inline-block;
+/* ========================= 버튼 영역 ========================= */
+.action-buttons {
     margin-top: 30px;
-    padding: 14px 36px;
-    font-weight: 600;
-    background-color: #6c757d;
-    color: #fff;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: all 0.2s;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; /* 버튼 간격 */
 }
 
-.question-btn:hover {
-    background-color: #5a6268;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(108,117,125,0.3);
+/* 공통 버튼 */
+.btn-common {
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: inline-block;
+}
+
+/* 제출 */
+.submit-btn {
+    background: #4C82F1;
+    color: #fff;
+}
+.submit-btn:hover {
+    background: #3b6cd3;
+}
+
+/* 수정 */
+.edit-btn {
+    background: #28a745;
+    color: #fff;
+}
+.edit-btn:hover {
+    background: #1f8b3a;
+}
+
+/* 돌아가기 */
+.back-btn {
+    background: #6c757d;
+    color: #fff;
+}
+.back-btn:hover {
+    background: #5a6268;
+}
+
+/* 성공 메시지 */
+.alert-success {
+    background: #e2f5e9;
+    border: 1px solid #b6e2c0;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #2d7a3f;
 }

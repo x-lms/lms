@@ -1,0 +1,128 @@
+/* 수정 페이지 전체 레이아웃 */
+.main-content {
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-left: 240px;
+    min-height: 85vh;
+}
+
+/* 제목 */
+.main-content h2 {
+    font-size: 26px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* 기본 form 스타일 */
+form {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* form 그룹 */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* label 스타일 */
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+/* input + textarea 공통 */
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group textarea {
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #bbb;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    border-color: #4C82F1;
+    box-shadow: 0 0 5px rgba(76, 130, 241, 0.3);
+}
+
+/* textarea */
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* 기존 파일 링크 */
+.form-group a {
+    color: #2b66e3;
+    font-weight: 500;
+}
+
+/* 경고 문구 */
+.form-group p {
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+/* 버튼 영역 */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* 버튼 공통 */
+.submit-btn, .cancel-btn {
+    padding: 10px 20px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: 0.2s ease;
+}
+
+/* 수정 버튼 */
+.submit-btn {
+    background-color: #4C82F1;
+    color: white;
+    border: none;
+}
+
+.submit-btn:hover {
+    background-color: #3b6cd3;
+}
+
+/* 취소 버튼 */
+.cancel-btn {
+    background-color: #dcdcdc;
+    color: #333;
+    border: none;
+}
+
+.cancel-btn:hover {
+    background-color: #c4c4c4;
+}
+
+/* 에러 메시지 */
+.alert-danger {
+    background: #ffdddd;
+    border-left: 4px solid #ff4f4f;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    color: #a70000;
+    font-weight: 600;
+}

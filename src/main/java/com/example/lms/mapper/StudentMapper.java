@@ -66,7 +66,8 @@ public interface StudentMapper {
     Integer selectProfessorNoByCourseNo(@Param("courseNo") int courseNo);
     
     //============================== 과제 전송 =================================
- // 프로젝트 단일 조회
+    
+    // 프로젝트 단일 조회
     Project selectProjectByProjectNo(@Param("projectNo") int projectNo);
     // 학생 제출 여부 조회
     ProjectResult selectProjectResultByProjectNoAndStudentNo(
@@ -78,5 +79,7 @@ public interface StudentMapper {
     // projectNo로 강의번호 조회
     int selectCourseNoByProjectNo(@Param("projectNo") int projectNo);
 
+    int updateProjectResult(ProjectResult result);
+	ProjectResult getProjectResultByResultNo(int resultNo);
 
 }

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -112,7 +114,8 @@ public class StudentCourseController {
 
         return "student/addCourse";
     }
- // 과제 상세 페이지
+    
+    //과제 상세보기
     @GetMapping("/assignment/{projectNo}")
     public String assignmentDetail(
             @PathVariable int projectNo,
@@ -129,10 +132,16 @@ public class StudentCourseController {
         model.addAttribute("project", project);
         model.addAttribute("submitted", submitted);
 
-        return "student/projectResultOne"; 
+        // 수정 가능 여부 체크
+        boolean editable = submitted != null && isBeforeDeadline(project.getProjectDeadline());
+        model.addAttribute("editable", editable);
+
+        return "student/projectResultOne";
     }
 
-    // 과제 제출 처리
+    // ===============================
+    //  과제 제출 처리
+    // ===============================
     @PostMapping("/assignment/{projectNo}")
     public String submitAssignment(
             @PathVariable int projectNo,
@@ -140,22 +149,98 @@ public class StudentCourseController {
             @RequestParam("resultTitle") String title,
             @RequestParam("resultContents") String contents,
             @SessionAttribute("loginStudent") Student loginStudent,
-            RedirectAttributes redirectAttributes
-    ) {
+            RedirectAttributes redirectAttributes) {
 
         if (loginStudent == null) return "redirect:/login";
 
-        int studentNo = loginStudent.getStudentNo();
+        Project project = studentService.getProjectByProjectNo(projectNo);
 
-        studentService.submitAssignment(projectNo, studentNo, file, title, contents);
+        // 마감일 여부 체크
+        if (!isBeforeDeadline(project.getProjectDeadline())) {
+            redirectAttributes.addFlashAttribute("error", "마감일이 지나 제출할 수 없습니다.");
+            return "redirect:/student/assignment/" + projectNo;
+        }
+
+        studentService.submitAssignment(
+                projectNo,
+                loginStudent.getStudentNo(),
+                file, title, contents
+        );
 
         redirectAttributes.addFlashAttribute("msg", "과제가 성공적으로 제출되었습니다.");
-
         int courseNo = studentService.getCourseNoByProjectNo(projectNo);
+
         return "redirect:/student/courseOne/" + courseNo;
     }
 
-    // 수강 과목 상세보기
+    // ===============================
+    //  수정 페이지 이동 (GET)
+    // ===============================
+    @GetMapping("/assignment/edit/{resultNo}")
+    public String editAssignmentPage(
+            @PathVariable int resultNo,
+            @SessionAttribute("loginStudent") Student loginStudent,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (loginStudent == null) return "redirect:/login";
+
+        ProjectResult submitted = studentService.getProjectResultByResultNo(resultNo);
+        Project project = studentService.getProjectByProjectNo(submitted.getProjectNo());
+
+        // 마감일 지나면 수정 불가
+        if (!isBeforeDeadline(project.getProjectDeadline())) {
+            redirectAttributes.addFlashAttribute("error", "마감일이 지나 수정할 수 없습니다.");
+            return "redirect:/student/assignment/" + project.getProjectNo();
+        }
+
+        model.addAttribute("project", project);
+        model.addAttribute("submitted", submitted);
+
+        return "student/projectResultEdit";
+    }
+
+    // ===============================
+    // 과제 수정 처리 (POST)
+    // ===============================
+    @PostMapping("/assignment/edit/{resultNo}")
+    public String updateAssignment(
+            @PathVariable int resultNo,
+            @RequestParam("submissionFile") MultipartFile file,
+            @RequestParam("resultTitle") String title,
+            @RequestParam("resultContents") String contents,
+            @SessionAttribute("loginStudent") Student loginStudent,
+            RedirectAttributes redirectAttributes) {
+
+        if (loginStudent == null) return "redirect:/login";
+
+        ProjectResult origin = studentService.getProjectResultByResultNo(resultNo);
+        Project project = studentService.getProjectByProjectNo(origin.getProjectNo());
+
+        // 마감 후 수정 불가
+        if (!isBeforeDeadline(project.getProjectDeadline())) {
+            redirectAttributes.addFlashAttribute("error", "마감일이 지나 수정할 수 없습니다.");
+            return "redirect:/student/assignment/" + project.getProjectNo();
+        }
+
+        studentService.updateAssignment(resultNo, file, title, contents);
+
+        redirectAttributes.addFlashAttribute("msg", "과제가 수정되었습니다.");
+
+        return "redirect:/student/assignment/" + project.getProjectNo();
+    }
+
+    // ===============================
+    // 공통 - 마감일 비교 (YYYY-MM-DD)
+    // ===============================
+    private boolean isBeforeDeadline(String projectDeadline) {
+        LocalDate deadlineDate = LocalDate.parse(projectDeadline);
+        LocalDateTime deadline = deadlineDate.atTime(23, 59, 59);
+        return LocalDateTime.now().isBefore(deadline);
+    }
+
+
+	// 수강 과목 상세보기
     @GetMapping("/courseOne/{courseNo}")
     public String courseDetail(
             @PathVariable int courseNo,
@@ -229,8 +314,8 @@ public class StudentCourseController {
          // 신규 질문 작성용 빈 객체
          question = new Question();
          question.setCourseNo(courseNo);
-         question.setQuestionTitle("");     // null 방지
-         question.setQuestionContents("");  // null 방지
+         question.setQuestionTitle("");     
+         question.setQuestionContents("");  
 
          // 작성 모드 표시
          model.addAttribute("isEdit", false);
