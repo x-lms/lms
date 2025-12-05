@@ -172,6 +172,40 @@ tbody tr.no-data td {
     border: 1px solid #f5c6cb;
 }
 
+/* 데이터 없음 메시지 */
+tbody tr.no-data td {
+    padding: 40px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 16px;
+}
+
+/* 뒤로가기 버튼 */
+p {
+    margin-top: 30px;
+    text-align: center;
+}
+
+p a {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #6b7280;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+p a:hover {
+    background: #4b5563;
+}
+
+p a:active {
+    background: #374151;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .main-content h2 {

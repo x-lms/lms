@@ -62,7 +62,7 @@
 	        IFNULL(sc.score_project,0) scoreProject,
 	        IFNULL(sc.score_mid,0) scoreMid,
 	        IFNULL(sc.score_fin,0) scoreFin,
-	        CASE WHEN sc.student_no IS NULL THEN 0 ELSE 1 END existsScore
+	        (sc.student_no IS NOT NULL) existsScore
 	    FROM registration r
 	    JOIN student s ON s.student_no = r.student_no
 	    LEFT JOIN score sc ON sc.student_no = r.student_no AND sc.course_no = r.course_no
@@ -243,7 +243,7 @@
 	        att_no attNo,
 	        course_no courseNo,
 	        state_before stateBefore,
-	        COALESCE(state_after, '') stateAfter,
+	        COALESCE(state_after, '-') stateAfter,
 	        COALESCE(history_comment, '') historyComment,
 	       	history_file historyFile,
 	       	history_file_original historyFileOriginal,
@@ -294,8 +294,8 @@
 	        r.course_no courseNo,
 	        s.student_no studentNo,
 	        s.student_name studentName,
-	        s.student_email studentEmail,
-	        s.student_phone studentPhone,
+	        COALESCE(s.student_email, '-') studentEmail,
+	        COALESCE(s.student_phone, '-') studentPhone,
 	        s.student_state studentState,
 	        s.student_img studentImg
 	    FROM student s
@@ -310,9 +310,9 @@
 	    SELECT 
 	        r.student_no studentNo,
 	        COUNT(a.att_no) total,                     
+	        SUM(CASE WHEN a.att_state = '출석' THEN 1 ELSE 0 END) attendance,
 	        SUM(CASE WHEN a.att_state = '결석' THEN 1 ELSE 0 END) absent,
-	        SUM(CASE WHEN a.att_state = '지각' THEN 1 ELSE 0 END) late,
-	        SUM(CASE WHEN a.att_state = '조퇴' THEN 1 ELSE 0 END) early
+	        SUM(CASE WHEN a.att_state = '지각' THEN 1 ELSE 0 END) late
 	    FROM registration r
 	    LEFT JOIN attendance a 
 	    ON r.student_no = a.student_no AND r.course_no = a.course_no
@@ -339,11 +339,11 @@
 		    s.student_pw studentPw,
 		    s.student_name studentName,
 		    s.student_state studentState,
-		    s.student_address studentAddress,
-		    s.student_phone studentPhone,
-		    s.student_birth studentBirth,
+		    COALESCE(s.student_address, '-') studentAddress,
+		    COALESCE(s.student_phone, '-') studentPhone,
+		    COALESCE(s.student_birth, '-') studentBirth,
 		    s.student_img studentImg,
-		    s.student_email studentEmail
+		    COALESCE(s.student_email, '-') studentEmail
 		FROM student s
 		JOIN dept d ON s.dept_no = d.dept_no
 		where s.dept_no = #{deptNo}
@@ -439,6 +439,20 @@
 		        (#{time.courseNo}, #{time.courseLocation}, #{time.coursedate}, #{time.courseTimeStart}, #{time.courseTimeEnd})
 		    </foreach>
 	</insert>
+	
+	<!-- 교수별 등록된 강의시간 조회 -->
+	<select id="getCourseTimesByEmp" parameterType="int" resultType="com.example.lms.dto.CourseTime">
+		SELECT
+	        ct.course_time_no courseTimeNo,
+	        ct.course_no courseNo,
+	        ct.course_date coursedate,     
+	        ct.course_time_start courseTimeStart,
+	        ct.course_time_end courseTimeEnd,
+	        ct.course_location courseLocation
+	    FROM course_time ct
+	    JOIN course c ON c.course_no = ct.course_no
+	    WHERE c.emp_no = #{empNo}
+	</select>
 	
 	<!-- 강의리스트 -->	
 	<select id="courseListByPage" parameterType="map" resultType="com.example.lms.dto.Course">

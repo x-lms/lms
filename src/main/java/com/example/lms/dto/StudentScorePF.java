@@ -16,8 +16,7 @@ public class StudentScorePF {
 	private String scoreStatus;
 	
 	// 이미 임시 등록된 학생 표시용
-    private boolean alreadySubmitted;
-    private int existsScore; // 0 = 점수 없음, 1 = 점수 있음	
+    private boolean existsScore; 
 
 	
 }

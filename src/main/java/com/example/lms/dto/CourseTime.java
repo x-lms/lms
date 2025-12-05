@@ -1,5 +1,7 @@
 package com.example.lms.dto;
 
+import java.time.LocalDate;
+
 import lombok.Data;
 
 @Data
@@ -16,6 +18,8 @@ public class CourseTime {
 	private String dayOptions;
 	private int index;
 
-		
+	 // 강의 기간 필드 추가
+    private LocalDate courseStartDate; // 강의 시작일
+    private LocalDate courseEndDate;   // 강의 종료일	
 	
 }

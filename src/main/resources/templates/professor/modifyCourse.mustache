@@ -9,116 +9,111 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-      <div class="main-content">
-            <h2>강의 수정</h2>
+{{#msg}}
+<script>
+    alert("{{msg}}");
+</script>
+{{/msg}}
 
-            <div class="form-container">
-                <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyCourse" method="post">
-                    <input type="hidden" name="courseNo" value="{{c.courseNo}}">
-                    
-                    <div class="form-group">
-                        <label>강의명 <span class="required">*</span></label>
-                        <input type="text" class="form-input" name="courseName" value="{{c.courseName}}" required>
-                    </div>
+<div class="main-content">
+    <h2>강의 수정</h2>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>학과번호</label>
-                            <input type="number" class="form-input" name="deptNo" value="{{loginProfessor.deptNo}}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>정원</label>
-                            <input type="number" class="form-input" name="maxCnt" value="{{c.maxCnt}}" required>
-                        </div>
-                    </div>
+    <div class="form-container">
+        <form action="{{springMacroRequestContext.request.contextPath}}/professor/modifyCourse" method="post">
+            
+            <!-- PK 유지용 hidden -->
+            <input type="hidden" name="newCourse.courseNo" value="{{cwt.newCourse.courseNo}}">
 
-                    <div class="form-group">
-                        <label>강의기간 <span class="required">*</span></label>
-                        <input type="text" class="form-input" name="coursePeriod" maxlength="17" value="{{c.coursePeriod}}" placeholder="예: 2024-03 ~ 2024-06" required>
-                        <span class="help-text format">형식: YYYY-MM ~ YYYY-MM</span>
-                    </div>
-						
-					<div class="form-group">
-				    <label>강의시간(요일, 시작시간, 종료시간) / 위치 <span class="required">*</span></label>
-				    <div id="courseTimeContainer">
-				        {{#courseTimeList}}
-				        <div class="form-row courseTimeRow">
-				            <select class="form-input" name="courseTimes[{{index}}].coursedate" required>
-				                {{{dayOptions}}}
-				            </select>
-				            <input type="time" class="form-input" name="courseTimes[{{index}}].courseTimeStart" value="{{courseTimeStart}}" required>
-				            <input type="time" class="form-input" name="courseTimes[{{index}}].courseTimeEnd" value="{{courseTimeEnd}}" required>
-				            <input type="text" class="form-input" name="courseTimes[{{index}}].courseLocation" value="{{courseLocation}}" placeholder="강의실 위치" required>
-				        </div>
-				        {{/courseTimeList}}
-				    </div>
-					
-					<div class="timeButtons">
-					    <button type="button" id="addTimeBtn">+</button>
-					    <button type="button" id="removeTimeBtn">-</button>
-					</div>
-						
-                    <div class="form-group">
-                        <label>강의 계획</label>
-                        <textarea class="form-textarea" name="coursePlan" placeholder="강의 계획을 입력하세요">{{c.coursePlan}}</textarea>
-                    </div>
-
-                    <div class="button-group">
-                        <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseOne?courseNo={{c.courseNo}}" class="cancel-btn">취소</a>
-                        <button type="submit" class="submit-btn">수정</button>
-                    </div>
-                </form>
+            <div class="form-group">
+                <label>강의명 <span class="required">*</span></label>
+                <input type="text" class="form-input" name="newCourse.courseName" value="{{cwt.newCourse.courseName}}" required>
             </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>학과번호</label>
+                    <input type="number" class="form-input" name="newCourse.deptNo" value="{{loginProfessor.deptNo}}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>정원</label>
+                    <input type="number" class="form-input" name="newCourse.maxCnt" value="{{cwt.newCourse.maxCnt}}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>강의 시작일 <span class="required">*</span></label>
+                <input type="date" class="form-input" id="startDate">
+            </div>
+            
+            <div class="form-group">
+                <label>강의 종료일 <span class="required">*</span></label>
+                <input type="date" class="form-input" id="endDate">
+            </div>
+            
+            <!-- 서버로 전송할 hidden input -->
+            <input type="hidden" name="newCourse.coursePeriod" id="coursePeriod">
+
+            <div class="form-group">
+                <label>강의시간(요일, 시작시간, 종료시간) / 위치 <span class="required">*</span></label>
+                <div id="courseTimeContainer">
+                    {{#cwt.courseTimes}}
+                    <div class="form-row courseTimeRow">
+                        <select class="form-input" name="courseTimes[{{index}}].coursedate" required>
+                            {{{dayOptions}}}
+                        </select>
+                        <input type="time" class="form-input" name="courseTimes[{{index}}].courseTimeStart" value="{{courseTimeStart}}" required>
+                        <input type="time" class="form-input" name="courseTimes[{{index}}].courseTimeEnd" value="{{courseTimeEnd}}" required>
+                        <input type="text" class="form-input" name="courseTimes[{{index}}].courseLocation" value="{{courseLocation}}" placeholder="강의실 위치" required>
+                    </div>
+                    {{/cwt.courseTimes}}
+                </div>
+
+                <div class="timeButtons">
+                    <button type="button" id="addTimeBtn">+</button>
+                    <button type="button" id="removeTimeBtn">-</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>강의 계획</label>
+                <textarea class="form-textarea" name="newCourse.coursePlan" placeholder="강의 계획을 입력하세요">{{cwt.newCourse.coursePlan}}</textarea>
+            </div>
+
+            <div class="button-group">
+                <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseOne?courseNo={{cwt.newCourse.courseNo}}" class="cancel-btn">취소</a>
+                <button type="submit" class="submit-btn">수정</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
-    const $coursePeriod = $("input[name='coursePeriod']");
-
-    // 입력 마스크 적용
-    $coursePeriod.on("input", function() {
-        let val = $(this).val();
-
-        // 숫자와 ~, 공백, - 만 남기기
-        val = val.replace(/[^0-9~\s-]/g, "");
-
-        // 연속 공백/~ 제거
-        val = val.replace(/\s+/g, " ").replace(/~+/g, "~");
-
-        // YYYY-MM 자동 '-' 추가
-        val = val.replace(/^(\d{4})(\d)/, "$1-$2"); // 시작 YYYY-MM
-        val = val.replace(/^(\d{4}-\d{2})\s*~\s*(\d{4})(\d)/, "$1 ~ $2-$3"); // 종료 YYYY-MM
-
-        // 7글자 이상이면 '~' 뒤 붙이기
-        if (!val.includes("~") && val.length > 7) {
-            val = val.slice(0, 7) + " ~ " + val.slice(7);
-        }
-
-        $(this).val(val);
-    });
-
     // 제출 시 유효성 검사
     $("form").on("submit", function(e) {
-        const coursePeriod = $coursePeriod.val().trim();
-        const regex = /^\d{4}-(0[1-9]|1[0-2])\s*~\s*\d{4}-(0[1-9]|1[0-2])$/;
+        const startDateVal = $("#startDate").val();
+        const endDateVal = $("#endDate").val();
 
-        if (!regex.test(coursePeriod)) {
-            alert("강의기간 형식이 올바르지 않습니다. 형식: YYYY-MM ~ YYYY-MM");
+        if (!startDateVal || !endDateVal) {
+            alert("강의 시작일과 종료일을 모두 입력해주세요.");
             e.preventDefault();
             return false;
         }
 
-        // 시작월과 종료월 비교
-        const [start, end] = coursePeriod.split("~").map(s => s.trim());
-        const startDate = new Date(start + "-01");
-        const endDate = new Date(end + "-01");
+        const startDate = new Date(startDateVal);
+        const endDate = new Date(endDateVal);
 
         if (startDate > endDate) {
-            alert("강의 시작월이 종료월보다 클 수 없습니다.");
+            alert("강의 시작일이 종료일보다 클 수 없습니다.");
             e.preventDefault();
             return false;
         }
+
+        // 서버로 보낼 hidden input에 합치기
+        $("#coursePeriod").val(`${startDateVal} ~ ${endDateVal}`);
     });
-    
-    // 여러개의 강의시간 수정
+
+    // 강의시간 추가/삭제
     $('#addTimeBtn').on('click', function() {
         const index = $('#courseTimeContainer .courseTimeRow').length;
         const $clone = $('#courseTimeContainer .courseTimeRow:last').clone();
@@ -138,7 +133,6 @@ $(document).ready(function() {
             alert("최소 한 개의 강의시간은 필요합니다.");
         }
     });
-    
 });
 </script>
 </body>

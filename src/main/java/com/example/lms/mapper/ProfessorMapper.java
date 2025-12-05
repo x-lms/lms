@@ -100,6 +100,7 @@ public interface ProfessorMapper {
 	// 강의등록
 	int insertCourse(Course c);
 	int insertCourseTime(CourseWithTime cwt);
+	List<CourseTime> getCourseTimesByEmp(int empNo); // 강의시간
 	// 강의수정
 	int updateCourse(Course c);
 	List<CourseTime> getCourseTime(int courseNo);
@@ -120,5 +121,7 @@ public interface ProfessorMapper {
 	// 홈 화면
 	List<CourseTime> selectAllCourseTimes(int empNo);
 	List<Map<String, String>> getProfessorSchedule();
+
+	
 	
 }

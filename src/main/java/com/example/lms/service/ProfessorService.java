@@ -315,6 +315,11 @@ public class ProfessorService {
 	    professorMapper.insertCourseTime(cwt); // foreach로 batch insert
 	}
 	
+	// 강의 시간 겹침확인
+	public List<CourseTime> getCourseTimesByEmp(int empNo) {
+		return professorMapper.getCourseTimesByEmp(empNo);
+	}
+	
 	// 강의 수정
 	public int updateCourse(Course c) {
 		return professorMapper.updateCourse(c);		
@@ -423,7 +428,7 @@ public class ProfessorService {
 		return professorMapper.getProfessorSchedule();
 	}
 
-	
+
 
 	
 

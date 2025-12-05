@@ -7,12 +7,15 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -124,7 +127,7 @@ public class ProfessorController {
                 .findFirst()
                 .orElse(null);
 		
-        if (student != null && student.getExistsScore() == 1) {
+        if (student != null && student.isExistsScore()) {
             redirectAttributes.addFlashAttribute("msg", "이미 등록된 성적입니다.");
         } else {
             // 총점 계산
@@ -345,42 +348,50 @@ public class ProfessorController {
 	
 	// 다운로드 파일
 	@GetMapping("/professor/downloadHistoryFile")
-	public void downloadHistoryFile(@RequestParam("fileName") String fileName, HttpServletResponse response) {
-	    String uploadDir = "C:/lms/uploads";
-	    File file = new File(uploadDir, fileName);
+	public void downloadHistoryFile(@RequestParam("fileName") String fileName, HttpServletResponse response) throws IOException {
+		 File file = new File(uploadDir, fileName);
 
-	    if (!file.exists()) {
-	        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	        return;
-	    }
+		    if (!file.exists()) {
+		        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		        return;
+		    }
 
-	    try {
-	        // MIME 타입 설정
-	        String mimeType = Files.probeContentType(file.toPath());
-	        if (mimeType == null) mimeType = "application/octet-stream";
-	        response.setContentType(mimeType);
+		    // 1. MIME 타입 추출
+		    String mimeType = Files.probeContentType(file.toPath());
+		    if (mimeType == null) mimeType = "application/octet-stream";
+		    response.setContentType(mimeType);
 
-	        // 한글 포함 파일명 인코딩
-	        String encodedFileName = URLEncoder.encode(file.getName(), "UTF-8").replaceAll("\\+", "%20");
+		    // 2. 브라우저에서 바로 열 수 있는 타입
+		    Set<String> inlineMimeTypes = Set.of(
+		        "application/pdf",
+		        "image/png",
+		        "image/jpeg",
+		        "image/gif",
+		        "text/plain",
+		        "text/html"
+		    );
 
-	        // 브라우저 처리: 열기용으로 inline
-	        response.setHeader("Content-Disposition", "inline; filename*=UTF-8''" + encodedFileName);
+		    // 3. 파일명 인코딩
+		    String encodedFileName = URLEncoder.encode(file.getName(), "UTF-8").replaceAll("\\+", "%20");
 
-	        // 파일 전송
-	        try (FileInputStream fis = new FileInputStream(file);
-	             OutputStream os = response.getOutputStream()) {
+		    // 4. Content-Disposition 결정
+		    if (inlineMimeTypes.contains(mimeType)) {
+		        response.setHeader("Content-Disposition", "inline; filename*=UTF-8''" + encodedFileName);
+		    } else {
+		        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
+		    }
 
-	            byte[] buffer = new byte[1024];
-	            int bytesRead;
-	            while ((bytesRead = fis.read(buffer)) != -1) {
-	                os.write(buffer, 0, bytesRead);
-	            }
-	            os.flush();
-	        }
+		    // 5. 파일 스트리밍
+		    try (FileInputStream fis = new FileInputStream(file);
+		         OutputStream os = response.getOutputStream()) {
 
-	    } catch (IOException e) {
-	        throw new RuntimeException("파일 다운로드 실패", e);
-	    }
+		        byte[] buffer = new byte[1024];
+		        int bytesRead;
+		        while ((bytesRead = fis.read(buffer)) != -1) {
+		            os.write(buffer, 0, bytesRead);
+		        }
+		        os.flush();
+		    }
 	}
 	
 	// 출석내역목록
@@ -559,30 +570,91 @@ public class ProfessorController {
 	        }
 
 	        ct.setDayOptions(dayOptions.toString());  // ★ CourseTime에 저장
+	    
 	    }
 	    
-		model.addAttribute("c", c);
-		model.addAttribute("courseTimeList", courseTimeList);
-		
+	    CourseWithTime cwt = new CourseWithTime();
+	    cwt.setCourse(c); // 기존 course
+
+	    // 기존 값을 새 객체에 복사
+	    Course newCourse = new Course();
+	    newCourse.setCourseNo(c.getCourseNo());
+	    newCourse.setCourseName(c.getCourseName());
+	    newCourse.setDeptNo(c.getDeptNo());
+	    newCourse.setMaxCnt(c.getMaxCnt());
+	    newCourse.setCoursePlan(c.getCoursePlan());
+	    newCourse.setCoursePeriod(c.getCoursePeriod());
+
+	    cwt.setNewCourse(newCourse); // 이제 newCourse는 기존 값 복사 + 별도 객체
+	    cwt.setCourseTimes(courseTimeList);
+
+	    model.addAttribute("cwt", cwt);
+			
 		return "professor/modifyCourse";
 	}
 	
-	// 강의 수정 액션
 	@PostMapping("/professor/modifyCourse")
-	public String courseUpdate(HttpSession session, Course course, CourseWithTime cwt) {
-		Emp loginProfessor = getLoginProfessor(session);
+	public String courseUpdate(HttpSession session, CourseWithTime cwt, RedirectAttributes redirectAttrs) {
+	    Emp loginProfessor = getLoginProfessor(session);
 
-		// 1. 강의 기본 정보 수정
-	    professorService.updateCourse(course);
+	    // newCourse가 null이면 새 객체로 초기화
+	    if (cwt.getNewCourse() == null) {
+	        cwt.setNewCourse(new Course());
+	    }
 
-	 // 기존 강의시간 삭제 후 새로 등록
-	    professorService.deleteCourseTime(course.getCourseNo());
-	    for (CourseTime ct : cwt.getCourseTimes()) {
-	        ct.setCourseNo(course.getCourseNo());
-	        professorService.addCourseTime(ct);
+	    Course updatedCourse = cwt.getNewCourse();
+
+	    // PK가 폼에서 안 넘어왔으면, 기존 courseNo 세팅
+	    if (updatedCourse.getCourseNo() == 0 && cwt.getCourse() != null) {
+	        updatedCourse.setCourseNo(cwt.getCourse().getCourseNo());
+	    }
+
+	    // CoursePeriod 문자열("YYYY-MM-DD ~ YYYY-MM-DD") -> LocalDate로 변환
+	    LocalDate courseStartDate = null;
+	    LocalDate courseEndDate   = null;
+	    if (updatedCourse.getCoursePeriod() != null && updatedCourse.getCoursePeriod().contains("~")) {
+	        String[] periodParts = updatedCourse.getCoursePeriod().split("~");
+	        courseStartDate = LocalDate.parse(periodParts[0].trim());
+	        courseEndDate   = LocalDate.parse(periodParts[1].trim());
 	    }
 	    
-	    return "redirect:/professor/courseOne?courseNo=" + course.getCourseNo();
+	    // 기존 강의시간 조회 (자기 강의는 제외)
+	    List<CourseTime> existingTimes = professorService.getCourseTimesByEmp(loginProfessor.getEmpNo())
+	        .stream()
+	        .filter(ct -> ct.getCourseNo() != updatedCourse.getCourseNo()) // 자기 강의 제외
+	        .collect(Collectors.toList());
+
+	    // 새 CourseTime에 강의 기간 세팅
+	    for (CourseTime ct : cwt.getCourseTimes()) {
+	        ct.setCourseStartDate(courseStartDate);
+	        ct.setCourseEndDate(courseEndDate);
+	    }	
+	    
+	    // 시간 겹침 체크
+	    CourseTime overlap = checkCourseTimeOverlap(cwt.getCourseTimes(), existingTimes);
+	    if (overlap != null) {
+	        System.out.println("겹침 발견: " + overlap.getCoursedate() + " " + overlap.getCourseTimeStart() + "-" + overlap.getCourseTimeEnd());
+	        redirectAttrs.addFlashAttribute("msg",
+	            "강의시간이 기존 강의와 겹칩니다: "
+	            + overlap.getCoursedate() + " "
+	            + overlap.getCourseTimeStart() + "-" 
+	            + overlap.getCourseTimeEnd());
+	        return "redirect:/professor/modifyCourse?courseNo=" + updatedCourse.getCourseNo();
+	    } else {
+	        System.out.println("겹침 없음");
+	    }
+	    
+	    // 강의 업데이트
+	    professorService.updateCourse(updatedCourse);
+
+	    // 기존 강의시간 삭제 후 새로 등록
+	    professorService.deleteCourseTime(updatedCourse.getCourseNo());
+	    for (CourseTime ct : cwt.getCourseTimes()) {
+	        ct.setCourseNo(updatedCourse.getCourseNo());
+	        professorService.addCourseTime(ct);
+	    }
+
+	    return "redirect:/professor/courseOne?courseNo=" + updatedCourse.getCourseNo();
 	}
 	
 	// 강의 삭제
@@ -605,20 +677,84 @@ public class ProfessorController {
 	
 	// 강의 등록 액션
 	@PostMapping("/professor/addCourse")
-	public String addCourse(HttpSession session, CourseWithTime cwt) {	
+	public String addCourse(HttpSession session, CourseWithTime cwt, RedirectAttributes redirectAttrs) {	
 		Emp loginProfessor = getLoginProfessor(session);
 		
 		// Course에 교수 번호 세팅
 	    cwt.getCourse().setEmpNo(loginProfessor.getEmpNo());
 		
-		// 1. Course 등록 → courseNo 자동 생성됨
+	    // 기존 강의시간 조회 (같은 교수)
+	    List<CourseTime> existingTimes = professorService.getCourseTimesByEmp(loginProfessor.getEmpNo());
+	    
+	    // 겹치는 시간 체크
+	    CourseTime overlap = checkCourseTimeOverlap(cwt.getCourseTimes(), existingTimes);
+	    if (overlap != null) {
+	        redirectAttrs.addFlashAttribute("msg",
+	            "강의시간이 기존 강의와 겹칩니다: "
+	            + overlap.getCoursedate() + " "
+	            + overlap.getCourseTimeStart() + "-" 
+	            + overlap.getCourseTimeEnd());
+	        return "redirect:/professor/modifyCourse?courseNo=" + cwt.getCourse().getCourseNo();
+	    }
+	    
+	    // 1. Course 등록 → courseNo 자동 생성됨
 	    professorService.insertCourse(cwt.getCourse());
-
 	    // 2. CourseTime 여러 개 등록 (FK 세팅 포함)
 	    professorService.insertCourseWithTimes(cwt);
-
 		
 		return "redirect:/professor/courseList?currentPage=1";
+	}
+	
+	// 겹침 체크 함수 (요일 + 시간 + 기간)
+	private CourseTime checkCourseTimeOverlap(List<CourseTime> newTimes, List<CourseTime> existingTimes) {
+	    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+	    for (CourseTime newTime : newTimes) {
+	        // 시간 문자열 "09:00 ~ 10:35"일 경우 split 처리
+	        String startStr = newTime.getCourseTimeStart().contains("~") ?
+	                newTime.getCourseTimeStart().split("~")[0].trim() :
+	                newTime.getCourseTimeStart();
+	        String endStr = newTime.getCourseTimeEnd().contains("~") ?
+	                newTime.getCourseTimeEnd().split("~")[1].trim() :
+	                newTime.getCourseTimeEnd();
+
+	        LocalTime newStart = LocalTime.parse(startStr, timeFormatter);
+	        LocalTime newEnd   = LocalTime.parse(endStr, timeFormatter);
+
+	        LocalDate newStartDate = newTime.getCourseStartDate();
+	        LocalDate newEndDate   = newTime.getCourseEndDate();
+
+	        if (newStartDate == null || newEndDate == null) continue; // NPE 방지
+
+	        for (CourseTime existTime : existingTimes) {
+	            LocalTime existStart = LocalTime.parse(existTime.getCourseTimeStart(), timeFormatter);
+	            LocalTime existEnd   = LocalTime.parse(existTime.getCourseTimeEnd(), timeFormatter);
+
+	            LocalDate existStartDate = existTime.getCourseStartDate();
+	            LocalDate existEndDate   = existTime.getCourseEndDate();
+
+	            if (existStartDate == null || existEndDate == null) continue;
+
+	            // 1. 요일 체크
+	            if (!newTime.getCoursedate().equals(existTime.getCoursedate())) continue;
+
+	            // 2. 기간 겹침 체크
+	            if (newEndDate.isBefore(existStartDate) || newStartDate.isAfter(existEndDate)) continue;
+
+	            // 3. 시간 겹침 체크
+	            if (timesOverlap(newStart, newEnd, existStart, existEnd)) {
+	                return newTime; // 겹치는 새 강의시간 반환
+	            }
+	        }
+	    }
+
+	    return null; // 겹치는 시간 없음
+	}
+
+	// 시간 겹침 확인 함수 (끝나는 시간 직전까지 겹치면 true)
+	private boolean timesOverlap(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
+	    // 완전히 겹치지 않는 경우만 false
+	    return start1.isBefore(end2) && start2.isBefore(end1);
 	}
 	
 	// 강의리스트
@@ -666,7 +802,12 @@ public class ProfessorController {
         
         List<Dept> deptList = deptService.getDeptList();
         boolean noDeptSelected = (loginProfessor.getDeptNo() == null);
-              
+        
+        // 각 학과에 selected 필드 세팅
+        for (Dept d : deptList) {
+            d.setSelected(d.getDeptNo().equals(loginProfessor.getDeptNo()));
+        }
+        
         model.addAttribute("e", e);
         model.addAttribute("noDeptSelected", noDeptSelected);
         model.addAttribute("deptList", deptList);
@@ -817,6 +958,7 @@ public class ProfessorController {
     // 과제 다운로드
     @GetMapping("/professor/downloadProjectFile")
     public void downloadProjectFile(@RequestParam String fileName, HttpServletResponse response) throws IOException {
+    	String uploadDir = "C:/lms/uploads/assignments/";
         File file = new File(uploadDir, fileName);
 
         if (file.exists()) {
