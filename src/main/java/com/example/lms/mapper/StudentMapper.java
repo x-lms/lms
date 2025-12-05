@@ -22,10 +22,11 @@ public interface StudentMapper {
 
     List<Course> selectCoursesByStudentNo(int studentNo);
     List<Course> selectAvailableCourses(int studentNo);
-
+    
     int checkDuplicateCourse(@Param("studentNo") int studentNo, @Param("courseNo") int courseNo);
     void insertStudentCourse(@Param("studentNo") int studentNo, @Param("courseNo") int courseNo);
-    void insertStudentCourse(Map<String, Integer> params); // applyCourse용
+    
+    void insertStudentCourse(Map<String, Object> params); // applyCourse용
 
     String selectEmpNameByCourseNo(int courseNo);
     List<CourseTime> selectCourseTimesByCourseNo(int courseNo);
@@ -40,7 +41,7 @@ public interface StudentMapper {
     );
 
     int countCoursesByKeyword(@Param("studentNo") int studentNo, @Param("keyword") String keyword);
-
+    String selectCoursePeriod(int courseNo);
     List<Course> selectAvailableCoursesWithPaging(
             @Param("studentNo") int studentNo,
             @Param("offset") int offset,
@@ -81,5 +82,7 @@ public interface StudentMapper {
 
     int updateProjectResult(ProjectResult result);
 	ProjectResult getProjectResultByResultNo(int resultNo);
+	void updateCurrentCnt(int courseNo);
+	void decreaseCurrentCnt(int courseNo);
 
 }

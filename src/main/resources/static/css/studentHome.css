@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-/* ==================== 교수 홈 CSS ==================== */
+/* ==================== 학생 홈 CSS ==================== */
 
 /* 메인 콘텐츠 */
 .main-content {
@@ -35,8 +35,13 @@ section h3 {
 }
 
 /* 시간표 섹션 */
+.timetable {
+    overflow-x: auto;
+}
+
 .timetable table {
     width: 100%;
+    table-layout: fixed; /* 테이블 레이아웃 고정 */
     border-collapse: collapse;
     background: white;
     border: 1px solid #e5e7eb;
@@ -53,6 +58,7 @@ section h3 {
     font-weight: 600;
     color: white;
     border-right: 1px solid rgba(255, 255, 255, 0.2);
+    width: calc((100% - 80px) / 5); /* 시간 열 제외하고 5개 열 균등 분배 */
 }
 
 .timetable th:last-child {
@@ -61,7 +67,7 @@ section h3 {
 
 .timetable th:first-child {
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    width: 80px;
+    width: 80px; /* 시간 열 고정 너비 */
 }
 
 .timetable tbody tr {
@@ -79,8 +85,11 @@ section h3 {
     font-size: 13px;
     color: #4b5563;
     border-right: 1px solid #f1f5f9;
-    min-height: 60px;
-    vertical-align: top;
+    height: 80px; /* 고정 높이 */
+    vertical-align: middle; /* 수직 중앙 정렬 */
+    overflow: hidden; /* 넘치는 내용 숨김 */
+    text-overflow: ellipsis; /* 말줄임표 */
+    word-wrap: break-word; /* 긴 단어 줄바꿈 */
 }
 
 .timetable td:first-child {
@@ -88,6 +97,7 @@ section h3 {
     font-weight: 600;
     color: #1f2937;
     border-right: 1px solid #e5e7eb;
+    width: 80px; /* 시간 열 고정 너비 */
 }
 
 .timetable td:last-child {
@@ -100,6 +110,8 @@ section h3 {
     color: #1e40af;
     font-weight: 500;
     border: 1px solid #93c5fd;
+    padding: 8px; /* 내용이 있을 때 패딩 조정 */
+    line-height: 1.4; /* 줄 간격 */
 }
 
 /* 달력 섹션 */
@@ -263,8 +275,13 @@ section h3 {
         font-size: 12px;
     }
 
-    .timetable th:first-child {
+    .timetable th:first-child,
+    .timetable td:first-child {
         width: 60px;
+    }
+
+    .timetable td {
+        height: 70px; /* 모바일에서 높이 조정 */
     }
 
     /* 달력 반응형 */
@@ -311,5 +328,9 @@ section h3 {
     .timetable th,
     .timetable td {
         padding: 8px 4px;
+    }
+
+    .timetable td {
+        height: 60px; /* 작은 화면에서 높이 조정 */
     }
 }

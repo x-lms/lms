@@ -26,7 +26,7 @@ public class StudentService {
 
     private final StudentMapper studentMapper;
 
-    // ================= 기존 기능 =================
+    // ================= 학생정보 기능 =================
     public Student getStudentDetail(int studentNo) {
         return studentMapper.selectStudentDetail(studentNo);
     }
@@ -79,10 +79,17 @@ public class StudentService {
                 }
             }
         }
+        int empNo = course.getEmpNo();
+        Map<String, Object> params = Map.of(
+        	    "studentNo", studentNo,
+        	    "courseNo", courseNo,
+        	    "empNo", empNo,
+        	    "registState", "수강중"  // 초기값은 무조건 수강중
+        	);
+        	studentMapper.insertStudentCourse(params);
+        	
+        	studentMapper.updateCurrentCnt(courseNo);
 
-        // 신청 처리 (Map으로 전달)
-        Map<String, Integer> params = Map.of("studentNo", studentNo, "courseNo", courseNo);
-        studentMapper.insertStudentCourse(params);
     }
 
     private boolean timeOverlap(String start1, String end1, String start2, String end2) {
@@ -227,7 +234,7 @@ public class StudentService {
         if (info == null) return false;
 
         String status = (String) info.get("status");
-        if (!"신청".equals(status)) return false;
+        if (!"신청".equals(status) && !"수강중".equals(status)) return false;
 
         String coursePeriod = (String) info.get("coursePeriod");
         if (coursePeriod == null || !coursePeriod.contains("~")) return false;
@@ -245,6 +252,7 @@ public class StudentService {
             throw new Exception("이미 수업이 시작되어 취소할 수 없습니다.");
         }
         Map<String, Integer> params = Map.of("studentNo", studentNo, "courseNo", courseNo);
+        studentMapper.decreaseCurrentCnt(courseNo);
         studentMapper.deleteStudentCourse(params);
     }
  // ========================= 질문 등록 =========================
@@ -327,13 +335,14 @@ public class StudentService {
     // ========================= 과제 제출 =========================
     @Transactional
     public void submitAssignment(int projectNo, int studentNo, MultipartFile file, String title, String contents) {
+
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("업로드할 파일이 없습니다.");
         }
 
         try {
             // 1) 파일 저장 경로
-            String uploadDir = "C:/lms/upload/";
+            String uploadDir = "C:/lms/uploads/assignments/";
             File dir = new File(uploadDir);
             if (!dir.exists()) dir.mkdirs();
 
@@ -360,17 +369,18 @@ public class StudentService {
         }
     }
 
+
     // ========================= 제출 후 강의번호 조회 =========================
     public int getCourseNoByProjectNo(int projectNo) {
         return studentMapper.selectCourseNoByProjectNo(projectNo);
     }
     
- // 과제 수정 (안전 버전)
+ // 과제 수정 
     public void updateAssignment(int resultNo, MultipartFile file, String title, String contents) {
 
         ProjectResult origin = studentMapper.getProjectResultByResultNo(resultNo);
 
-        String uploadDir = "C:/lms/upload/";
+        String uploadDir = "C:/lms/uploads/";
 
         // 1️ 제목/내용은 무조건 업데이트
         origin.setResultTitle(title);
@@ -403,9 +413,11 @@ public class StudentService {
 
         studentMapper.updateProjectResult(origin);
     }
-
+    
 
     public ProjectResult getProjectResultByResultNo(int resultNo) {
         return studentMapper.getProjectResultByResultNo(resultNo);
     }
+
+
 }

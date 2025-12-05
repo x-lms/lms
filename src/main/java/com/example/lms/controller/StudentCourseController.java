@@ -1,4 +1,7 @@
 package com.example.lms.controller;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+
 
 import com.example.lms.dto.StudentCourse;
 import com.example.lms.dto.Assignment;
@@ -8,14 +11,25 @@ import com.example.lms.dto.Question;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.TimetableCell;
 import com.example.lms.service.StudentService;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+
+import org.springframework.http.HttpHeaders;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -139,105 +153,115 @@ public class StudentCourseController {
         return "student/projectResultOne";
     }
 
-    // ===============================
-    //  과제 제출 처리
-    // ===============================
-    @PostMapping("/assignment/{projectNo}")
-    public String submitAssignment(
-            @PathVariable int projectNo,
-            @RequestParam("submissionFile") MultipartFile file,
-            @RequestParam("resultTitle") String title,
-            @RequestParam("resultContents") String contents,
-            @SessionAttribute("loginStudent") Student loginStudent,
-            RedirectAttributes redirectAttributes) {
+ // ===============================
+//  과제 제출 처리
+// ===============================
+@PostMapping("/assignment/{projectNo}")
+public String submitAssignment(
+        @PathVariable int projectNo,
+        @RequestParam("submissionFile") MultipartFile file,
+        @RequestParam("resultTitle") String title,
+        @RequestParam("resultContents") String contents,
+        @SessionAttribute("loginStudent") Student loginStudent,
+        RedirectAttributes redirectAttributes) {
 
-        if (loginStudent == null) return "redirect:/login";
+    if (loginStudent == null) return "redirect:/login";
 
-        Project project = studentService.getProjectByProjectNo(projectNo);
+    Project project = studentService.getProjectByProjectNo(projectNo);
 
-        // 마감일 여부 체크
-        if (!isBeforeDeadline(project.getProjectDeadline())) {
-            redirectAttributes.addFlashAttribute("error", "마감일이 지나 제출할 수 없습니다.");
-            return "redirect:/student/assignment/" + projectNo;
-        }
-
-        studentService.submitAssignment(
-                projectNo,
-                loginStudent.getStudentNo(),
-                file, title, contents
-        );
-
-        redirectAttributes.addFlashAttribute("msg", "과제가 성공적으로 제출되었습니다.");
-        int courseNo = studentService.getCourseNoByProjectNo(projectNo);
-
-        return "redirect:/student/courseOne/" + courseNo;
+    if (!isBeforeDeadline(project.getProjectDeadline())) {
+        redirectAttributes.addFlashAttribute("error", "마감일이 지나 제출할 수 없습니다.");
+        return "redirect:/student/assignment/" + projectNo;
     }
 
-    // ===============================
-    //  수정 페이지 이동 (GET)
-    // ===============================
-    @GetMapping("/assignment/edit/{resultNo}")
-    public String editAssignmentPage(
-            @PathVariable int resultNo,
-            @SessionAttribute("loginStudent") Student loginStudent,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+    // MultipartFile 그대로 서비스로 전달
+    studentService.submitAssignment(projectNo, loginStudent.getStudentNo(), file, title, contents);
 
-        if (loginStudent == null) return "redirect:/login";
+    redirectAttributes.addFlashAttribute("msg", "과제가 성공적으로 제출되었습니다.");
+    int courseNo = studentService.getCourseNoByProjectNo(projectNo);
 
-        ProjectResult submitted = studentService.getProjectResultByResultNo(resultNo);
-        Project project = studentService.getProjectByProjectNo(submitted.getProjectNo());
+    return "redirect:/student/courseOne/" + courseNo;
+}
 
-        // 마감일 지나면 수정 불가
-        if (!isBeforeDeadline(project.getProjectDeadline())) {
-            redirectAttributes.addFlashAttribute("error", "마감일이 지나 수정할 수 없습니다.");
-            return "redirect:/student/assignment/" + project.getProjectNo();
-        }
+// ===============================
+//  과제 다운로드
+// ===============================
+@GetMapping("/assignment/download/{resultNo}")
+public ResponseEntity<Resource> downloadAssignment(
+        @PathVariable int resultNo,
+        @SessionAttribute("loginStudent") Student loginStudent) {
 
-        model.addAttribute("project", project);
-        model.addAttribute("submitted", submitted);
-
-        return "student/projectResultEdit";
+    if (loginStudent == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    // ===============================
-    // 과제 수정 처리 (POST)
-    // ===============================
-    @PostMapping("/assignment/edit/{resultNo}")
-    public String updateAssignment(
-            @PathVariable int resultNo,
-            @RequestParam("submissionFile") MultipartFile file,
-            @RequestParam("resultTitle") String title,
-            @RequestParam("resultContents") String contents,
-            @SessionAttribute("loginStudent") Student loginStudent,
-            RedirectAttributes redirectAttributes) {
+    ProjectResult result = studentService.getProjectResultByResultNo(resultNo);
+    if (result == null || !result.getStudentNo().equals(loginStudent.getStudentNo())) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 
-        if (loginStudent == null) return "redirect:/login";
+    // 업로드 경로와 동일하게 맞춤
+    Path filePath = Paths.get("C:/lms/uploads/assignments", result.getResultFile());
 
-        ProjectResult origin = studentService.getProjectResultByResultNo(resultNo);
-        Project project = studentService.getProjectByProjectNo(origin.getProjectNo());
+    if (!Files.exists(filePath)) {
+        System.out.println("파일 없음: " + filePath.toAbsolutePath());
+        return ResponseEntity.notFound().build();
+    }
 
-        // 마감 후 수정 불가
-        if (!isBeforeDeadline(project.getProjectDeadline())) {
-            redirectAttributes.addFlashAttribute("error", "마감일이 지나 수정할 수 없습니다.");
-            return "redirect:/student/assignment/" + project.getProjectNo();
-        }
+    Resource resource = new FileSystemResource(filePath.toFile());
 
-        studentService.updateAssignment(resultNo, file, title, contents);
+    // 파일명 한글/공백 인코딩
+    String encodedFileName;
+    try {
+        encodedFileName = URLEncoder.encode(result.getResultFile(), "UTF-8").replaceAll("\\+", "%20");
+    } catch (Exception e) {
+        encodedFileName = result.getResultFile();
+    }
 
-        redirectAttributes.addFlashAttribute("msg", "과제가 수정되었습니다.");
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
+            .body(resource);
+}
 
+
+// ===============================
+//  과제 수정 처리
+// ===============================
+@PostMapping("/assignment/edit/{resultNo}")
+public String updateAssignment(
+        @PathVariable int resultNo,
+        @RequestParam("submissionFile") MultipartFile file,
+        @RequestParam("resultTitle") String title,
+        @RequestParam("resultContents") String contents,
+        @SessionAttribute("loginStudent") Student loginStudent,
+        RedirectAttributes redirectAttributes) {
+
+    if (loginStudent == null) return "redirect:/login";
+
+    ProjectResult origin = studentService.getProjectResultByResultNo(resultNo);
+    Project project = studentService.getProjectByProjectNo(origin.getProjectNo());
+
+    if (!isBeforeDeadline(project.getProjectDeadline())) {
+        redirectAttributes.addFlashAttribute("error", "마감일이 지나 수정할 수 없습니다.");
         return "redirect:/student/assignment/" + project.getProjectNo();
     }
 
-    // ===============================
-    // 공통 - 마감일 비교 (YYYY-MM-DD)
-    // ===============================
-    private boolean isBeforeDeadline(String projectDeadline) {
-        LocalDate deadlineDate = LocalDate.parse(projectDeadline);
-        LocalDateTime deadline = deadlineDate.atTime(23, 59, 59);
-        return LocalDateTime.now().isBefore(deadline);
-    }
+    studentService.updateAssignment(resultNo, file, title, contents);
+
+    redirectAttributes.addFlashAttribute("msg", "과제가 수정되었습니다.");
+    return "redirect:/student/assignment/" + project.getProjectNo();
+}
+
+// ===============================
+// 공통 - 마감일 비교
+// ===============================
+private boolean isBeforeDeadline(String projectDeadline) {
+    LocalDate deadlineDate = LocalDate.parse(projectDeadline);
+    LocalDateTime deadline = deadlineDate.atTime(23, 59, 59);
+    return LocalDateTime.now().isBefore(deadline);
+}
+
+
 
 
 	// 수강 과목 상세보기
@@ -254,7 +278,7 @@ public class StudentCourseController {
 
         model.addAttribute("course", course);
         model.addAttribute("assignmentList", assignmentList);
-        model.addAttribute("cancelable", cancelable);
+        model.addAttribute("cancelable", cancelable ? "Y" : null);
 
         return "student/courseOne";
     }

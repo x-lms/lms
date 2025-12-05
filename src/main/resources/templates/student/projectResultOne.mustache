@@ -46,13 +46,19 @@
                     <label>제출 제목</label>
                     <div class="submitted-value">{{submitted.resultTitle}}</div>
                 </div>
+                
+		<div class="form-group">
+    <label>제출 파일</label>
+    <div class="submitted-value">
+        <a href="/student/assignment/download/{{submitted.resultNo}}">
+            {{submitted.resultFile}}
+        </a>
+    </div>
+</div>
 
-                <div class="form-group">
-                    <label>제출 파일</label>
-                    <div class="submitted-value">
-                        <a href="/download/{{submitted.resultFile}}">{{submitted.resultFile}}</a>
-                    </div>
-                </div>
+
+
+
 
                 <div class="form-group">
                     <label>제출 내용</label>

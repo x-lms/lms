@@ -18,14 +18,17 @@ public class StudentGradeController {
 
     private final StudentScoreService studentScoreService;
 
-    // 성적 리스트 조회
     @GetMapping("student/gradeList")
     public String gradeList(@SessionAttribute("loginStudent") Student student, Model model) {
 
-      
-        List<Score> gradeList = studentScoreService.getScoreList(student.getStudentNo());
+        List<Score> allGrades = studentScoreService.getScoreList(student.getStudentNo());
 
-        model.addAttribute("gradeList", gradeList);
+        // f 일때만 성적이 보일수 있음
+        List<Score> finalGrades = allGrades.stream()
+                                           .filter(score -> "f".equals(score.getScoreStatus()))
+                                           .toList();
+
+        model.addAttribute("gradeList", finalGrades);
         return "student/gradeList"; 
     }
 

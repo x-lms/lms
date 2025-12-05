@@ -115,12 +115,25 @@
         WHERE student_no = #{studentNo} AND course_no = #{courseNo}
     </select>
 
-    <!-- 수강 신청 -->
     <insert id="insertStudentCourse" parameterType="map">
-        INSERT INTO registration(student_no, course_no)
-        VALUES (#{studentNo}, #{courseNo})
-    </insert>
+	    INSERT INTO registration(student_no, course_no, emp_no, regist_state)
+	    VALUES (#{studentNo}, #{courseNo}, #{empNo}, #{registState})
+</insert>
 
+	<!-- 현재수강신청 학생수 -->
+	<update id="updateCurrentCnt">
+	    UPDATE course
+	    SET current_cnt = current_cnt + 1
+	    WHERE course_no = #{courseNo}
+</update>
+	<!-- 수강신청취소시 현재 학생수  -->
+	<update id="decreaseCurrentCnt">
+	    UPDATE course
+	    SET current_cnt = current_cnt - 1
+	    WHERE course_no = #{courseNo}
+</update>
+	
+	
     <!-- 교수명 조회 -->
     <select id="selectEmpNameByCourseNo" parameterType="int" resultType="String">
         SELECT e.emp_name
@@ -191,15 +204,24 @@
         )
     </select>
     
-   <select id="selectCourseEnrollInfo" resultType="map" parameterType="map">
-    SELECT student_no AS studentNo,
-           course_no AS courseNo,
-           start_date AS startDate,
-           status
-    FROM student_course
-    WHERE student_no = #{studentNo}
-      AND course_no = #{courseNo}
+ <select id="selectCourseEnrollInfo" resultType="map">
+    SELECT 
+        r.regist_state AS status,
+        c.course_period AS coursePeriod
+    FROM registration r
+    JOIN course c ON r.course_no = c.course_no
+    WHERE r.student_no = #{studentNo}
+      AND r.course_no = #{courseNo}
 </select>
+
+
+
+<select id="selectCoursePeriod" resultType="string">
+    SELECT course_period
+    FROM course
+    WHERE course_no = #{courseNo}
+</select>
+
 
  <!-- 강의별 과제 목록 조회 -->
     <select id="selectAssignmentsByCourseNo" parameterType="int" resultType="com.example.lms.dto.Assignment">
