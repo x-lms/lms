@@ -99,13 +99,105 @@
     </div>
 
     <script>
-        // 이미지 미리보기
-        $('#studentImg').on('change', function() {
-            const [file] = this.files;
-            if (file) {
-                $('#previewImg').attr('src', URL.createObjectURL(file));
+    // 이미지 미리보기
+    $('#studentImg').on('change', function() {
+        const [file] = this.files;
+        if (file) {
+            $('#previewImg').attr('src', URL.createObjectURL(file));
+        }
+    });
+
+    $(document).ready(function() {
+
+        // ================================
+        // 📌 1. 비밀번호 실시간 입력 제한
+        // ================================
+        $("#password").on("input", function() {
+            const password = $(this).val();
+            const regex = /^[A-Za-z0-9]*$/;
+
+            if(regex.test(password)) {
+                $("#pwMessage").text("");
+            } else {
+                $("#pwMessage").text("비밀번호는 숫자와 영어만 가능합니다.");
+                $(this).val(password.replace(/[^A-Za-z0-9]/g, ""));
             }
         });
-    </script>
+
+
+
+        // ================================
+        // 📌 2. 한국 전화번호 마스킹(하이픈 자동)
+        // ================================
+        const $phone = $("input[name='studentPhone']");
+
+        $phone.on("input", function() {
+            let val = $(this).val().replace(/[^0-9]/g, "");
+
+            // 서울 번호(02)
+            if (val.startsWith("02")) {
+                if (val.length > 2 && val.length <= 5) {
+                    val = val.replace(/^(\d{2})(\d{1,3})/, "$1-$2");
+                } else if (val.length > 5) {
+                    val = val.replace(/^(\d{2})(\d{3,4})(\d{1,4})/, "$1-$2-$3");
+                }
+            } 
+            // 휴대폰 및 일반 지역번호
+            else {
+                if (val.length > 3 && val.length <= 7) {
+                    val = val.replace(/^(\d{3})(\d{1,3})/, "$1-$2");
+                } else if (val.length > 7) {
+                    val = val.replace(/^(\d{3})(\d{3,4})(\d{1,4})/, "$1-$2-$3");
+                }
+            }
+
+            $(this).val(val);
+        });
+
+
+
+        // ================================
+        // 📌 3. 폼 제출 시 유효성 검사
+        // ================================
+        $("form").on("submit", function(e) {
+
+            // ---- (1) 비밀번호 확인 ----
+            const pw = $("#password").val();
+            const pw2 = $("#password2").val();
+
+            // 둘 중 하나라도 입력했다면 검사
+            if (pw || pw2) {
+                if (pw !== pw2) {
+                    alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                    e.preventDefault();
+                    return;
+                }
+
+                // 비밀번호는 영문/숫자 조합만 허용
+                const pwRegex = /^[A-Za-z0-9]+$/;
+                if (!pwRegex.test(pw)) {
+                    alert("비밀번호는 영어와 숫자만 사용할 수 있습니다.");
+                    e.preventDefault();
+                    return;
+                }
+            }
+
+
+            // ---- (2) 전화번호 유효성 검사 ----
+            const phone = $phone.val();
+
+            if (phone) {
+                const phoneRegex = /^(01[0-9]-\d{3,4}-\d{4}|0[2-6][0-9]?-\d{3,4}-\d{4})$/;
+
+                if (!phoneRegex.test(phone)) {
+                    alert("올바른 한국 전화번호 형식이 아닙니다.\n예: 010-1234-5678");
+                    e.preventDefault();
+                    return;
+                }
+            }
+        });
+    });
+</script>
+
 </body>
 </html>

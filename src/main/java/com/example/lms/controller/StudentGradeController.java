@@ -23,9 +23,9 @@ public class StudentGradeController {
 
         List<Score> allGrades = studentScoreService.getScoreList(student.getStudentNo());
 
-        // f 일때만 성적이 보일수 있음
+        // F 일때만 성적이 보일수 있음
         List<Score> finalGrades = allGrades.stream()
-                                           .filter(score -> "f".equals(score.getScoreStatus()))
+                                           .filter(score -> "F".equals(score.getScoreStatus()))
                                            .toList();
 
         model.addAttribute("gradeList", finalGrades);
