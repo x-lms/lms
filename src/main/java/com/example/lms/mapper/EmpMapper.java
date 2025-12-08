@@ -45,4 +45,11 @@ public interface EmpMapper {
 	Integer selectMaxStdNo(String n);
 	// 학생 수정
 	int updateStudent(Student s);
+	
+	// 스케줄 추가
+	int insertSchedule(Schedule s);
+	// 스케줄 수정
+	int updateSchedule(Schedule s);
+	// 스케줄 삭제
+	void deleteSchedule(int scheduleNo);
 }

@@ -52,4 +52,16 @@ public class PublicService {
 	public NoticeFile getNoticeFile(int fileNo) {
 		return publicMapper.selectNoticeFileOne(fileNo);
 	}
+	
+	// 스케줄 상세
+	public Schedule getSchedule(int sNo) {
+		return publicMapper.selectSchduleOne(sNo);
+	}
+	public Emp selectEmp(int empNo) {
+		return publicMapper.selectEmp(empNo);
+	}
+	// 스케줄 리스트
+	public List<Schedule> getScheduleList() {
+		return publicMapper.selectSchduleList();
+	}
 }

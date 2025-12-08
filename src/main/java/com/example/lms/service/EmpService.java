@@ -21,6 +21,7 @@ import com.example.lms.dto.Emp;
 import com.example.lms.dto.Notice;
 import com.example.lms.dto.NoticeFile;
 import com.example.lms.dto.ProfessorInfo;
+import com.example.lms.dto.Schedule;
 import com.example.lms.dto.SearchList;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.StudentExcelResult;
@@ -321,6 +322,21 @@ public class EmpService {
 	// 학생 수정
 	public void updateStudent(Student s) {
 		empMapper.updateStudent(s);
+	}
+	
+	// 스케줄 추가
+	public int addSchedule(Schedule s) {
+		return empMapper.insertSchedule(s);
+	}
+	
+	// 스케줄 수정
+	public int modifySchedule(Schedule s) {
+		return empMapper.updateSchedule(s);
+	}
+	
+	// 스케줄 삭제
+	public void removeSchedule(int sNo) {
+		empMapper.deleteSchedule(sNo);
 	}
 }
 

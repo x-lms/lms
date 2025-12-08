@@ -8,5 +8,5 @@ public class Schedule {
 	private int scheduleWriter;
 	private String scheduleTitle;
 	private String scheduleContents;
-	private String scheduleData;
+	private String scheduleDate;
 }

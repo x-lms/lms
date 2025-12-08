@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학습관리시스템 - 학사일정 상세</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+	<!-- include -->
+	{{>layouts/header}}
+	<div class="container">
+		{{#loginStudent}}
+			{{ >layouts/navStudent }}
+		{{/loginStudent}}
+		{{#loginProfessor}}
+			{{ >layouts/navProfessor }}
+		{{/loginProfessor}}
+		{{#loginEmp}}
+			{{ >layouts/navEmp }}
+		{{/loginEmp}}
+		<div class="main-content">
+			<div class="page-header">
+				<h2 class="page-title">학사일정 상세</h2>
+			</div>
+
+			<div class="professor-detail-container">
+				<div class="professor-detail-header">
+					<h3 class="section-title">일정 정보</h3>
+				</div>
+				{{#schedule}}
+					<div class="professor-detail-content">
+						<div class="info-grid">
+							<div class="info-grid-row">
+								<span class="info-grid-label">일정 제목</span>
+								<span class="info-grid-value">{{scheduleTitle}}</span>
+							</div>
+							<div class="info-grid-row">
+								<span class="info-grid-label">작성자</span>
+								<span class="info-grid-value">{{scheduleWriter}}</span>
+							</div>
+							<div class="info-grid-row">
+								<span class="info-grid-label">일정 날짜</span>
+								<span class="info-grid-value">{{scheduleDate}}</span>
+							</div>
+							<div class="info-grid-row">
+								<span class="info-grid-label">일정 내용</span>
+								<div class="info-grid-value">
+									<div class="schedule-content">{{scheduleContents}}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+	
+					<div class="professor-detail-actions">
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/scheduleCalendar" class="btn-secondary">목록</a>
+						<div class="action-right">
+							{{#loginEmp}}
+								<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifySchedule?scheduleNo={{scheduleNo}}" class="btn-edit">수정</a>
+								<button type="button" class="btn-delete" onclick="deleteSchedule()">삭제</button>
+							{{/loginEmp}}
+						</div>
+					</div>
+				{{/schedule}}
+			</div>
+		</div>
+	</div>
+	{{>layouts/footer}}
+
+	<script>
+        function deleteSchedule() {
+            if(confirm('이 학사일정을 삭제하시겠습니까?')) {
+                location.href = '{{springMacroRequestContext.request.contextPath}}/emp/deleteSchedule?scheduleNo={{scheduleNo}}';
+            }
+        }
+    </script>
+</body>
+</html>

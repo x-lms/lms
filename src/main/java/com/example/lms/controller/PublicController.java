@@ -17,10 +17,9 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.lms.dto.LoginUser;
-import com.example.lms.dto.Notice;
-import com.example.lms.dto.NoticeFile;
+import com.example.lms.dto.*;
 import com.example.lms.service.PublicService;
 
 import jakarta.servlet.ServletOutputStream;
@@ -170,5 +169,33 @@ public class PublicController {
 
 	    fis.close();
 	    sos.close();
+	}
+	// 스케줄 홈
+	@GetMapping("/public/schedule")
+	public String schedule() {
+		return "/public/schedule";
+	}
+	// 스케줄 상세보기
+	@GetMapping("/public/scheduleOne")
+	public String scheduleInfo(Model model, int scheduleNo) {
+		Schedule schedule = publicService.getSchedule(scheduleNo);
+		model.addAttribute("schedule", schedule);
+		return "/public/scheduleOne";
+	}
+	// 스케줄 리스트
+	@GetMapping("/public/scheduleList")
+	@ResponseBody
+	public List<Map<String, Object>> scheduleList() {
+		List<Schedule> list = publicService.getScheduleList();
+	    List<Map<String, Object>> result = new ArrayList<>();
+	    log.debug("일정 개수: " + list.size());
+	    for (Schedule s : list) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("id", s.getScheduleNo());
+	        map.put("title", s.getScheduleTitle());
+	        map.put("start", s.getScheduleDate().toString());
+	        result.add(map);
+	    }
+		return result;
 	}
 }

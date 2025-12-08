@@ -212,3 +212,251 @@ body {
     color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
 }
+
+/* ==================== FullCalendar 커스텀 스타일 ==================== */
+.calendar-wrapper {
+	background: white;
+	border-radius: 12px;
+	padding: 30px;
+}
+
+#scheduleCalendar {
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+/* 달력 헤더 */
+.fc .fc-toolbar {
+	padding: 10px 0 20px 0;
+	gap: 10px;
+}
+
+.fc .fc-toolbar-title {
+	font-size: 22px;
+	font-weight: 700;
+	color: #1f2937;
+}
+
+.fc .fc-button {
+	background: #1e40af;
+	border: none;
+	padding: 8px 16px;
+	border-radius: 6px;
+	font-weight: 600;
+	transition: background 0.2s;
+	box-shadow: none;
+}
+
+.fc .fc-button:hover {
+	background: #1d4ed8;
+}
+
+.fc .fc-button:focus {
+	box-shadow: none;
+}
+
+.fc .fc-button:disabled {
+	background: #9ca3af;
+	opacity: 0.6;
+}
+
+.fc .fc-button-active {
+	background: #1e3a8a !important;
+}
+
+/* 요일 헤더 */
+.fc .fc-col-header {
+	background: #f8fafc;
+}
+
+.fc .fc-col-header-cell {
+	padding: 12px 4px;
+	font-weight: 600;
+	color: #374151;
+	border-color: #e5e7eb;
+}
+
+.fc .fc-col-header-cell-cushion {
+	padding: 8px 4px;
+}
+
+/* 일요일 빨간색 */
+.fc .fc-day-sun .fc-col-header-cell-cushion {
+	color: #dc2626;
+}
+
+/* 토요일 파란색 */
+.fc .fc-day-sat .fc-col-header-cell-cushion {
+	color: #2563eb;
+}
+
+/* 날짜 셀 */
+.fc .fc-daygrid-day {
+	border-color: #e5e7eb;
+}
+
+.fc .fc-daygrid-day:hover {
+	background: #f9fafb;
+	cursor: pointer;
+}
+
+.fc .fc-daygrid-day-frame {
+	min-height: 100px;
+}
+
+.fc .fc-daygrid-day-number {
+	padding: 8px;
+	font-size: 14px;
+	color: #374151;
+	font-weight: 500;
+}
+
+/* 일요일 날짜 빨간색 */
+.fc .fc-day-sun .fc-daygrid-day-number {
+	color: #dc2626;
+}
+
+/* 토요일 날짜 파란색 */
+.fc .fc-day-sat .fc-daygrid-day-number {
+	color: #2563eb;
+}
+
+/* 이전/다음 달 날짜 */
+.fc .fc-daygrid-day.fc-day-other .fc-daygrid-day-number {
+	color: #d1d5db;
+}
+
+/* 오늘 날짜 */
+.fc .fc-day-today {
+	background: #eff6ff !important;
+}
+
+.fc .fc-day-today .fc-daygrid-day-number {
+	background: #3b82f6;
+	color: white;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 4px;
+}
+
+/* 일정 이벤트 */
+.fc .fc-event {
+	border: none;
+	border-radius: 4px;
+	padding: 4px 8px;
+	margin: 2px 4px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.fc .fc-event:hover {
+	filter: brightness(0.9);
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fc .fc-event-title {
+	font-weight: 600;
+	font-size: 13px;
+}
+
+.fc .fc-event-time {
+	display: none;
+}
+
+/* 일정 색상 */
+.fc .fc-event {
+	background: #3b82f6;
+	border-left: 3px solid #1e40af;
+}
+
+.fc .fc-daygrid-event-dot {
+	border-color: #1e40af;
+}
+
+/* 더보기 링크 */
+.fc .fc-daygrid-more-link {
+	color: #1e40af;
+	font-weight: 600;
+	font-size: 12px;
+}
+
+.fc .fc-daygrid-more-link:hover {
+	color: #1d4ed8;
+	text-decoration: underline;
+}
+
+/* 팝오버 */
+.fc .fc-popover {
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	border: 1px solid #e5e7eb;
+}
+
+.fc .fc-popover-header {
+	background: #f8fafc;
+	padding: 12px;
+	font-weight: 600;
+	color: #374151;
+}
+
+.fc .fc-popover-body {
+	padding: 8px;
+}
+
+/* 테두리 */
+.fc-theme-standard td, .fc-theme-standard th {
+	border-color: #e5e7eb;
+}
+
+/* 스크롤바 커스텀 */
+.fc-scroller::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+	background: #f1f5f9;
+	border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+	background: #cbd5e1;
+	border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+	background: #94a3b8;
+}
+
+/* 반응형 */
+@media ( max-width : 768px) {
+	.calendar-wrapper {
+		padding: 15px;
+	}
+	.fc .fc-toolbar {
+		flex-direction: column;
+		gap: 10px;
+	}
+	.fc .fc-toolbar-title {
+		font-size: 18px;
+	}
+	.fc .fc-button {
+		padding: 6px 12px;
+		font-size: 13px;
+	}
+	.fc .fc-daygrid-day-frame {
+		min-height: 60px;
+	}
+	.fc .fc-daygrid-day-number {
+		font-size: 12px;
+		padding: 4px;
+	}
+	.fc .fc-event-title {
+		font-size: 11px;
+	}
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학습관리시스템 - 학사일정 수정</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/stylejm.css">
+</head>
+<body>
+	<!-- include -->
+	{{>layouts/header}}
+	<div class="container">
+		{{>layouts/navEmp}}
+		<div class="main-content">
+			<div class="page-header">
+				<h2 class="page-title">학사일정 수정</h2>
+			</div>
+
+			<div class="notice-form-container">
+			{{#schedule}}
+				<form class="notice-form" action="{{springMacroRequestContext.request.contextPath}}/emp/modifySchedule" method="post">
+					<input type="hidden" name="scheduleNo" value="{{scheduleNo}}">
+
+					<div class="form-row">
+						<label class="form-label required">일정 제목</label>
+						<input type="text" name="scheduleTitle" class="form-input" value="{{scheduleTitle}}" required>
+					</div>
+
+					<div class="form-row">
+						<label class="form-label required">작성자</label>
+						<input type="text" name="scheduleWriter" class="form-input" value="{{scheduleWriter}}" readonly>
+					</div>
+
+					<div class="form-row">
+						<label class="form-label required">일정 날짜</label>
+						<input type="date" name="scheduleDate" class="form-input" value="{{scheduleDate}}" required>
+					</div>
+
+					<div class="form-row">
+						<label class="form-label required">일정 내용</label>
+						<textarea name="scheduleContents" class="form-textarea" rows="10" required>{{scheduleContents}}</textarea>
+					</div>
+
+					<div class="form-actions">
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/scheduleOne?scheduleNo={{ScheduleNo}}" class="btn-secondary">취소</a>
+						<button type="submit" class="btn-primary">수정 완료</button>
+					</div>
+				</form>
+			{{/schedule}}
+			</div>
+		</div>
+	</div>
+	{{>layouts/footer}}
+</body>
+</html>

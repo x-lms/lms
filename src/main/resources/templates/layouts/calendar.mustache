@@ -1,38 +1,53 @@
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/ko.js"></script>
 
-<div id="scheduleCalendar"></div>
+<div class="calendar-wrapper">
+    <div id="scheduleCalendar"></div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
     var calendarEl = document.getElementById('scheduleCalendar');
 
     // 서버에서 일정 가져오기 (JSON)
-    fetch('/emp/scheduleList')
+    fetch('/public/scheduleList')
         .then(resp => resp.json())
         .then(events => {
-
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                height: 650,
+                height: 'auto',
                 locale: 'ko',
-
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek'
+                },
+                buttonText: {
+                    today: '오늘',
+                    month: '월',
+                    week: '주'
+                },
                 events: events, // 일정 바인딩
 
                 dateClick: function(info) {
+                    {{#loginEmp}}
                     if(confirm(info.dateStr + " 일정 추가하시겠습니까?")) {
                         location.href = "/emp/addSchedule?date=" + info.dateStr;
                     }
+                    {{/loginEmp}}
                 },
 
                 eventClick: function(info) {
                     let no = info.event.id;
-                    location.href = "/emp/scheduleOne?scheduleNo=" + no;
+                    location.href = "/public/scheduleOne?scheduleNo=" + no;
                 }
             });
 
             calendar.render();
+        })
+        .catch(error => {
+            console.error('일정을 불러오는데 실패했습니다:', error);
         });
 });
 </script>

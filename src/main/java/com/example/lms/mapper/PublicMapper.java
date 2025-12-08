@@ -20,4 +20,10 @@ public interface PublicMapper {
 	Notice selectNoticeOne(int noticeNo);
 	List<NoticeFile> selectNoticeFile(int noticeNo);
 	NoticeFile selectNoticeFileOne(int fileNo);
+	
+	// 스케줄 상세
+	Schedule selectSchduleOne(int scheduleNo);
+	Emp selectEmp(int empNo);
+	// 스케줄 리스트
+	List<Schedule> selectSchduleList();
 }

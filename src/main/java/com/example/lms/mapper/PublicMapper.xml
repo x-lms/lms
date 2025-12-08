@@ -52,7 +52,7 @@
 	<!-- 공지사항 상세 -->
 	<select id="selectNoticeOne" parameterType="int" resultType="com.example.lms.dto.Notice">
 		SELECT notice_no noticeNo, notice_writer noticeWriter, notice_title noticeTitle, notice_contents noticeContents, DATE_FORMAT(createdate, '%Y.%m.%d') createdate
-		FROM notice where notice_no = #{noticeNo}
+		FROM notice WHERE notice_no = #{noticeNo}
 	</select>
 	<select id="selectNoticeFile" parameterType="int" resultType="com.example.lms.dto.NoticeFile">
 		SELECT file_no fileNo, notice_no noticeNo, origin_name originName, file_name fileName, file_size fileSize, file_type fileType
@@ -61,5 +61,19 @@
 	<select id="selectNoticeFileOne" parameterType="int" resultType="com.example.lms.dto.NoticeFile">
 		SELECT file_no fileNo, notice_no noticeNo, origin_name originName, file_name fileName, file_size fileSize, file_type fileType
 		FROM notice_file WHERE file_no = #{fileNo}
+	</select>
+	
+	<!-- 스케줄 상세 -->
+	<select id="selectSchduleOne" parameterType="int" resultType="com.example.lms.dto.Schedule">
+		SELECT schedule_no scheduleNo, schedule_writer scheduleWriter, schedule_title scheduleTitle, schedule_contents scheduleContents, schedule_date scheduleDate
+		FROM schedule WHERE schedule_no = #{scheduleNo}
+	</select>
+	<select id="selectEmp" parameterType="int" resultType="com.example.lms.dto.Emp">
+		SELECT emp_name FROM emp WHERE emp_no = #{empNo}
+	</select>
+	<!-- 스케줄 리스트 -->
+	<select id="selectSchduleList" resultType="com.example.lms.dto.Schedule">
+		SELECT schedule_no scheduleNo, schedule_title scheduleTitle, schedule_date scheduleDate
+		FROM schedule
 	</select>
 </mapper>

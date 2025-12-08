@@ -1397,6 +1397,17 @@
 	width: 100%;
 }
 
+/* 학사일정 상세 - 내용 영역 */
+.schedule-content {
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    color: #374151;
+}
+
 /* 검색 셀렉트 박스 */
 .search-select {
 	padding: 8px 14px;

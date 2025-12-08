@@ -26,8 +26,10 @@ import com.example.lms.dto.Emp;
 import com.example.lms.dto.Notice;
 import com.example.lms.dto.NoticeFile;
 import com.example.lms.dto.ProfessorInfo;
+import com.example.lms.dto.Schedule;
 import com.example.lms.dto.Student;
 import com.example.lms.dto.StudentExcelResult;
+import com.example.lms.service.DeptService;
 import com.example.lms.service.EmpService;
 import com.example.lms.service.PublicService;
 
@@ -37,10 +39,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 public class EmpController {
+
+    private final DeptService deptService;
 	@Autowired EmpService empService;
 	@Autowired PublicService publicService;
 	@Autowired ExcelTempStore excelTempStore;
 	private final String uploadDir = "C:/lms/uploads";
+
+    EmpController(DeptService deptService) {
+        this.deptService = deptService;
+    }
 	@InitBinder("modifyProfessor")
 	public void initBinderProfessor(WebDataBinder binder) {
 		binder.registerCustomEditor(String.class, new PropertyEditorSupport() {
@@ -425,4 +433,39 @@ public class EmpController {
 		empService.updateStudent(s);
 		return "redirect:/emp/studentInfo?studentNo=" + s.getStudentNo();
 	}
+	
+	// 스케줄 추가
+	@GetMapping("/emp/addSchedule")
+	public String addSchedule(Model model) {
+		return "/emp/addSchedule";
+	}
+	@PostMapping("/emp/addSchedule")
+	public String addSchedule(@SessionAttribute("loginEmp") Emp loginEmp, Schedule s, HttpServletRequest request) {
+		s.setScheduleWriter(loginEmp.getEmpNo());
+		log.debug("schedule: " + s.toString());
+		if(empService.addSchedule(s) != 1) return "redirect:/emp/addSchedule";
+		return "redirect:/public/schedule";
+	}
+	// 스케줄 수정
+	@GetMapping("/emp/modifySchedule")
+	public String modifySchedule(Model model, int scheduleNo) {
+		Schedule schedule = publicService.getSchedule(scheduleNo);
+		Emp writer = publicService.selectEmp(schedule.getScheduleWriter());
+		model.addAttribute("writer", writer.getEmpName());
+		model.addAttribute("schedule", schedule);
+		return "/emp/modifyNotice";
+	}
+	@PostMapping("/emp/modifySchedule")
+	public String modifySchedule(Schedule s, HttpServletRequest request) {
+		if(empService.modifySchedule(s) != 1) return "redirect:/emp/modifySchedule" + s.getScheduleNo();
+		return "redirect:/public/scheduleOne?scheduleNo=" + s.getScheduleNo();
+	}
+	
+	// 스케줄 삭제
+	@PostMapping("/emp/deleteSchedule")
+	public String deleteSchedule(int scheduleNo, HttpServletRequest request) {
+		empService.removeSchedule(scheduleNo);
+		return "redirect:/public/schedule";
+	}
+	
 }

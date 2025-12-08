@@ -147,4 +147,20 @@
 	    	, student_birth = #{studentBirth}, student_img = #{studentImg}, student_state = #{studentState}
 	    WHERE student_no = #{studentNo}
 	</update>
+	
+	<!-- 스케줄 추가 -->
+	<insert id="insertSchedule" parameterType="com.example.lms.dto.Schedule">
+		INSERT INTO schedule (schedule_writer, schedule_title, schedule_contents, schedule_date) 
+		VALUES (#{scheduleWriter}, #{scheduleTitle}, #{scheduleContents}, #{scheduleData})
+	</insert>
+	<!-- 스케줄 수정 -->
+	<update id="updateSchedule" parameterType="com.example.lms.dto.Schedule">
+		UPDATE schedule
+	    SET  schedule_writer = #{scheduleWriter}, schedule_title = #{scheduleTitle}, schedule_contents = #{scheduleContents}, schedule_date = #{scheduleDate}
+	    WHERE schedule_no = #{scheduleNo}
+	</update>
+	<!-- 스케줄 삭제 -->
+	<delete id="deleteSchedule" parameterType="int">
+		DELETE FROM schedule WHERE schedule_no = #{scheduleNo}
+	</delete>
 </mapper>
