@@ -32,7 +32,6 @@
 		            <th>정원</th>
 		            <th>현재인원</th>
 		            <th>강의기간</th>
-		            <th>강의계획</th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -45,35 +44,12 @@
 		            <td>{{maxCnt}}</td>
 		            <td>{{currentCnt}}</td>
 		            <td>{{coursePeriod}}</td>
-		            <td>{{coursePlan}}</td>
-		        </tr>
+		         </tr>
 		        {{/courseList}}
 		    </tbody>
 		</table>
 		
 		<a href="{{springMacroRequestContext.request.contextPath}}/professor/addCourse" class="register-btn">강의 등록</a>
-		<!-- 페이지네이션 -->
-		<div class="pagination">
-		   <!-- 이전 페이지 -->
-			{{#pageInfo.prePage}}
-			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList?currentPage={{pageInfo.prePage}}&searchWord={{searchWord}}">이전</a>
-			{{/pageInfo.prePage}}
-			
-			<!-- 페이지 번호 -->
-			{{#pageList}}
-			    {{#isCurrent}}
-			        <strong>{{page}}</strong>
-			    {{/isCurrent}}
-			    {{^isCurrent}}
-			        <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList?currentPage={{page}}&searchWord={{searchWord}}">{{page}}</a>
-			    {{/isCurrent}}
-			{{/pageList}}
-			
-			<!-- 다음 페이지 -->
-			{{#pageInfo.nextPage}}
-			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/courseList?currentPage={{pageInfo.nextPage}}&searchWord={{searchWord}}">다음</a>
-			{{/pageInfo.nextPage}}
-		</div>
 	</div>
 	</div>
     {{ >layouts/footer }}

@@ -13,6 +13,13 @@
     <h2>강의 등록</h2>
     
     <div class="form-container">
+    
+    {{#msg}}
+	<div id="serverMsg" style="color:red; font-weight:bold; margin-bottom:10px;">
+	    {{msg}}
+	</div>
+	{{/msg}}
+    
         <form action="{{springMacroRequestContext.request.contextPath}}/professor/addCourse" method="post">
         <input type="hidden" name="empNo" value="{{loginProfessor.empNo}}">
         <div class="form-group">
@@ -64,7 +71,10 @@
                         <input type="time" class="form-input" name="courseTimes[0].courseTimeStart">
                         <input type="time" class="form-input" name="courseTimes[0].courseTimeEnd">
                         <input type="text" class="form-input" name="courseTimes[0].courseLocation" placeholder="강의실 위치">
-                        <button type="button" class="addTimeBtn">+</button>
+                        <div class="button-container">
+                            <button type="button" class="addTimeBtn">+</button>
+                            <button type="button" class="removeTimeBtn">-</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -75,32 +85,76 @@
             </div>	
         </form>
     	</div>
+    	</div>
 <script>
 $(document).ready(function() {
-    // 제출 시 유효성 검사
+
+    // 서버 메시지 처리
+    const serverMsg = $("#serverMsg").text().trim();
+    if (serverMsg) alert(serverMsg);
+
+    // 폼 메시지 출력용 영역 생성 (HTML에 추가)
+    if ($("#formMsg").length === 0) {
+        $("form").prepend('<div id="formMsg" style="color:red; font-weight:bold; margin-bottom:10px;"></div>');
+    }
+
+    // 폼 제출 유효성 검사
     $("form").on("submit", function(e) {
-	    const startDateVal = $("#startDate").val();
-	    const endDateVal = $("#endDate").val();
-	
-	    if (!startDateVal || !endDateVal) {
-	        alert("강의 시작일과 종료일을 모두 입력해주세요.");
-	        e.preventDefault();
-	        return false;
-	    }
-	
-	    const startDate = new Date(startDateVal);
-	    const endDate = new Date(endDateVal);
-	
-	    if (startDate > endDate) {
-	        alert("강의 시작일이 종료일보다 클 수 없습니다.");
-	        e.preventDefault();
-	        return false;
-	    }
-	
-	    // 서버로 보낼 hidden input에 합치기
-	    $("#coursePeriod").val(`${startDateVal} ~ ${endDateVal}`);
-	});
-    
+        let errorMsg = "";
+        $("#formMsg").text("");
+
+        // 강의명
+        const courseName = $("input[name='course.courseName']").val().trim();
+        if (!courseName) errorMsg = "강의명을 입력하세요.";
+
+        // 정원
+        const maxCnt = $("#courseMaxCnt").val();
+        if (!errorMsg && (!maxCnt || maxCnt < 1)) errorMsg = "정원을 1명 이상 입력하세요.";
+
+        // 시작/종료일
+        const startDateVal = $("#startDate").val();
+        const endDateVal = $("#endDate").val();
+        if (!errorMsg && (!startDateVal || !endDateVal)) errorMsg = "강의 시작일과 종료일을 모두 입력하세요.";
+        else if (!errorMsg) {
+            const startDate = new Date(startDateVal);
+            const endDate = new Date(endDateVal);
+            if (startDate > endDate) errorMsg = "강의 시작일이 종료일보다 클 수 없습니다.";
+            else $("#coursePeriod").val(`${startDateVal} ~ ${endDateVal}`);
+        }
+
+        // 강의계획
+        const plan = $("textarea[name='course.coursePlan']").val().trim();
+        if (!errorMsg && !plan) errorMsg = "강의 계획을 입력하세요.";
+
+        // 강의시간
+        if (!errorMsg) {
+            $(".courseTimeRow").each(function(index) {
+                const day = $(this).find("select").val();
+                const start = $(this).find("input[name$='courseTimeStart']").val();
+                const end = $(this).find("input[name$='courseTimeEnd']").val();
+                const location = $(this).find("input[name$='courseLocation']").val().trim();
+
+                if (!day || !start || !end || !location) {
+                    errorMsg = `${index + 1}번째 강의시간 정보를 모두 입력하세요.`;
+                    return false;
+                }
+                if (start >= end) {
+                    errorMsg = `${index + 1}번째 강의 종료시간은 시작시간보다 커야 합니다.`;
+                    return false;
+                }
+            });
+        }
+
+        if (errorMsg) {
+            e.preventDefault();
+            $("#formMsg").text(errorMsg);
+            alert(errorMsg);
+            return false;
+        }
+
+        return true;
+    });
+
     // 강의시간 행 추가
     $(document).on('click', '.addTimeBtn', function() {
         const index = $('#courseTimeContainer .courseTimeRow').length;
@@ -113,8 +167,17 @@ $(document).ready(function() {
         $clone.find('input').val('');
         $('#courseTimeContainer').append($clone);
     });
+
+    // 강의시간 행 삭제
+    $(document).on('click', '.removeTimeBtn', function() {
+        if ($('#courseTimeContainer .courseTimeRow').length > 1) {
+            $(this).closest('.courseTimeRow').remove();
+        } else {
+            alert("최소 한 개의 강의시간은 필요합니다.");
+        }
+    });
+
 });
 </script>
-
 </body>
 </html>

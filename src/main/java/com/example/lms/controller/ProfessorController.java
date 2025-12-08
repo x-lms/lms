@@ -396,23 +396,31 @@ public class ProfessorController {
 	
 	// 출석내역목록
 	@GetMapping("/professor/attendanceHistoryList")
-	public String attendanceHistoryList(HttpSession session, Model model, @RequestParam(defaultValue = "1") int currentPage, @RequestParam(required=false) Integer searchWord) {
-		Emp loginProfessor = getLoginProfessor(session);
-		
-		int rowPerPage = 10; 
+	public String attendanceHistoryList(
+	        HttpSession session, 
+	        Model model,
+	        @RequestParam(defaultValue = "1") int currentPage, 
+	        @RequestParam(required = false) String studentName, 
+	        @RequestParam(required = false) Integer courseNo) {
+
+	    Emp loginProfessor = getLoginProfessor(session);
+
+	    int rowPerPage = 10; 
 	    int pageBlock = 10; 
-		
+
+	    // Map에 null도 넣어줘야 MyBatis에서 key 오류 안 남
 	    Map<String, Object> param = new HashMap<>();
-	    param.put("attNo", searchWord);                   
+	    param.put("courseNo", courseNo);
+	    param.put("studentName", (studentName != null && !studentName.isEmpty()) ? studentName.trim() : null);
 	    param.put("beginRow", (currentPage - 1) * rowPerPage);
 	    param.put("rowPerPage", rowPerPage);
-	    
-		List<AttendanceHistory> historyList = professorService.attendanceHistoryList(param);
-		Integer  totalCount = professorService.getHistoryCount(param);
-		int total = (totalCount != null) ? totalCount : 0;
-		
+
+	    List<AttendanceHistory> historyList = professorService.attendanceHistoryList(param);
+	    Integer totalCount = professorService.getHistoryCount(param);
+	    int total = (totalCount != null) ? totalCount : 0;
+
 	    PageInfo pageInfo = getPageInfo(total, currentPage, rowPerPage, pageBlock);
-	    		
+
 	    List<Map<String,Object>> pageListWithCurrent = new ArrayList<>();
 	    for(int p : pageInfo.getPageList()) {
 	        Map<String,Object> m = new HashMap<>();
@@ -420,20 +428,15 @@ public class ProfessorController {
 	        m.put("isCurrent", p == pageInfo.getCurrentPage());
 	        pageListWithCurrent.add(m);
 	    }
-	    
-	 
-	    
+
 	    model.addAttribute("historyList", historyList);
-	    model.addAttribute("searchWord", (searchWord != null) ? searchWord : "");
+	    model.addAttribute("studentName", studentName != null ? studentName : "");
+	    model.addAttribute("courseNo", courseNo != null ? courseNo : "");
 	    model.addAttribute("pageInfo", pageInfo);
 	    model.addAttribute("pageList", pageListWithCurrent);
-	    
-	    log.debug("historyList : " + historyList);
-	   	    
-		return "professor/attendanceHistoryList";
+
+	    return "professor/attendanceHistoryList";
 	}
-	
-	
 	
 	// 출석체크 폼
 	@GetMapping("/professor/addAttendance")
@@ -450,6 +453,7 @@ public class ProfessorController {
 	        student.setAlreadyChecked(alreadyChecked);
 	    }
 	    
+	    log.debug("studentList : " + studentList);
 	    model.addAttribute("studentList", studentList);
 	    model.addAttribute("courseNo", courseNo);
 
@@ -604,44 +608,47 @@ public class ProfessorController {
 
 	    Course updatedCourse = cwt.getNewCourse();
 
-	    // PK가 폼에서 안 넘어왔으면, 기존 courseNo 세팅
+	    // PK가 없으면 기존 값 세팅
 	    if (updatedCourse.getCourseNo() == 0 && cwt.getCourse() != null) {
 	        updatedCourse.setCourseNo(cwt.getCourse().getCourseNo());
 	    }
 
-	    // CoursePeriod 문자열("YYYY-MM-DD ~ YYYY-MM-DD") -> LocalDate로 변환
+	    // coursePeriod -> LocalDate 변환 안전 처리
 	    LocalDate courseStartDate = null;
-	    LocalDate courseEndDate   = null;
+	    LocalDate courseEndDate = null;
 	    if (updatedCourse.getCoursePeriod() != null && updatedCourse.getCoursePeriod().contains("~")) {
 	        String[] periodParts = updatedCourse.getCoursePeriod().split("~");
-	        courseStartDate = LocalDate.parse(periodParts[0].trim());
-	        courseEndDate   = LocalDate.parse(periodParts[1].trim());
+	        if (periodParts.length == 2) {
+	            String startStr = periodParts[0].trim();
+	            String endStr = periodParts[1].trim();
+	            if (!startStr.isBlank() && !endStr.isBlank()) {
+	                courseStartDate = LocalDate.parse(startStr);
+	                courseEndDate = LocalDate.parse(endStr);
+	            }
+	        }
 	    }
-	    
-	    // 기존 강의시간 조회 (자기 강의는 제외)
+
+	    // 기존 강의시간 조회 (자기 강의 제외)
 	    List<CourseTime> existingTimes = professorService.getCourseTimesByEmp(loginProfessor.getEmpNo())
 	        .stream()
-	        .filter(ct -> ct.getCourseNo() != updatedCourse.getCourseNo()) // 자기 강의 제외
+	        .filter(ct -> ct.getCourseNo() != updatedCourse.getCourseNo())
 	        .collect(Collectors.toList());
 
-	    // 새 CourseTime에 강의 기간 세팅
+	    // 새 CourseTime에 기간 세팅
 	    for (CourseTime ct : cwt.getCourseTimes()) {
 	        ct.setCourseStartDate(courseStartDate);
 	        ct.setCourseEndDate(courseEndDate);
-	    }	
-	    
+	    }
+
 	    // 시간 겹침 체크
 	    CourseTime overlap = checkCourseTimeOverlap(cwt.getCourseTimes(), existingTimes);
 	    if (overlap != null) {
-	        System.out.println("겹침 발견: " + overlap.getCoursedate() + " " + overlap.getCourseTimeStart() + "-" + overlap.getCourseTimeEnd());
 	        redirectAttrs.addFlashAttribute("msg",
 	            "강의시간이 기존 강의와 겹칩니다: "
 	            + overlap.getCoursedate() + " "
 	            + overlap.getCourseTimeStart() + "-" 
 	            + overlap.getCourseTimeEnd());
 	        return "redirect:/professor/modifyCourse?courseNo=" + updatedCourse.getCourseNo();
-	    } else {
-	        System.out.println("겹침 없음");
 	    }
 	    
 	    // 강의 업데이트
@@ -678,117 +685,83 @@ public class ProfessorController {
 	// 강의 등록 액션
 	@PostMapping("/professor/addCourse")
 	public String addCourse(HttpSession session, CourseWithTime cwt, RedirectAttributes redirectAttrs) {	
-		Emp loginProfessor = getLoginProfessor(session);
-		
-		// Course에 교수 번호 세팅
+	    Emp loginProfessor = getLoginProfessor(session);
+
 	    cwt.getCourse().setEmpNo(loginProfessor.getEmpNo());
-		
-	    // 기존 강의시간 조회 (같은 교수)
-	    List<CourseTime> existingTimes = professorService.getCourseTimesByEmp(loginProfessor.getEmpNo());
 	    
-	    // 겹치는 시간 체크
-	    CourseTime overlap = checkCourseTimeOverlap(cwt.getCourseTimes(), existingTimes);
+	    List<CourseTime> existingTimes =
+	            professorService.getCourseTimesByEmp(loginProfessor.getEmpNo());
+
+	    CourseTime overlap =
+	            checkCourseTimeOverlap(cwt.getCourseTimes(), existingTimes);
+
 	    if (overlap != null) {
 	        redirectAttrs.addFlashAttribute("msg",
 	            "강의시간이 기존 강의와 겹칩니다: "
 	            + overlap.getCoursedate() + " "
-	            + overlap.getCourseTimeStart() + "-" 
+	            + overlap.getCourseTimeStart() + " ~ "
 	            + overlap.getCourseTimeEnd());
-	        return "redirect:/professor/modifyCourse?courseNo=" + cwt.getCourse().getCourseNo();
+
+	        return "redirect:/professor/addCourse"; //✅ 등록 완료
 	    }
-	    
-	    // 1. Course 등록 → courseNo 자동 생성됨
+
 	    professorService.insertCourse(cwt.getCourse());
-	    // 2. CourseTime 여러 개 등록 (FK 세팅 포함)
 	    professorService.insertCourseWithTimes(cwt);
-		
-		return "redirect:/professor/courseList?currentPage=1";
+
+	    return "redirect:/professor/courseList?currentPage=1";
 	}
+
 	
-	// 겹침 체크 함수 (요일 + 시간 + 기간)
+	// 요일 + 시간 겹침 체크 함수
 	private CourseTime checkCourseTimeOverlap(List<CourseTime> newTimes, List<CourseTime> existingTimes) {
 	    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
 	    for (CourseTime newTime : newTimes) {
-	        // 시간 문자열 "09:00 ~ 10:35"일 경우 split 처리
-	        String startStr = newTime.getCourseTimeStart().contains("~") ?
-	                newTime.getCourseTimeStart().split("~")[0].trim() :
-	                newTime.getCourseTimeStart();
-	        String endStr = newTime.getCourseTimeEnd().contains("~") ?
-	                newTime.getCourseTimeEnd().split("~")[1].trim() :
-	                newTime.getCourseTimeEnd();
+
+	        // "09:00 ~ 10:35" 형식 대비
+	        String startStr = newTime.getCourseTimeStart().contains("~")
+	                ? newTime.getCourseTimeStart().split("~")[0].trim()
+	                : newTime.getCourseTimeStart();
+
+	        String endStr = newTime.getCourseTimeEnd().contains("~")
+	                ? newTime.getCourseTimeEnd().split("~")[1].trim()
+	                : newTime.getCourseTimeEnd();
 
 	        LocalTime newStart = LocalTime.parse(startStr, timeFormatter);
 	        LocalTime newEnd   = LocalTime.parse(endStr, timeFormatter);
 
-	        LocalDate newStartDate = newTime.getCourseStartDate();
-	        LocalDate newEndDate   = newTime.getCourseEndDate();
-
-	        if (newStartDate == null || newEndDate == null) continue; // NPE 방지
-
 	        for (CourseTime existTime : existingTimes) {
+
 	            LocalTime existStart = LocalTime.parse(existTime.getCourseTimeStart(), timeFormatter);
 	            LocalTime existEnd   = LocalTime.parse(existTime.getCourseTimeEnd(), timeFormatter);
 
-	            LocalDate existStartDate = existTime.getCourseStartDate();
-	            LocalDate existEndDate   = existTime.getCourseEndDate();
+	            // ✅ 1. 요일 겹침 체크
+	            if (!newTime.getCoursedate().equals(existTime.getCoursedate())) {
+	                continue;
+	            }
 
-	            if (existStartDate == null || existEndDate == null) continue;
-
-	            // 1. 요일 체크
-	            if (!newTime.getCoursedate().equals(existTime.getCoursedate())) continue;
-
-	            // 2. 기간 겹침 체크
-	            if (newEndDate.isBefore(existStartDate) || newStartDate.isAfter(existEndDate)) continue;
-
-	            // 3. 시간 겹침 체크
-	            if (timesOverlap(newStart, newEnd, existStart, existEnd)) {
-	                return newTime; // 겹치는 새 강의시간 반환
+	            // ✅ 2. 시간 겹침 체크 (함수 합쳐서 바로 처리)
+	            if (newStart.isBefore(existEnd) && existStart.isBefore(newEnd)) {
+	                return newTime; // ✅ 요일 + 시간 겹침 발생
 	            }
 	        }
 	    }
-
-	    return null; // 겹치는 시간 없음
-	}
-
-	// 시간 겹침 확인 함수 (끝나는 시간 직전까지 겹치면 true)
-	private boolean timesOverlap(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
-	    // 완전히 겹치지 않는 경우만 false
-	    return start1.isBefore(end2) && start2.isBefore(end1);
+	    return null; // ✅ 겹침 없음
 	}
 	
 	// 강의리스트
 	@GetMapping("/professor/courseList")
-	public String courseList(HttpSession session, Model model, @RequestParam(defaultValue = "1") int currentPage, @RequestParam(defaultValue = "") String searchWord) {
+	public String courseList(HttpSession session, Model model, @RequestParam(defaultValue = "") String searchWord) {
 		Emp loginProfessor = getLoginProfessor(session);
 		
-		int rowPerPage = 10;       // 한 페이지에 표시할 강의 수
-	    int pageBlock = 10;        // 한 블록에 표시할 페이지 수
-
 	    // 강의 리스트
-	    List<Course> courseList = professorService.courseListByPage(loginProfessor.getEmpNo(), currentPage, searchWord);
+	    List<Course> courseList = professorService.courseListByPage(loginProfessor.getEmpNo(), searchWord);
 
-	    // 전체 강의 수
-	    int totalCount = professorService.getCourseCount(loginProfessor.getEmpNo(), searchWord);
-
-	    // PageInfo 생성
-	    PageInfo pageInfo = getPageInfo(totalCount, currentPage, rowPerPage, pageBlock);
-
-	    // Mustache에서 편하게 쓰기 위해 pageList에 isCurrent 표시
-	    List<Map<String,Object>> pageListWithCurrent = new ArrayList<>();
-	    for(int p : pageInfo.getPageList()) {
-	        Map<String,Object> m = new HashMap<>();
-	        m.put("page", p);
-	        m.put("isCurrent", p == pageInfo.getCurrentPage());
-	        pageListWithCurrent.add(m);
-	    }
 	    log.debug("courseList : " + courseList);
 
 	    model.addAttribute("courseList", courseList);
 	    model.addAttribute("searchWord", searchWord);
-	    model.addAttribute("pageInfo", pageInfo);
-	    model.addAttribute("pageList", pageListWithCurrent);
-		
+	  		
 		return "professor/courseList";
 	}
 	
@@ -866,7 +839,7 @@ public class ProfessorController {
 		// 1. 강의 시간표
 	    List<TimetableCell> timetable = professorService.getFullTimetable(loginProfessor.getEmpNo());
 	    model.addAttribute("timetable", timetable);
-
+	    
 	    // 2. 학사 일정 / 달력
 	    // List<Map<String, String>> schedule = professorService.getProfessorSchedule();
 	    // model.addAttribute("schedule", schedule);
@@ -889,6 +862,12 @@ public class ProfessorController {
 	    int lastPage = (int) Math.ceil((double) totalCount / rowPerPage);
 	    pageInfo.setLastPage(lastPage);
 
+	    // currentPage가 lastPage를 초과하면 lastPage로 제한
+	    if(currentPage > lastPage) {
+	        currentPage = lastPage > 0 ? lastPage : 1; // lastPage가 0이면 1로 설정
+	    }
+	    pageInfo.setCurrentPage(currentPage);
+	    
 	    int startPage = ((currentPage - 1) / pageBlock) * pageBlock + 1;
 	    int endPage = startPage + pageBlock - 1;
 	    if(endPage > lastPage) endPage = lastPage;

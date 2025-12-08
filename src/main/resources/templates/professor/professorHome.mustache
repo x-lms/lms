@@ -34,16 +34,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{#timetable}}
-                    <tr>
-                    	<td>{{period}}</td>
-                        <td>{{mon}}</td>
-                        <td>{{tue}}</td>
-                        <td>{{wed}}</td>
-                        <td>{{thu}}</td>
-                        <td>{{fri}}</td>
-                    </tr>
-                    {{/timetable}}
+                     {{#timetable}}
+            <tr>
+                <td>{{period}}</td>
+                <td>
+                    {{#mon}}
+                    <div class="course">{{.}}</div>
+                    {{/mon}}
+                </td>
+                <td>
+				    {{#tue}}
+				    <div class="course">{{.}}</div>
+				    {{/tue}}
+				</td>
+				<td>
+				    {{#wed}}
+				    <div class="course">{{.}}</div>
+				    {{/wed}}
+				</td>
+				<td>
+				    {{#thu}}
+				    <div class="course">{{.}}</div>
+				    {{/thu}}
+				</td>
+				<td>
+				    {{#fri}}
+				    <div class="course">{{.}}</div>
+				    {{/fri}}
+				</td>
+            </tr>
+            {{/timetable}}
                 </tbody>
             </table>
         </section>

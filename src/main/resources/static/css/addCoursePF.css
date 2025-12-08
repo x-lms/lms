@@ -40,7 +40,8 @@
 /* 입력 필드 공통 */
 .form-input,
 .form-textarea,
-select.form-input {
+select.form-input,
+select {
     width: 100%;
     padding: 10px 14px;
     border: 1px solid #e5e7eb;
@@ -55,9 +56,26 @@ select.form-input {
 
 .form-input:focus,
 .form-textarea:focus,
-select.form-input:focus {
+select.form-input:focus,
+select:focus {
     border-color: #1e40af;
     box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+/* select 박스 커스텀 화살표 */
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234b5563' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+select option {
+    padding: 10px;
+    background: white;
+    color: #4b5563;
 }
 
 .form-input::placeholder,
@@ -94,7 +112,7 @@ select.form-input:focus {
 /* 강의시간 행 */
 .courseTimeRow {
     display: grid;
-    grid-template-columns: 100px 1fr 1fr 2fr auto;
+    grid-template-columns: 100px 1fr 1fr 2fr 76px;
     gap: 10px;
     margin-bottom: 10px;
     align-items: center;
@@ -102,6 +120,13 @@ select.form-input:focus {
 
 .courseTimeRow:last-child {
     margin-bottom: 0;
+}
+
+/* 버튼 컨테이너 */
+.courseTimeRow .button-container {
+    display: flex;
+    gap: 4px;
+    align-items: center;
 }
 
 /* 시간 추가 버튼 */
@@ -123,6 +148,33 @@ select.form-input:focus {
 
 .addTimeBtn:hover {
     background: #1d4ed8;
+    transform: scale(1.05);
+}
+
+/* 삭제 버튼 - 기본적으로 숨김 */
+.removeTimeBtn {
+    width: 36px;
+    height: 36px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 마지막 행의 삭제 버튼만 표시 */
+.courseTimeRow:last-child .removeTimeBtn {
+    display: flex;
+}
+
+.removeTimeBtn:hover {
+    background: #b91c1c;
     transform: scale(1.05);
 }
 
@@ -225,8 +277,14 @@ select.form-input:focus {
         gap: 8px;
     }
 
-    .addTimeBtn {
+    .courseTimeRow .button-container {
         width: 100%;
+        gap: 8px;
+    }
+
+    .addTimeBtn,
+    .removeTimeBtn {
+        flex: 1;
         height: 40px;
     }
 

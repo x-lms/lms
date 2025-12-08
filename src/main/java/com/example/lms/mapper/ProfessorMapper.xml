@@ -238,36 +238,48 @@
 	
 	<!-- 출석내역목록 -->
 	<select id="attendanceHistoryList" parameterType="map" resultType="com.example.lms.dto.AttendanceHistory">
-		SELECT
-		  	history_no historyNo,
-	        att_no attNo,
-	        course_no courseNo,
-	        state_before stateBefore,
-	        COALESCE(state_after, '-') stateAfter,
-	        COALESCE(history_comment, '') historyComment,
-	       	history_file historyFile,
-	       	history_file_original historyFileOriginal,
-	        createdate
-		FROM attendance_history
-		<where>
-	        <if test="attNo != null">
-	            att_no = #{attNo}
+	    SELECT
+	        h.history_no historyNo,
+	        h.att_no attNo,
+	        a.course_no courseNo,
+	        s.student_no studentNo,
+	        s.student_name studentName,
+	        h.state_before stateBefore,
+	        COALESCE(h.state_after, '-') stateAfter,
+	        COALESCE(h.history_comment, '') historyComment,
+	        h.history_file historyFile,
+	        h.history_file_original historyFileOriginal,
+	        h.createdate
+	    FROM attendance_history h
+	    JOIN attendance a ON h.att_no = a.att_no
+	    JOIN student s ON a.student_no = s.student_no
+	    <where>
+	        <if test="courseNo != null">
+	            a.course_no = #{courseNo}
+	        </if>
+	        <if test="studentName != null and studentName != ''">
+	            s.student_name LIKE CONCAT('%', #{studentName}, '%')
 	        </if>
 	    </where>
-		order by att_no desc
-		limit #{beginRow}, #{rowPerPage}
+	    ORDER BY h.history_no DESC
+	    LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<select id="getHistoryCount" parameterType="map" resultType="int">
-		select count(*)
-		from attendance_history
-		<where>
-	        <if test="attNo != null">
-	            att_no = #{attNo}
+	    SELECT COUNT(*)
+	    FROM attendance_history h
+	    JOIN attendance a ON h.att_no = a.att_no
+	    JOIN student s ON a.student_no = s.student_no
+	    <where>
+	        <if test="courseNo != null">
+	            a.course_no = #{courseNo}
+	        </if>
+	        <if test="studentName != null and studentName != ''">
+	            s.student_name LIKE CONCAT('%', #{studentName}, '%')
 	        </if>
 	    </where>
 	</select>
-	
+
 	<!-- 출석체크 -->
 	<insert id="insertAttendance" parameterType="com.example.lms.dto.Attendance" useGeneratedKeys="true" keyProperty="attNo">
 		INSERT INTO attendance(student_no, course_no, emp_no, att_date, att_state)
@@ -475,7 +487,6 @@
 			 and c.course_name like concat('%', #{searchWord},'%')
 			</if>
 		order by c.course_no desc
-		limit #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<select id="getCourseCount" parameterType="Map" resultType="int">

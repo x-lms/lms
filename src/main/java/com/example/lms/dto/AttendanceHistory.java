@@ -16,4 +16,7 @@ public class AttendanceHistory {
 	private String historyFileOriginal;
 	private MultipartFile newFile; 
 	private String createdate;
+	
+	 private int studentNo;   	 // 추가
+	 private String studentName; // 추가
 }

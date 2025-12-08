@@ -343,13 +343,9 @@ public class ProfessorService {
 	}
 		
 	// 강의리스트
-	public List<Course> courseListByPage(int empNo, int currentPage, String searchWord) {
-		int rowPerPage = 10;
-		int beginRow = (currentPage - 1) * rowPerPage;
+	public List<Course> courseListByPage(int empNo, String searchWord) {
 		Map<String, Object> m = new HashMap<>();
 		m.put("empNo", empNo);
-		m.put("rowPerPage", rowPerPage);
-		m.put("beginRow", beginRow);
 		m.put("searchWord", searchWord);
 		List<Course> courseList = professorMapper.courseListByPage(m);
 		log.debug("courseList : {}", courseList);
@@ -377,9 +373,9 @@ public class ProfessorService {
 	
 	// 홈 화면
 	public List<TimetableCell> getFullTimetable(int empNo) {
-		List<CourseTime> courseTimes  = professorMapper.selectAllCourseTimes(empNo);
-		
-		// 1~9교시 기본 셀 생성
+	    List<CourseTime> courseTimes  = professorMapper.selectAllCourseTimes(empNo);
+
+	    // 1~9교시 기본 셀 생성
 	    List<TimetableCell> timetable = new ArrayList<>();
 	    for (int i = 1; i <= 9; i++) {
 	        TimetableCell cell = new TimetableCell();
@@ -387,23 +383,28 @@ public class ProfessorService {
 	        timetable.add(cell);
 	    }
 
-	    // 각 CourseTime을 맞는 교시에 채우기
+	    // 각 CourseTime을 맞는 교시에 채우기 (누적)
 	    for (CourseTime ct : courseTimes) {
 	        int period = getPeriodFromTime(ct.getCourseTimeStart());
 	        if (period <= 0 || period > 9) continue;
 
 	        TimetableCell cell = timetable.get(period - 1); // 0-based
+	        
+	        // 강의명 + 강의실
+	        String courseInfo = ct.getCourseName() + " (" + ct.getCourseLocation() + ")";
+
 	        switch (ct.getCoursedate()) {
-	            case "월": cell.setMon(ct.getCourseName()); break;
-	            case "화": cell.setTue(ct.getCourseName()); break;
-	            case "수": cell.setWed(ct.getCourseName()); break;
-	            case "목": cell.setThu(ct.getCourseName()); break;
-	            case "금": cell.setFri(ct.getCourseName()); break;
+		        case "월": cell.getMon().add(courseInfo); break;
+		        case "화": cell.getTue().add(courseInfo); break;
+		        case "수": cell.getWed().add(courseInfo); break;
+		        case "목": cell.getThu().add(courseInfo); break;
+		        case "금": cell.getFri().add(courseInfo); break;
 	        }
 	    }
-		
-		return timetable;
+	    
+	    return timetable;
 	}
+
 
 	 // 시간별 교시 매핑
     private int getPeriodFromTime(String startTime) {

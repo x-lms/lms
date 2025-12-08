@@ -176,7 +176,7 @@ public class StudentService {
             timetable.add(cell);
         }
 
-        // 각 강의의 courseTimes를 timetable에 매핑
+     // 각 강의의 courseTimes를 timetable에 매핑
         for (StudentCourse course : courses) {
             for (CourseTime ct : course.getCourseTimes()) {
                 int period = getPeriodFromTime(ct.getCourseTimeStart());
@@ -184,12 +184,13 @@ public class StudentService {
 
                 TimetableCell cell = timetable.get(period - 1);
                 String courseInfo = course.getCourseName() + " (" + course.getCourseLocation() + ")";
+
                 switch (ct.getCoursedate()) {
-                    case "월": cell.setMon(courseInfo); break;
-                    case "화": cell.setTue(courseInfo); break;
-                    case "수": cell.setWed(courseInfo); break;
-                    case "목": cell.setThu(courseInfo); break;
-                    case "금": cell.setFri(courseInfo); break;
+                    case "월": cell.getMon().add(courseInfo); break;
+                    case "화": cell.getTue().add(courseInfo); break;
+                    case "수": cell.getWed().add(courseInfo); break;
+                    case "목": cell.getThu().add(courseInfo); break;
+                    case "금": cell.getFri().add(courseInfo); break;
                 }
             }
         }

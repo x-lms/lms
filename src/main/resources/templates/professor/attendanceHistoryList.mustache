@@ -16,7 +16,7 @@
 	    <h2>출석내역목록</h2>
 		
 		<form action="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList" method="get">
-		    <input type="text" name="searchWord" value="{{searchWord}}" placeholder="출석번호 검색">
+		    <input type="text" name="studentName"  placeholder="학생이름 검색">
 		    <button type="submit">검색</button>
 		</form>
 		
@@ -26,6 +26,7 @@
                 <tr>
                     <th>출석번호</th>
                     <th>강의번호</th>
+                    <th>학생이름</th>
                     <th>이전 상태</th>
                     <th>변경 상태</th>
                     <th>사유</th>
@@ -39,6 +40,7 @@
                 <tr>
                     <td>{{attNo}}<input type="hidden" name="attNo" value="{{attNo}}"></td>
                     <td>{{courseNo}}<input type="hidden" name="courseNo" value="{{courseNo}}"></td>
+                    <td>{{studentName}}<input type="hidden" name="studentName" value="{{studentName}}"></td>
                     <td>{{stateBefore}}<input type="hidden" name="stateBefore" value="{{stateBefore}}"></td>
                     <td>{{stateAfter}}</td>
                     <td>{{historyComment}}</td>
@@ -60,54 +62,28 @@
         </table>
         <!-- 페이지네이션 -->
 		<div class="pagination">
-		   <!-- 이전 페이지 -->
-			{{#pageInfo.prePage}}
-			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{pageInfo.prePage}}&searchWord={{searchWord}}">이전</a>
-			{{/pageInfo.prePage}}
-			
-			<!-- 페이지 번호 -->
-			{{#pageList}}
-			    {{#isCurrent}}
-			        <strong>{{page}}</strong>
-			    {{/isCurrent}}
-			    {{^isCurrent}}
-			        <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{page}}&searchWord={{searchWord}}">{{page}}</a>
-			    {{/isCurrent}}
-			{{/pageList}}
-			
-			<!-- 이전 페이지 -->
-			{{#pageInfo.prePage}}
-			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{pageInfo.prePage}}&searchWord={{searchWord}}">이전</a>
-			{{/pageInfo.prePage}}
-			
-			<!-- 다음 페이지 -->
-			{{#pageInfo.nextPage}}
-			    <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{pageInfo.nextPage}}&searchWord={{searchWord}}">다음</a>
-			{{/pageInfo.nextPage}}
+		    <!-- 이전 페이지 -->
+		    {{#pageInfo.prePage}}
+		        <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{pageInfo.prePage}}&studentName={{studentName}}&courseNo={{courseNo}}">이전</a>
+		    {{/pageInfo.prePage}}
+		    
+		    <!-- 페이지 번호 -->
+		    {{#pageList}}
+		        {{#isCurrent}}
+		            <strong>{{page}}</strong>
+		        {{/isCurrent}}
+		        {{^isCurrent}}
+		            <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{page}}&studentName={{studentName}}&courseNo={{courseNo}}">{{page}}</a>
+		        {{/isCurrent}}
+		    {{/pageList}}
+		    
+		    <!-- 다음 페이지 -->
+		    {{#pageInfo.nextPage}}
+		        <a href="{{springMacroRequestContext.request.contextPath}}/professor/attendanceHistoryList?currentPage={{pageInfo.nextPage}}&studentName={{studentName}}&courseNo={{courseNo}}">다음</a>
+		    {{/pageInfo.nextPage}}
 		</div>
         </div>
     </div>
     {{ >layouts/footer }}
-    <script>
-		$(document).ready(function() {
-		    // 입력 시 숫자 외 제거
-		    $("input[name='searchWord']").on("input", function() {
-		        var val = $(this).val();
-		        // 숫자만 남기기
-		        val = val.replace(/[^0-9]/g, "");
-		        $(this).val(val);
-		    });
-		
-		    // 선택적으로 엔터 제출 방지 및 알림
-		    $("form").on("submit", function() {
-		        var val = $("input[name='searchWord']").val();
-		        if(val && !/^\d+$/.test(val)) {
-		            alert("숫자만 입력 가능합니다.");
-		            return false; // 제출 막기
-		        }
-		        return true; // 숫자이면 제출 허용
-		    });
-		});
-</script>
 </body>
 </html>
