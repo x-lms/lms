@@ -331,19 +331,23 @@
 
 <select id="selectQuestionsByStudent" resultType="com.example.lms.dto.Question">
     SELECT 
-	    question_no AS questionNo,
-	    student_no AS studentNo,
-	    emp_no AS emp_no,
-	    course_no AS courseNo,
-	    question_title AS questionTitle,
-	    question_contents AS questionContents,
-	    answer_status AS answerStatus,
-	    answer_contents AS answerContents,
-	    createdate
-	FROM question
-	WHERE student_no = #{studentNo}
-	ORDER BY createdate DESC
+        q.question_no        AS questionNo,
+        q.student_no         AS studentNo,
+        q.emp_no             AS empNo,
+        q.course_no          AS courseNo,
+        q.question_title     AS questionTitle,
+        q.question_contents  AS questionContents,
+        q.answer_status      AS answerStatus,
+        q.answer_contents    AS answerContents,
+        q.createdate         AS createdate,
+        c.course_name        AS courseName   
+    FROM question q
+    JOIN course c
+      ON q.course_no = c.course_no
+    WHERE q.student_no = #{studentNo}
+    ORDER BY q.createdate DESC
 </select>
+
 
 
 <!-- 강의명 가져오기 -->
