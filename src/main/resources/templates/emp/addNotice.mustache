@@ -56,9 +56,9 @@
             </div>
         </div>
     </div>
-    {{>layouts/footer}}
+	{{>layouts/footer}}
 
-    <script>
+	<script>
 		// 파일 업로드 처리
 		$('#noticeFile').on('change', function(e) {
 		    const files = e.target.files;
@@ -86,9 +86,9 @@
 		let fileLabel = $('.file-label');
 		
 		fileLabel.on('dragover', function(e) {
-		    e.preventDefault();
-		    e.stopPropagation();
-		    $(this).addClass('drag-over');
+			e.preventDefault();
+			e.stopPropagation();
+			$(this).addClass('drag-over');
 		});
 		
 		fileLabel.on('dragleave', function(e) {
@@ -98,13 +98,28 @@
 		});
 		
 		fileLabel.on('drop', function(e) {
-		    e.preventDefault();
-		    e.stopPropagation();
-		    $(this).removeClass('drag-over');
-		    
-		    const files = e.originalEvent.dataTransfer.files;
-		    $('#noticeFile')[0].files = files;
-		    displayFiles(files);
+			e.preventDefault();
+			e.stopPropagation();
+			$(this).removeClass('drag-over');
+			
+			const newFiles = e.originalEvent.dataTransfer.files;
+			
+			// 기존파일 + 새파일 합치기
+			let dt = new DataTransfer();
+			
+			// 기존 파일 유지
+			const currentFiles = $('#noticeFile')[0].files;
+			for(let i = 0; i < currentFiles.length; i++) {
+				dt.items.add(currentFiles[i]);
+			}
+			
+			// 새로 드롭된 파일 추가
+			for(let i = 0; i < newFiles.length; i++) {
+				dt.items.add(newFiles[i]);
+			}
+			// input에 다시 넣기
+			$('#noticeFile')[0].files = dt.files;
+			displayFiles($('#noticeFile')[0].files);
 		});
     </script>
 </body>
