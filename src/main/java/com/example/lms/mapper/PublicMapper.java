@@ -12,6 +12,14 @@ public interface PublicMapper {
 	Emp selectLoginProfessor(LoginUser loginUser);
 	Emp selectLoginEmp(LoginUser loginUser);
 	
+	// 아이디 비밀번호 찾기
+	String findStudentId(Student std);
+	String findEmpId(Emp e);
+	int findStudentPw(Student std);
+	int findEmpPw(Emp e);
+	int changeStudentPw(Student std);
+	int changeEmpPw(Emp e);
+	
 	// 공지사항 리스트
 	List<Notice> selectNoticeList(SearchList sl);
 	int countNotice(String searchWord);

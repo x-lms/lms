@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>비밀번호찾기 - 학습관리시스템</title>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<link rel="stylesheet" href="{{springMacroRequestContext.request.contextPath}}/css/common.css">
+	<link rel="stylesheet" href="{{springMacroRequestContext.request.contextPath}}/css/stylejm.css">
+</head>
+<body class="login-wrapper">
+	<header class="login-header">
+		<div class="logo">LMS</div>
+		<div>
+			<h1>한국대학교 학습관리시스템</h1>
+			<p>Hankuk University Learning Management System</p>
+		</div>
+	</header>
+
+	<main class="login-content">
+		<div class="login-container">
+			<div class="login-title">
+				<h2>비밀번호 찾기</h2>
+				<p>가입 시 입력한 정보로 비밀번호를 재설정할 수 있습니다</p>
+			</div>
+
+			<div class="login-body">
+				<form id="findPwForm">
+					<div class="user-type-tabs">
+						<button type="button" class="tab-btn active" data-type="student">학생</button>
+						<button type="button" class="tab-btn" data-type="emp">교직원</button>
+					</div>
+					<input type="hidden" name="type" value="student">
+
+					<div id="studentFieldsPw" class="find-fields">
+						<div class="form-group">
+							<label>이름</label>
+							<input type="text" name="studentName" class="form-input" placeholder="이름을 입력하세요" required>
+						</div>
+						<div class="form-group">
+							<label>학번</label>
+							<input type="text" name="studentNo" class="form-input" placeholder="학번을 입력하세요" required>
+						</div>
+						<div class="form-group">
+							<label>이메일</label>
+							<input type="email" name="studentEmail" class="form-input" placeholder="이메일을 입력하세요" required>
+						</div>
+					</div>
+
+					<div id="empFieldsPw" class="find-fields" style="display: none;">
+						<div class="form-group">
+							<label>이름</label>
+							<input type="text" name="empName" class="form-input" placeholder="이름을 입력하세요" required>
+						</div>
+						<div class="form-group">
+							<label>이메일</label>
+							<input type="email" name="empEmail" class="form-input" placeholder="이메일을 입력하세요" required>
+						</div>
+						<div class="form-group">
+							<label>전화번호</label>
+							<input type="tel" name="empPhone" class="form-input" placeholder="010-0000-0000" required>
+						</div>
+						<div class="form-group">
+							<label>생년월일</label>
+							<input type="date" name="empBirth" class="form-input" required>
+						</div>
+					</div>
+					<button type="button" id="btnFindPw" class="login-btn">비밀번호 찾기</button>
+				</form>
+
+				<div class="extra-links">
+					<a href="{{springMacroRequestContext.request.contextPath}}/login">로그인</a>
+					<span class="divider">|</span>
+					<a href="{{springMacroRequestContext.request.contextPath}}/findId">아이디 찾기</a>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<footer class="login-footer">
+		<p>© 2024 한국대학교 정보전산원. All rights reserved.</p>
+	</footer>
+</body>
+
+<script>
+	// 탭 전환
+	$('.tab-btn').on('click', function() {
+		const type = $(this).data('type');
+
+		$('.tab-btn').removeClass('active');
+		$(this).addClass('active');
+		$('input[name="type"]').val(type);
+
+		if (type === 'student') {
+			$('#studentFieldsPw').show();
+			$('#empFieldsPw').hide();
+		} else {
+			$('#empFieldsPw').show();
+			$('#studentFieldsPw').hide();
+		}
+	});
+
+	$('#btnFindPw').on('click', function() {
+		const data = $('#findPwForm').serialize();
+		$.ajax({
+			url : '{{springMacroRequestContext.request.contextPath}}/findPw',
+			method : 'POST',
+			data : data,
+			success : function(res) {
+				if (res.success) {
+					window.location.href = "{{springMacroRequestContext.request.contextPath}}" + res.redirectUrl;
+				} else {
+					alert("일치하는 정보가 없습니다.");
+				}
+			}
+		});
+	});
+</script>
+</html>

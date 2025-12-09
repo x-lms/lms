@@ -25,6 +25,26 @@ public class PublicService {
 		return publicMapper.selectLoginEmp(lu);
 	}
 	
+	// 아이디/비밀번호 찾기
+	public String findStudentId(Student std) {
+		return publicMapper.findStudentId(std);
+	}
+	public String findEmpId(Emp e) {
+		return publicMapper.findEmpId(e);
+	}
+	public int findStudentNo(Student std) {
+		return publicMapper.findStudentPw(std);
+	}
+	public int findEmpNo(Emp e) {
+		return publicMapper.findEmpPw(e);
+	}
+	public int changeStudentPw(Student std) {
+		return publicMapper.changeStudentPw(std);
+	}
+	public int changeEmpPw(Emp e) {
+		return publicMapper.changeEmpPw(e);
+	}
+	
 	// 공지사항 리스트
 	private static final int ROW_PER_PAGE = 10;	// 한 페이지에 보여질 글 수
 	public List<Notice> getNoticeList(int currentPage, String searchWord) {

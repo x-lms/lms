@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -67,6 +68,137 @@ public class PublicController {
 	public String logout(HttpSession session) {
 		session.invalidate();
 		return "redirect:/login"; // 리다이렉트
+	}
+	
+	// 아이디 찾기
+	@GetMapping("/findId")
+	public String findId() {
+		return "/public/findId";
+	}
+	@PostMapping("/findId")
+	@ResponseBody
+	public Map<String, Object> findId(@RequestParam Map<String, String> paramMap) {
+		Map<String, Object> result = new HashMap<>();
+		
+		String type = paramMap.get("type");
+		String foundId = null;
+		
+		if(type.equals("student")) {
+			Student s = new Student();
+			s.setStudentName(paramMap.get("studentName"));
+			s.setStudentEmail(paramMap.get("studentEmail"));
+			s.setStudentBirth(paramMap.get("studentBirth"));
+			s.setStudentPhone(paramMap.get("studentPhone"));
+			
+			foundId = publicService.findStudentId(s);
+		}
+		if(type.equals("emp")) {
+			Emp e = new Emp();
+			e.setEmpName(paramMap.get("empName"));
+			e.setEmpBirth(paramMap.get("empBirth"));
+			e.setEmpPhone(paramMap.get("empPhone"));
+			
+			foundId = publicService.findEmpId(e);
+		}
+		
+		if (foundId != null) {
+			result.put("success", true);
+			result.put("id", foundId);
+		} else {
+			result.put("success", false);
+		}
+		return result;
+	}
+	
+	// 비밀번호 찾기
+	@GetMapping("/findPw")
+	public String findPw() {
+		return "/public/findPw";
+	}
+	
+	@PostMapping("/findPw")
+	@ResponseBody
+	public Map<String, Object> findPw(HttpServletRequest request, @RequestParam Map<String, String> param) {
+		Map<String, Object> result = new HashMap<>();
+		
+		String type = param.get("type");
+		
+		int userNo = 0;
+		if(type.equals("student")) {
+			Student s = new Student();
+			s.setStudentNo(Integer.parseInt(param.get("studentNo")));
+			s.setStudentName(param.get("studentName"));
+			s.setStudentEmail(param.get("studentEmail"));
+			
+			userNo = publicService.findStudentNo(s);
+		}
+		if(type.equals("emp")) {
+			Emp e = new Emp();
+			e.setEmpName(param.get("empName"));
+			e.setEmpEmail(param.get("empEmail"));
+			e.setEmpBirth(param.get("empBirth"));
+			e.setEmpPhone(param.get("empPhone"));
+			
+			userNo = publicService.findEmpNo(e);
+		}
+		log.debug("userNo: " + userNo);
+		if(userNo == 0) {
+			result.put("success", false);
+			return result;
+		}
+		
+		String token = UUID.randomUUID().toString();
+		request.getSession().setAttribute("pwResetToken", token);
+		request.getSession().setAttribute("pwResetUserNo", userNo);
+		request.getSession().setAttribute("pwResetUserType", type);
+		result.put("success", true);
+		result.put("redirectUrl", "/resetPw?token=" + token);
+		
+		return result;
+	}
+	
+	@GetMapping("/resetPw")
+	public String resetPw(Model model, HttpSession session, @RequestParam(required = false) String token) {
+		String sessionToken = (String) session.getAttribute("pwResetToken");
+		
+		// 접근 차단
+		if(sessionToken == null || !sessionToken.equals(token)) return "redirect:/findPw";
+		
+		return "public/resetPw";
+	}
+	@PostMapping("/resetPw")
+	@ResponseBody
+	public Map<String, Object> resetPwDo(HttpSession session, @RequestParam("newPw") String newPw) {
+		Map<String, Object> result = new HashMap<>();
+		Integer userNo = (Integer) session.getAttribute("pwResetUserNo");
+		String userType = (String) session.getAttribute("pwResetUserType");
+		log.debug("userNo, userType: " + userNo + ", " + userType);
+		if(userNo == null) {
+			result.put("success", false);
+			return result;
+		}
+		if(userType.equals("student")) {
+			Student s = new Student();
+			s.setStudentNo(userNo);
+			s.setStudentPw(newPw);
+			
+			publicService.changeStudentPw(s);
+			result.put("success", true);
+		}
+		if(userType.equals("emp")) {
+			Emp e = new Emp();
+			e.setEmpNo(userNo);
+			e.setEmpPw(newPw);
+			
+			publicService.changeEmpPw(e);
+			result.put("success", true);
+		}
+		
+		session.removeAttribute("pwResetToken");
+		session.removeAttribute("pwResetUserNo");
+		session.removeAttribute("pwResetUserType");
+		
+		return result;
 	}
 	
 	// 공지사항게시판

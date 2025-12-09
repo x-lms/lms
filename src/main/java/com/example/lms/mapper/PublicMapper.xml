@@ -26,6 +26,42 @@
 		WHERE emp_role= 1 AND emp_email = #{userId} AND emp_pw = #{userPw}
 	</select>
 	
+	<!-- 아이디 찾기 -->
+	<select id="findStudentId" parameterType="com.example.lms.dto.Student" resultType="String">
+		SELECT student_no FROM student
+		WHERE student_name = #{studentName}
+		AND student_email = #{studentEmail}
+		AND student_birth = #{studentBirth}
+		AND student_phone = #{studentPhone}
+	</select>
+	<select id="findEmpId" parameterType="com.example.lms.dto.Emp" resultType="String">
+		SELECT emp_email FROM emp
+		WHERE emp_name = #{empName}
+		AND emp_birth = #{empBirth}
+		AND emp_phone = #{empPhone}
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="findStudentPw" parameterType="com.example.lms.dto.Student" resultType="int">
+		SELECT student_no FROM student 
+		WHERE student_no = #{studentNo}
+		AND student_name = #{studentName}
+		AND student_email = #{studentEmail}
+	</select>
+	<select id="findEmpPw" parameterType="com.example.lms.dto.Emp" resultType="int">
+		SELECT emp_no FROM emp
+		WHERE emp_name = #{empName}
+		AND emp_email = #{empEmail}
+		AND emp_birth = #{empBirth}
+		AND emp_phone = #{empPhone}
+	</select>
+	<update id="changeStudentPw" parameterType="com.example.lms.dto.Student">
+		UPDATE student SET student_pw = #{studentPw} WHERE student_no = #{studentNo}
+	</update>
+	<update id="changeEmpPw" parameterType="com.example.lms.dto.Emp">
+		UPDATE emp SET emp_pw = #{empPw} WHERE emp_no = #{empNo}
+	</update>
+	
 	<!-- 공지사항 리스트 -->
 	<select id="selectNoticeList" parameterType="com.example.lms.dto.SearchList" resultType="com.example.lms.dto.Notice">
 		SELECT notice_no noticeNo, notice_writer noticeWriter, notice_title noticeTitle, DATE_FORMAT(createdate, '%Y.%m.%d') createdate
