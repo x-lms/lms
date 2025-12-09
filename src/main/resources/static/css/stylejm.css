@@ -1408,6 +1408,23 @@
     color: #374151;
 }
 
+/* 날짜 기간 입력 그룹 */
+.date-range-group {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.date-range-group .form-input {
+	flex: 1;
+}
+
+.date-separator {
+	font-size: 16px;
+	color: #6b7280;
+	font-weight: 600;
+}
+
 /* 검색 셀렉트 박스 */
 .search-select {
 	padding: 8px 14px;

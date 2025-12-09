@@ -41,11 +41,11 @@
 							</div>
 							<div class="info-grid-row">
 								<span class="info-grid-label">작성자</span>
-								<span class="info-grid-value">{{scheduleWriter}}</span>
+								<span class="info-grid-value">{{writer}}</span>
 							</div>
 							<div class="info-grid-row">
 								<span class="info-grid-label">일정 날짜</span>
-								<span class="info-grid-value">{{scheduleDate}}</span>
+								<span class="info-grid-value">{{scheduleStartDate}} ~ {{scheduleEndDate}}</span>
 							</div>
 							<div class="info-grid-row">
 								<span class="info-grid-label">일정 내용</span>
@@ -55,17 +55,16 @@
 							</div>
 						</div>
 					</div>
-	
-					<div class="professor-detail-actions">
-						<a href="{{springMacroRequestContext.request.contextPath}}/emp/scheduleCalendar" class="btn-secondary">목록</a>
-						<div class="action-right">
-							{{#loginEmp}}
-								<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifySchedule?scheduleNo={{scheduleNo}}" class="btn-edit">수정</a>
-								<button type="button" class="btn-delete" onclick="deleteSchedule()">삭제</button>
-							{{/loginEmp}}
-						</div>
-					</div>
 				{{/schedule}}
+				<div class="professor-detail-actions">
+					<a href="{{springMacroRequestContext.request.contextPath}}/public/schedule" class="btn-secondary">목록</a>
+					<div class="action-right">
+						{{#loginEmp}}
+							<a href="{{springMacroRequestContext.request.contextPath}}/emp/modifySchedule?scheduleNo={{scheduleNo}}" class="btn-edit">수정</a>
+							<button type="button" class="btn-delete" onclick="deleteSchedule()">삭제</button>
+						{{/loginEmp}}
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

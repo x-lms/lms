@@ -32,6 +32,11 @@
 					<h3 class="section-title">일정 정보</h3>
 				</div>
 				{{ >layouts/calendar }}
+				{{#loginEmp}}
+					<div class="btn-box">
+						<a href="{{springMacroRequestContext.request.contextPath}}/emp/addSchedule" class="add-btn-single">일정 추가</a>
+					</div>
+				{{/loginEmp}}
 			</div>
 		</div>
 	</div>

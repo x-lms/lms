@@ -453,7 +453,7 @@ public class EmpController {
 		Emp writer = publicService.selectEmp(schedule.getScheduleWriter());
 		model.addAttribute("writer", writer.getEmpName());
 		model.addAttribute("schedule", schedule);
-		return "/emp/modifyNotice";
+		return "/emp/modifySchedule";
 	}
 	@PostMapping("/emp/modifySchedule")
 	public String modifySchedule(Schedule s, HttpServletRequest request) {

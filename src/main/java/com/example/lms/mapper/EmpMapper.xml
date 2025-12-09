@@ -150,13 +150,13 @@
 	
 	<!-- 스케줄 추가 -->
 	<insert id="insertSchedule" parameterType="com.example.lms.dto.Schedule">
-		INSERT INTO schedule (schedule_writer, schedule_title, schedule_contents, schedule_date) 
-		VALUES (#{scheduleWriter}, #{scheduleTitle}, #{scheduleContents}, #{scheduleData})
+		INSERT INTO schedule (schedule_writer, schedule_title, schedule_contents, schedule_start_date, schedule_end_date) 
+		VALUES (#{scheduleWriter}, #{scheduleTitle}, #{scheduleContents}, #{scheduleStartDate}, #{scheduleEndDate})
 	</insert>
 	<!-- 스케줄 수정 -->
 	<update id="updateSchedule" parameterType="com.example.lms.dto.Schedule">
 		UPDATE schedule
-	    SET  schedule_writer = #{scheduleWriter}, schedule_title = #{scheduleTitle}, schedule_contents = #{scheduleContents}, schedule_date = #{scheduleDate}
+	    SET  schedule_writer = #{scheduleWriter}, schedule_title = #{scheduleTitle}, schedule_contents = #{scheduleContents}, schedule_start_date = #{scheduleStartDate}, schedule_end_date = #{scheduleEndDate}
 	    WHERE schedule_no = #{scheduleNo}
 	</update>
 	<!-- 스케줄 삭제 -->

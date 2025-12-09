@@ -20,7 +20,7 @@
             </div>
             
             <div class="notice-form-container">
-                <form id="studentForm" class="notice-form" action="/emp/addStdOne" method="post">
+                <form id="studentForm" class="notice-form" action="{{springMacroRequestContext.request.contextPath}}/emp/addStdOne" method="post">
                     <div class="form-row">
                         <label class="form-label required">입학/편입년도</label>
                         <input type="number" name="year" class="form-input" placeholder="년도를 입력하세요 ex)2025" required>
@@ -52,7 +52,7 @@
 					</div>
 
 					<div class="form-actions">
-                        <a href="/emp/studentList" class="btn-secondary">취소</a>
+                        <a href="{{springMacroRequestContext.request.contextPath}}/emp/studentList" class="btn-secondary">취소</a>
                         <button type="submit" class="btn-primary">등록</button>
                     </div>
                 </form>

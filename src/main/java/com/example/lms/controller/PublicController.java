@@ -179,6 +179,9 @@ public class PublicController {
 	@GetMapping("/public/scheduleOne")
 	public String scheduleInfo(Model model, int scheduleNo) {
 		Schedule schedule = publicService.getSchedule(scheduleNo);
+		Emp writer = publicService.selectEmp(schedule.getScheduleWriter());
+		model.addAttribute("scheduleNo", scheduleNo);
+		model.addAttribute("writer", writer.getEmpName());
 		model.addAttribute("schedule", schedule);
 		return "/public/scheduleOne";
 	}
@@ -193,7 +196,9 @@ public class PublicController {
 	        Map<String, Object> map = new HashMap<>();
 	        map.put("id", s.getScheduleNo());
 	        map.put("title", s.getScheduleTitle());
-	        map.put("start", s.getScheduleDate().toString());
+	        map.put("start", s.getScheduleStartDate().toString());
+	        LocalDate endPlusOne = s.getScheduleEndDate().plusDays(1);
+	        map.put("end", endPlusOne.toString());
 	        result.add(map);
 	    }
 		return result;

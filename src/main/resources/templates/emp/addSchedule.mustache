@@ -33,8 +33,12 @@
 					</div>
 
 					<div class="form-row">
-						<label class="form-label required">일정 날짜</label>
-						<input type="date" name="scheduleData" class="form-input" required>
+						<label class="form-label required">일정 기간</label>
+						<div class="date-range-group">
+							<input type="date" name="scheduleStartDate" class="form-input" required>
+							<span class="date-separator">~</span>
+							<input type="date" name="scheduleEndDate" class="form-input" required>
+						</div>
 					</div>
 
 					<div class="form-row">

@@ -57,11 +57,11 @@
                     </tbody>
                 </table>
 
-                <div class="btn-box">
-                    <a href="/emp/addProfessor" class="add-btn-single">교수 추가</a>
-                </div>
-            
-                <div class="pagination">
+				<div class="btn-box">
+					<a href="{{springMacroRequestContext.request.contextPath}}/emp/addProfessor" class="add-btn-single">교수 추가</a>
+				</div>
+
+				<div class="pagination">
 					{{#prePage}}
 						 <a href="{{springMacroRequestContext.request.contextPath}}/emp/professorList?currentPage={{prePage}}&searchName={{searchName}}&searchDept={{searchDept}}" class="page-btn">이전</a>
 					{{/prePage}}
