@@ -18,4 +18,8 @@ public class Emp {
 	private String empImg; // DTO에 MultipartFile로 선언
 	private MultipartFile empImgFile; 
 	
+    public String getInitial() { 
+        return empName != null && !empName.isEmpty() ? empName.substring(0, 1) : "";
+    }
+	
 }

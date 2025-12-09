@@ -7,12 +7,25 @@
             <p>Hankuk University Learning Management System</p>
         </div>
     </div>
-    <div class="header-right">
+  <div class="header-right">
         <div class="user-info">
-            <div class="user-avatar">김</div>
+            <div class="user-avatar">
+                <!-- 이름 첫 글자 표시 -->
+                {{#loginStudent}}{{initial}}{{/loginStudent}}
+                {{#loginProfessor}}{{initial}}{{/loginProfessor}}
+                {{#loginEmp}}{{initial}}{{/loginEmp}}
+            </div>
             <div class="user-detail">
-                <span class="user-name">김직원</span>
-                <span class="user-id">EMP2024001</span>
+                <span class="user-name">
+                    {{#loginStudent}}{{studentName}}{{/loginStudent}}
+                    {{#loginProfessor}}{{empName}}{{/loginProfessor}}
+                    {{#loginEmp}}{{empName}}{{/loginEmp}}
+                </span>
+                <span class="user-id">
+                    {{#loginStudent}}{{studentNo}}{{/loginStudent}}
+                    {{#loginProfessor}}{{empEmail}}{{/loginProfessor}}
+                    {{#loginEmp}}{{empEmail}}{{/loginEmp}}
+                </span>
             </div>
         </div>
         <a href="/logout" class="logout-btn">로그아웃</a>

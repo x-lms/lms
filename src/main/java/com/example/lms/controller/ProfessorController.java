@@ -839,11 +839,7 @@ public class ProfessorController {
 		// 1. 강의 시간표
 	    List<TimetableCell> timetable = professorService.getFullTimetable(loginProfessor.getEmpNo());
 	    model.addAttribute("timetable", timetable);
-	    
-	    // 2. 학사 일정 / 달력
-	    // List<Map<String, String>> schedule = professorService.getProfessorSchedule();
-	    // model.addAttribute("schedule", schedule);
-		
+	    		
 		return "professor/professorHome";
 	}
 	

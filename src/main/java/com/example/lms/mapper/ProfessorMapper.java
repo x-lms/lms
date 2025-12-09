@@ -58,7 +58,7 @@ public interface ProfessorMapper {
 	// 과제 삭제
 	int deleteProjectIfNoResults(int projectNo);
 	int countProjectResults(int projectNo);
-
+	
 	// 과제 등록
 	int addProject(Project p);
 	
@@ -120,8 +120,6 @@ public interface ProfessorMapper {
 	
 	// 홈 화면
 	List<CourseTime> selectAllCourseTimes(int empNo);
-	List<Map<String, String>> getProfessorSchedule();
-
 	
 	
 }

@@ -536,15 +536,4 @@
 	    ORDER BY ct.course_time_start
 	</select>
 	
-	<!-- 전체 학사 일정 -->
-	<select id="getAcademicSchedule" resultType="map">
-	    SELECT 
-	    	schedule_no schedulNo,
-	    	schedule_writer scheduleWriter,
-	    	schedule_title scheduleTitle,
-	    	schedule_contents scheduleContents,
-	    	schedule_date scheduleDate
-	    FROM schedule 
-	</select>
-
 </mapper>

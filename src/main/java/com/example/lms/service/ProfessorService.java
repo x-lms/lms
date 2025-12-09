@@ -423,14 +423,6 @@ public class ProfessorService {
             default: return 0; // 범위 밖
         }
     }
-    
-    // 캘린더
-	public List<Map<String, String>> getProfessorSchedule() {		
-		return professorMapper.getProfessorSchedule();
-	}
-
-
-
-	
+   
 
 }

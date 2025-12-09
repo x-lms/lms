@@ -17,4 +17,8 @@ private String studentBirth;
 private String studentImg;
 private MultipartFile studentImgFile;
 private String studentEmail;
+
+public String getInitial() { 
+    return studentName != null && !studentName.isEmpty() ? studentName.substring(0, 1) : "";
+}
 }
