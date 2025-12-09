@@ -20,7 +20,6 @@
         <div class="alert-success">{{msg}}</div>
         {{/msg}}
 
-        
         <div class="detail-box">
             <h2 class="detail-title">{{project.projectName}}</h2>
 
@@ -38,82 +37,74 @@
                 {{/project.projectContents}}
             </div>
 
-            
             {{#submitted}}
-            <div class="submitted-box">
-
-                <div class="form-group">
-                    <label>제출 제목</label>
-                    <div class="submitted-value">{{submitted.resultTitle}}</div>
-                </div>
-                
-		<div class="form-group">
-    <label>제출 파일</label>
-    <div class="submitted-value">
-        <a href="/student/assignment/download/{{submitted.resultNo}}">
-            {{submitted.resultFile}}
-        </a>
-    </div>
-</div>
-
-
-
-
-
-                <div class="form-group">
-                    <label>제출 내용</label>
-                    <div class="submitted-value submitted-contents">
-                        {{submitted.resultContents}}
-                    </div>
-                </div>
-
                 {{#editable}}
-                <div class="action-buttons">
-                    <a href="/student/assignment/edit/{{submitted.resultNo}}" class="btn-common edit-btn">
-                        수정하기
-                    </a>
-                    <a href="/student/courseOne/{{project.courseNo}}" class="btn-common back-btn">
-                        강의 상세로
-                    </a>
-                </div>
+                <!-- 제출 후 수정 가능 상태 → 수정폼 표시 -->
+                <form action="/student/assignment/edit/{{submitted.resultNo}}" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="resultTitleEdit">제목</label>
+                        <input type="text" id="resultTitleEdit" name="resultTitle" value="{{submitted.resultTitle}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="submissionFileEdit">파일 첨부 (새 파일 업로드 시 기존 파일 대체)</label>
+                        <input type="file" id="submissionFileEdit" name="submissionFile">
+                    </div>
+                    <div class="form-group">
+                        <label for="resultContentsEdit">내용</label>
+                        <textarea id="resultContentsEdit" name="resultContents" required>{{submitted.resultContents}}</textarea>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="submit" class="btn-common edit-btn">수정하기</button>
+                        <a href="/student/courseOne/{{project.courseNo}}" class="btn-common back-btn">강의 상세로</a>
+                    </div>
+                </form>
                 {{/editable}}
 
                 {{^editable}}
-                <div class="action-buttons">
-                    <a href="/student/courseOne/{{project.courseNo}}" class="btn-common back-btn">
-                        강의 상세로
-                    </a>
+                <!-- 제출 후 수정 불가 상태 → 제출 내용만 표시 -->
+                <div class="submitted-box">
+                    <div class="form-group">
+                        <label>제출 제목</label>
+                        <div class="submitted-value">{{submitted.resultTitle}}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>제출 파일</label>
+                        <div class="submitted-value">
+                            <a href="/student/assignment/download/{{submitted.resultNo}}">
+                                {{submitted.resultFile}}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>제출 내용</label>
+                        <div class="submitted-value submitted-contents">{{submitted.resultContents}}</div>
+                    </div>
+                    <div class="action-buttons">
+                        <a href="/student/courseOne/{{project.courseNo}}" class="btn-common back-btn">강의 상세로</a>
+                    </div>
                 </div>
                 {{/editable}}
-            </div>
             {{/submitted}}
 
-            
             {{^submitted}}
+            <!-- 미제출 상태 → 새 제출 폼 표시 -->
             <form method="post" action="/student/assignment/{{project.projectNo}}" enctype="multipart/form-data">
-
                 <div class="form-group">
                     <label for="resultTitle">제목</label>
                     <input type="text" id="resultTitle" name="resultTitle" placeholder="제목을 입력하세요" required>
                 </div>
-
                 <div class="form-group">
                     <label for="submissionFile">파일 첨부</label>
                     <input type="file" id="submissionFile" name="submissionFile" required>
                 </div>
-
                 <div class="form-group">
                     <label for="resultContents">내용</label>
                     <textarea id="resultContents" name="resultContents" placeholder="내용을 입력하세요" required></textarea>
                 </div>
-
                 <div class="action-buttons">
                     <button type="submit" class="btn-common submit-btn">제출</button>
-                    <a href="/student/courseOne/{{project.courseNo}}" class="btn-common back-btn">
-                        강의 상세로
-                    </a>
+                    <a href="/student/courseOne/{{project.courseNo}}" class="btn-common back-btn">강의 상세로</a>
                 </div>
-
             </form>
             {{/submitted}}
 

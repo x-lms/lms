@@ -31,11 +31,33 @@
             <tbody>
                 {{#courses}}
                 <tr>
-                    <td><a href="/student/courseOne/{{courseNo}}" class="course-link">{{courseName}}</a></td>
+                    <td>
+                        <a href="/student/courseOne/{{courseNo}}" class="course-link">
+                            {{courseName}}
+                        </a>
+                    </td>
                     <td>{{empName}}</td>
-                    <td>{{courseDate}}</td>
-                    <td>{{courseTimeStart}}~{{courseTimeEnd}}</td>
-                    <td>{{courseLocation}}</td>
+
+                    <!-- 요일 -->
+                    <td>
+                        {{#courseTimes}}
+                            {{coursedate}}<br>
+                        {{/courseTimes}}
+                    </td>
+
+                    <!-- 시간 -->
+                    <td>
+                        {{#courseTimes}}
+                            {{courseTimeStart}}~{{courseTimeEnd}}<br>
+                        {{/courseTimes}}
+                    </td>
+
+                    <!-- 강의실 -->
+                    <td>
+                        {{#courseTimes}}
+                            {{courseLocation}}<br>
+                        {{/courseTimes}}
+                    </td>
                 </tr>
                 {{/courses}}
             </tbody>
