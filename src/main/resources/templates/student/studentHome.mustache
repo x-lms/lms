@@ -71,31 +71,12 @@
         <!-- 학사 일정 / 달력 -->
         <section class="calendar">
             <h3>학사 일정</h3>
-            <div id="calendar"></div>
+           	{{>layouts/calendar}}
         </section>
     </div>
 </div>
 {{ >layouts/footer }}
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        height: 600,
-        events: [
-            {{#scheduleList}}
-            {
-                title: "{{title}}",
-                start: "{{start}}",
-                end: "{{end}}"
-            },
-            {{/scheduleList}}
-        ]
-    });
-    calendar.render();
-});
-</script>
 	
 </body>
 </html>
