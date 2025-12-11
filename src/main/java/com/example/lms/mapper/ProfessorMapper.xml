@@ -88,7 +88,15 @@
 	    LEFT JOIN student s
 	    	ON sc.student_no = s.student_no
 	    WHERE sc.course_no = #{courseNo}
-	    ORDER BY sc.score_total DESC
+	    ORDER BY
+			 FIELD(sc.score_grade, 
+            'A+', 'A', 
+            'B+', 'B', 
+            'C+', 'C', 
+            'D+', 'D', 
+            'F'
+        ),
+        sc.score_total DESC
 	</select>
 		
 	<!-- 답글 등록 -->

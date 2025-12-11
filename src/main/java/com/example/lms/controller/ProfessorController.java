@@ -135,7 +135,7 @@ public class ProfessorController {
             score.setScoreTotal(scoreTotal);
 
             // 임시 등급
-            score.setScoreGrade(score.getScoreAtt() == 0 ? "F" : "X");
+            score.setScoreGrade(score.getScoreAtt() == 4 ? "F" : "X");
 
             professorService.addScore(score);
 
