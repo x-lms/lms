@@ -53,28 +53,50 @@
             <div class="section-title">과제 목록</div>
             <div class="list-box">
                 <table>
-                    <tr>
-                        <th>과제명</th>
-                        <th>마감일</th>
-                        
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>과제명</th>
+                            <th>마감일</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#assignmentList}}
+                        <tr>
+                            <td>
+                                {{^closed}}
+                                <a href="/student/assignment/{{projectNo}}" class="assignment-link">
+                                    {{projectName}}
+                                </a>
+                                {{/closed}}
 
-                    {{#assignmentList}}
-                    <tr>
-                        <td>
-                            <a href="/student/assignment/{{projectNo}}" class="assignment-link">
-                                {{projectName}}
-                            </a>
-                        </td>
-                        <td>{{projectDeadline}}</td>
-                        <td>
-                        
-                    </tr>
-                    {{/assignmentList}}
+                                {{#closed}}
+                                <span class="assignment-closed">
+                                    {{projectName}}
+                                </span>
+                                {{/closed}}
+                            </td>
 
-                    {{^assignmentList}}
-                    <tr><td colspan="3">등록된 과제가 없습니다.</td></tr>
-                    {{/assignmentList}}
+                            <td>{{projectDeadline}}</td>
+
+                            <td>
+                                {{^closed}}
+                                <span class="status-open">진행중</span>
+                                {{/closed}}
+
+                                {{#closed}}
+                                <span class="status-deadline">마감</span>
+                                {{/closed}}
+                            </td>
+                        </tr>
+                        {{/assignmentList}}
+
+                        {{^assignmentList}}
+                        <tr>
+                            <td colspan="3">등록된 과제가 없습니다.</td>
+                        </tr>
+                        {{/assignmentList}}
+                    </tbody>
                 </table>
             </div>
 

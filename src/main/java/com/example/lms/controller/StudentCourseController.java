@@ -265,23 +265,31 @@ private boolean isBeforeDeadline(String projectDeadline) {
 
 
 	// 수강 과목 상세보기
-    @GetMapping("/courseOne/{courseNo}")
-    public String courseDetail(
-            @PathVariable int courseNo,
-            @SessionAttribute("loginStudent") Student loginStudent,
-            Model model) {
+@GetMapping("/courseOne/{courseNo}")
+public String courseDetail(
+        @PathVariable int courseNo,
+        @SessionAttribute("loginStudent") Student loginStudent,
+        Model model) {
 
-        int studentNo = loginStudent.getStudentNo();
-        StudentCourse course = studentService.getCourseDetail(studentNo, courseNo);
-        List<Assignment> assignmentList = studentService.getAssignments(courseNo);
-        boolean cancelable = studentService.isCancelable(studentNo, courseNo);
+    int studentNo = loginStudent.getStudentNo();
+    StudentCourse course = studentService.getCourseDetail(studentNo, courseNo);
+    List<Assignment> assignmentList = studentService.getAssignments(courseNo);
+    boolean cancelable = studentService.isCancelable(studentNo, courseNo);
 
-        model.addAttribute("course", course);
-        model.addAttribute("assignmentList", assignmentList);
-        model.addAttribute("cancelable", cancelable ? "Y" : null);
-
-        return "student/courseOne";
+    //  과제 마감 여부 계산
+    LocalDate today = LocalDate.now();
+    for (Assignment a : assignmentList) {
+        LocalDate deadline = LocalDate.parse(a.getProjectDeadline());
+        a.setClosed(today.isAfter(deadline));
     }
+
+    model.addAttribute("course", course);
+    model.addAttribute("assignmentList", assignmentList);
+    model.addAttribute("cancelable", cancelable ? "Y" : null);
+
+    return "student/courseOne";
+}
+
 
     @PostMapping("/course-cancel/{courseNo}")
     public String cancelCourse(
